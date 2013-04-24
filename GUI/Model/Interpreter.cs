@@ -98,6 +98,7 @@ namespace AEGIScript.GUI.Model
 
         /// <summary>
         /// Provides a layer of abstraction for walking ASTNodes -- handles double dispatching gracefully
+        /// From a grammatical point of view, walk handle actual statements
         /// </summary>
         /// <param name="node"></param>
         /// <returns>String representation for debug purposes</returns>
@@ -455,6 +456,8 @@ namespace AEGIScript.GUI.Model
 
         /// <summary>
         /// Provides an abstraction layer for resolves -- handles double dispatching to the proper functions
+        /// From a grammatical point of view, resolve deals with all expressions, but not statements.
+        /// For statement handlng, see the Walk functions
         /// </summary>
         /// <param name="toRes"></param>
         /// <param name="currentType"></param>
@@ -543,7 +546,7 @@ namespace AEGIScript.GUI.Model
         }
 
         /// <summary>
-        /// 
+        /// Functional sugar -- hides the fact that we only need to resolve the right-hand size
         /// </summary>
         /// <param name="toRes"></param>
         /// <param name="currentType"></param>
@@ -558,6 +561,13 @@ namespace AEGIScript.GUI.Model
             return toRes;
         }
 
+        /// <summary>
+        /// Deprecated function to resolve variable nodes -- now they're all handled
+        /// as TermNodes in all scopes
+        /// </summary>
+        /// <param name="toRes"></param>
+        /// <param name="currentType"></param>
+        /// <returns>Variable's actual value</returns>
         private TermNode Resolve(VarNode toRes, ASTNode.Type currentType)
         {
             TermNode node;
