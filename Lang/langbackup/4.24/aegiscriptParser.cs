@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5 D:\\Eclipse\\aegiscript_live\\aegiscript.g 2013-04-24 16:00:55
+// $ANTLR 3.5 D:\\Eclipse\\aegiscript_live\\aegiscript.g 2013-04-23 22:23:37
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -1273,7 +1273,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 			{
 			// AST REWRITE
-			// elements: statement, expression, 48
+			// elements: 48, expression, statement
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -1487,7 +1487,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 				{
 				// AST REWRITE
-				// elements: b, a, name
+				// elements: b, name, a
 				// token labels: name
 				// rule labels: retval, a
 				// token list labels: 
@@ -2096,7 +2096,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_accessor();
 	partial void LeaveRule_accessor();
 	// $ANTLR start "accessor"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:105:1: accessor : a= IDENT ( '[' b+= expression ']' )+ -> ^( ACCESS $a ( $b)+ ) ;
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:105:1: accessor : a= IDENT ( '[' b+= INTEGER ']' )+ -> ^( ACCESS $a ( $b)+ ) ;
 	[GrammarRule("accessor")]
 	private AstParserRuleReturnScope<CommonTree, IToken> accessor()
 	{
@@ -2111,29 +2111,31 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 		IToken a = default(IToken);
 		IToken char_literal71 = default(IToken);
 		IToken char_literal72 = default(IToken);
-		List<CommonTree> list_b = null;
-		AstParserRuleReturnScope<CommonTree, IToken> b = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken b = default(IToken);
+		List<IToken> list_b = null;
+
 		CommonTree a_tree = default(CommonTree);
 		CommonTree char_literal71_tree = default(CommonTree);
 		CommonTree char_literal72_tree = default(CommonTree);
+		CommonTree b_tree = default(CommonTree);
+		RewriteRuleITokenStream stream_INTEGER=new RewriteRuleITokenStream(adaptor,"token INTEGER");
 		RewriteRuleITokenStream stream_IDENT=new RewriteRuleITokenStream(adaptor,"token IDENT");
 		RewriteRuleITokenStream stream_43=new RewriteRuleITokenStream(adaptor,"token 43");
 		RewriteRuleITokenStream stream_42=new RewriteRuleITokenStream(adaptor,"token 42");
-		RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
 		try { DebugEnterRule(GrammarFileName, "accessor");
 		DebugLocation(105, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:2: (a= IDENT ( '[' b+= expression ']' )+ -> ^( ACCESS $a ( $b)+ ) )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:2: (a= IDENT ( '[' b+= INTEGER ']' )+ -> ^( ACCESS $a ( $b)+ ) )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:4: a= IDENT ( '[' b+= expression ']' )+
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:4: a= IDENT ( '[' b+= INTEGER ']' )+
 			{
 			DebugLocation(106, 6);
 			a=(IToken)Match(input,IDENT,Follow._IDENT_in_accessor498);  
 			stream_IDENT.Add(a);
 
 			DebugLocation(106, 14);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:14: ( '[' b+= expression ']' )+
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:14: ( '[' b+= INTEGER ']' )+
 			int cnt14=0;
 			try { DebugEnterSubRule(14);
 			while (true)
@@ -2153,22 +2155,20 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:15: '[' b+= expression ']'
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:15: '[' b+= INTEGER ']'
 					{
 					DebugLocation(106, 15);
 					char_literal71=(IToken)Match(input,42,Follow._42_in_accessor501);  
 					stream_42.Add(char_literal71);
 
 					DebugLocation(106, 21);
-					PushFollow(Follow._expression_in_accessor507);
-					b=expression();
-					PopFollow();
+					b=(IToken)Match(input,INTEGER,Follow._INTEGER_in_accessor507);  
+					stream_INTEGER.Add(b);
 
-					stream_expression.Add(b.Tree);
-					if (list_b==null) list_b=new List<CommonTree>();
-					list_b.Add(b.Tree);
+					if (list_b==null) list_b=new List<IToken>();
+					list_b.Add(b);
 
-					DebugLocation(106, 35);
+					DebugLocation(106, 32);
 					char_literal72=(IToken)Match(input,43,Follow._43_in_accessor509);  
 					stream_43.Add(char_literal72);
 
@@ -2198,34 +2198,35 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			// elements: b, a
 			// token labels: a
 			// rule labels: retval
-			// token list labels: 
-			// rule list labels: b
+			// token list labels: b
+			// rule list labels: 
 			// wildcard labels: 
 			retval.Tree = root_0;
 			RewriteRuleITokenStream stream_a=new RewriteRuleITokenStream(adaptor,"token a",a);
+			RewriteRuleITokenStream stream_b=new RewriteRuleITokenStream(adaptor,"token b", list_b);
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
-			RewriteRuleSubtreeStream stream_b=new RewriteRuleSubtreeStream(adaptor,"token b",list_b);
+
 			root_0 = (CommonTree)adaptor.Nil();
-			// 106:41: -> ^( ACCESS $a ( $b)+ )
+			// 106:38: -> ^( ACCESS $a ( $b)+ )
 			{
-				DebugLocation(106, 44);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:44: ^( ACCESS $a ( $b)+ )
+				DebugLocation(106, 41);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:41: ^( ACCESS $a ( $b)+ )
 				{
 				CommonTree root_1 = (CommonTree)adaptor.Nil();
-				DebugLocation(106, 46);
+				DebugLocation(106, 43);
 				root_1 = (CommonTree)adaptor.BecomeRoot((CommonTree)adaptor.Create(ACCESS, "ACCESS"), root_1);
 
-				DebugLocation(106, 54);
+				DebugLocation(106, 51);
 				adaptor.AddChild(root_1, stream_a.NextNode());
-				DebugLocation(106, 57);
+				DebugLocation(106, 54);
 				if (!(stream_b.HasNext))
 				{
 					throw new RewriteEarlyExitException();
 				}
 				while ( stream_b.HasNext )
 				{
-					DebugLocation(106, 57);
-					adaptor.AddChild(root_1, stream_b.NextTree());
+					DebugLocation(106, 54);
+					adaptor.AddChild(root_1, stream_b.NextNode());
 
 				}
 				stream_b.Reset();
@@ -2361,7 +2362,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 			{
 			// AST REWRITE
-			// elements: a, b
+			// elements: b, a
 			// token labels: a
 			// rule labels: retval
 			// token list labels: 
@@ -2572,7 +2573,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 				{
 				// AST REWRITE
-				// elements: a, b
+				// elements: b, a
 				// token labels: 
 				// rule labels: retval, a
 				// token list labels: 
@@ -4013,8 +4014,8 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 		public static readonly BitSet _expression_in_assignmentStatement479 = new BitSet(new ulong[]{0x400000000UL});
 		public static readonly BitSet _34_in_assignmentStatement481 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _IDENT_in_accessor498 = new BitSet(new ulong[]{0x40000000000UL});
-		public static readonly BitSet _42_in_accessor501 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _expression_in_accessor507 = new BitSet(new ulong[]{0x80000000000UL});
+		public static readonly BitSet _42_in_accessor501 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _INTEGER_in_accessor507 = new BitSet(new ulong[]{0x80000000000UL});
 		public static readonly BitSet _43_in_accessor509 = new BitSet(new ulong[]{0x40000000002UL});
 		public static readonly BitSet _IDENT_in_accessorStatement549 = new BitSet(new ulong[]{0x80000000UL});
 		public static readonly BitSet _31_in_accessorStatement552 = new BitSet(new ulong[]{0x8000UL});
@@ -4068,3 +4069,4 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 }
 
 } // namespace 
+

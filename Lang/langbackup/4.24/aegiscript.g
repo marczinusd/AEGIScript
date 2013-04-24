@@ -103,7 +103,7 @@ assignmentStatement
 
 
 accessor
-	: a = IDENT ('[' b += expression ']')+ -> ^(ACCESS $a $b+)
+	: a = IDENT ('[' b += INTEGER ']')+ -> ^(ACCESS $a $b+)
 	;
 
 ACCESS

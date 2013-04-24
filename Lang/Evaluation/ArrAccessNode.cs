@@ -13,11 +13,11 @@ namespace AEGIScript.Lang.Evaluation
             : base(tree, Symbol)
         {
             Indices = new List<int>();
-            for (int i = 1; i < Children.Count; i++)
-            {
-                Indices.Add(Int32.Parse(Children[i].Tree.Text));
-            }
-            ActualType = ASTNode.Type.ARRACC;
+            //for (int i = 1; i < Children.Count; i++)
+            //{
+            //    Indices.Add(Int32.Parse(Children[i].Tree.Text));
+            //}
+            //ActualType = ASTNode.Type.ARRACC;
         }
 
         public List<Int32> Indices { get; set; }

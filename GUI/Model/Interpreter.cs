@@ -15,6 +15,7 @@ namespace AEGIScript.GUI.Model
     class Interpreter
     {
         private FunCallHelper helper = new FunCallHelper();
+        private Random rand = new Random();
         private Scope GlobalScope = new Scope();
         private Stack<SymbolTable> Scopes = new Stack<SymbolTable>();
         private StringBuilder OutputBuilder = new StringBuilder();
@@ -93,35 +94,6 @@ namespace AEGIScript.GUI.Model
 
         
 
-        /// <summary>
-        /// The soul of the interpreter -- walks the AST and interprets it
-        /// </summary>
-        /// <param name="node">Root of the AST</param>
-        private string Walk(BeginNode node)
-        {
-            BeginTime = DateTime.Now;
-
-            StringBuilder builder = new StringBuilder();
-
-            foreach (ASTNode n in node.Children)
-            {
-                try
-                {
-                builder.Append(Walk(n));
-                }
-                catch (Exception ex)
-                {
-                   // crashes here if the exception raised is not a built-in type
-                    builder.AppendLine(ex.Message);
-                    PrintFun(ex.Message);
-                    return builder.ToString();
-                }
-            }
-            TimeSpan ElapsedTime = DateTime.Now - BeginTime;
-            var AsDouble = Math.Truncate(ElapsedTime.TotalSeconds * 10000) / 10000;
-            Print(this, new PrintEventArgs("Successfully finished in: " + AsDouble.ToString(CultureInfo.InvariantCulture) + " second(s)."));
-            return builder.ToString();
-        }
 
 
         /// <summary>
@@ -181,6 +153,35 @@ namespace AEGIScript.GUI.Model
             return Walk(ret.Tree as CommonTree);
         }
 
+        /// <summary>
+        /// The soul of the interpreter -- walks the AST and interprets it
+        /// </summary>
+        /// <param name="node">Root of the AST</param>
+        private string Walk(BeginNode node)
+        {
+            BeginTime = DateTime.Now;
+
+            StringBuilder builder = new StringBuilder();
+
+            foreach (ASTNode n in node.Children)
+            {
+                try
+                {
+                    builder.Append(Walk(n));
+                }
+                catch (Exception ex)
+                {
+                    // crashes here if the exception raised is not a built-in type
+                    builder.AppendLine(ex.Message);
+                    PrintFun(ex.Message);
+                    return builder.ToString();
+                }
+            }
+            TimeSpan ElapsedTime = DateTime.Now - BeginTime;
+            var AsDouble = Math.Truncate(ElapsedTime.TotalSeconds * 10000) / 10000;
+            Print(this, new PrintEventArgs("Successfully finished in: " + AsDouble.ToString(CultureInfo.InvariantCulture) + " second(s)."));
+            return builder.ToString();
+        }
         private string Walk(CommonTree tree)
         {
             try
@@ -213,10 +214,16 @@ namespace AEGIScript.GUI.Model
                 }
                 var ActualArray = GlobalScope.GetVar(Accessor.Symbol) as ArrayNode;
                 var Orig = ActualArray;
-                for (int i = 0; i < Accessor.Indices.Count - 1; i++)
+                TermNode ResolvedInd;
+                for (int i = 1; i < Accessor.Children.Count - 1; i++)
                 {
-                    int Ind = Accessor.Indices[i];
-                    if (Ind > 0 && Ind < ActualArray.Elements.Count
+                    ResolvedInd = Resolve(Accessor.Children[i], ASTNode.Type.BOOL);
+                    if (ResolvedInd.ActualType != ASTNode.Type.INT)
+                    {
+                        throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " + node.Line + "\n");
+                    }
+                    int Ind = (ResolvedInd as IntNode).Value;
+                    if (Ind >= 0 && Ind < ActualArray.Elements.Count
                         && ActualArray[Ind].ActualType == ASTNode.Type.ARRAY)
                     {
                         ActualArray = ActualArray[Ind] as ArrayNode;
@@ -227,7 +234,13 @@ namespace AEGIScript.GUI.Model
                         "non-array object, or using an out-of-range index at line " + node.Line + "\n");
                     }
                 }
-                ActualArray[Accessor.Indices.Count - 1] = Resolved;
+                ResolvedInd = Resolve(Accessor.Children[Accessor.Children.Count - 1], ASTNode.Type.BOOL);
+                if (ResolvedInd.ActualType != ASTNode.Type.INT)
+                {
+                    throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " + node.Line + "\n");
+                }
+                int finalInd = (ResolvedInd as IntNode).Value;
+                ActualArray[finalInd] = Resolved;
                 GlobalScope.AddVar(Accessor.Symbol, Orig);
             }
             else 
@@ -404,6 +417,42 @@ namespace AEGIScript.GUI.Model
             return NodeArithmetics.Op(left, right, toRes.op);
         }
 
+        private TermNode Resolve(FunCallNode fun, ASTNode.Type currentType)
+        {
+            List<TermNode> ResolvedArgs = new List<TermNode>();
+            for (int i = 1; i < fun.Children.Count; i++)
+            {
+                ResolvedArgs.Add(Resolve(fun.Children[i], currentType));
+            }
+            switch (fun.FunName)
+            {
+                case "rand":
+                    Random rand = new Random();
+                    if (fun.Children.Count == 1)
+                    {
+                        return new IntNode(rand.Next());
+                    }
+                    else if(fun.Children.Count == 2)
+                    {
+                        if (ResolvedArgs[0].ActualType == ASTNode.Type.INT)
+                        {
+                            return new IntNode(rand.Next((ResolvedArgs[0] as IntNode).Value));
+                        }
+                        else
+	                    {
+                            throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line + "\n");
+	                    }
+                    }
+                    else
+	                {
+                        throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line + "\n");
+	                }
+                default:
+                    throw new Exception("RUNTIME ERROR!\n You are either calling a non-existing function, or trying to "+ 
+                                        "use a void functions return value.");
+            }
+        }
+
         /// <summary>
         /// Provides an abstraction layer for resolves -- handles double dispatching to the proper functions
         /// </summary>
@@ -428,6 +477,8 @@ namespace AEGIScript.GUI.Model
                     return Resolved;
                 case ASTNode.Type.ARRACC:
                     return Resolve(toRes as ArrAccessNode, currentType);
+                case ASTNode.Type.FUNCALL:
+                    return Resolve(toRes as FunCallNode, currentType);
                 default:
                     throw new Exception("Unable to resolve ASTNode " + toRes.ActualType.ToString() + " " + toRes.Parent.ActualType.ToString());
             }
@@ -448,10 +499,16 @@ namespace AEGIScript.GUI.Model
                 throw new Exception("RUNTIME ERROR!\n You are trying to use an accessor on a non-array object at line " + toRes.Line + "\n");
             }
             ArrayNode ActualArray = Ret as ArrayNode;
-            for (int i = 0; i < toRes.Indices.Count - 1; i++)
+            TermNode ResolvedInd;
+            for (int i = 1; i < toRes.Children.Count - 1; i++)
             {
-                int Ind = toRes.Indices[i];
-                if (Ind > 0 && Ind < ActualArray.Elements.Count
+                ResolvedInd = Resolve(toRes.Children[i], currentType);
+                if (ResolvedInd.ActualType != ASTNode.Type.INT)
+                {
+                    throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " + toRes.Line + "\n");
+                }
+                int Ind = (ResolvedInd as IntNode).Value;
+                if (Ind >= 0 && Ind < ActualArray.Elements.Count
                     && ActualArray[Ind].ActualType == ASTNode.Type.ARRAY)
                 {
                     ActualArray = ActualArray[Ind] as ArrayNode;
@@ -462,7 +519,12 @@ namespace AEGIScript.GUI.Model
                     "non-array object, or using an out-of-range index at line " + toRes.Line + "\n");
                 }
             }
-            return Resolve(ActualArray[toRes.Indices[toRes.Indices.Count - 1]], currentType);
+            ResolvedInd = Resolve(toRes.Children[toRes.Children.Count - 1], currentType);
+            if (ResolvedInd.ActualType != ASTNode.Type.INT)
+            {
+                throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " + toRes.Line + "\n");
+            }
+            return Resolve(ActualArray[(ResolvedInd as IntNode).Value], currentType);
         }
 
         /// <summary>
