@@ -121,7 +121,7 @@ FIELD_ACCESS
 array
 	: '['a = expression
 	(',' b += expression)*']' -> ^(ARRAY $a $b*)
-	| '['']'
+	| '['']' -> ^(ARRAY)
 	;
 
 ARRAY

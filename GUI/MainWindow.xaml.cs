@@ -39,8 +39,27 @@ namespace AEGIScript.GUI
             _viewModel.OnFileUpToDate += viewModel_OnFileUpToDate;
             _viewModel.OnNewFile += viewModel_OnNewFile;
             _viewModel.OnClose += viewModel_OnClose;
+            _viewModel.OnFinished += _viewModel_OnFinished;
+            _viewModel.OnRunning += _viewModel_OnRunning;
+            CancelButton.IsEnabled = false;
             InitKeywords();
             FileChangedButton.Background = Brushes.Transparent;
+        }
+
+        void _viewModel_OnRunning(object sender, EventArgs e)
+        {
+            RunButton.IsEnabled = false;
+            DebugButton.IsEnabled = false;
+            ImmediateButton.IsEnabled = false;
+            CancelButton.IsEnabled = true;
+        }
+
+        void _viewModel_OnFinished(object sender, EventArgs e)
+        {
+            RunButton.IsEnabled = true;
+            DebugButton.IsEnabled = true;
+            ImmediateButton.IsEnabled = true;
+            CancelButton.IsEnabled = false;
         }
 
         private void viewModel_OnClose(object sender, EventArgs e)

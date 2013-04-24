@@ -116,9 +116,6 @@
     <Compile Include="Lang\Exceptions\UndefinedVariableException.cs" />
     <Compile Include="Lang\FunCalls\FunCallHelper.cs" />
     <Compile Include="Lang\Scoping\Scope.cs" />
-    <Compile Include="Lang\Scoping\ScopeMediator.cs" />
-    <Compile Include="Lang\Scoping\Symbol.cs" />
-    <Compile Include="Lang\Scoping\VariableSymbol.cs" />
     <Compile Include="Lang\SymbolTables\SymbolTable.cs" />
     <Compile Include="Lang\SymbolTables\VariableAlreadyDefinedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -239,6 +236,7 @@
     <Folder Include="Res\Syntax\" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Res\Icons\stop.png" />
     <Resource Include="Res\Icons\add.png" />
     <Resource Include="Res\Icons\bug.png" />
     <Resource Include="Res\Icons\console.png" />

@@ -24,6 +24,7 @@
         <BitmapImage x:Key="SaveAsImg" UriSource="../res/Icons/save_as.png" />
         <BitmapImage x:Key="OpenImg" UriSource="../res/Icons/documents.png" />
         <BitmapImage x:Key="NewImg" UriSource="../res/Icons/add.png" />
+        <BitmapImage x:Key="StopImg" UriSource="../res/Icons/stop.png" />
     </Window.Resources>
     <Grid Name="mainGrid">
         <Grid.RowDefinitions>
@@ -68,27 +69,30 @@
         </Menu>
         <Label Grid.Column="9" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Content="Immediate Window" FontFamily="SegoeUI" FontWeight="Thin" FontSize="14"></Label>
         <Label Grid.Column="0" Grid.Row="1" Name="FileChangedButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" BorderBrush="Transparent" IsEnabled="True"></Label>
-        <Button ToolTip="New file" Command="{Binding NewCommand}" Grid.Column="1" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
+        <Button Name="NewButton" ToolTip="New file" Command="{Binding NewCommand}" Grid.Column="1" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
             <Image Source="{StaticResource ResourceKey=NewImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
         </Button>
 
-        <Button ToolTip="Run source" Command="{Binding RunCommand}" Grid.Column="2" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
+        <Button Name="RunButton" ToolTip="Run source" Command="{Binding RunCommand}" Grid.Column="2" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
             <Image Source="{StaticResource ResourceKey=RunImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
         </Button>
-        <Button ToolTip="Run with debug messages" Command="{Binding WalkCommand}" Grid.Column="3" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
+        <Button Name="DebugButton" ToolTip="Run with debug messages" Command="{Binding WalkCommand}" Grid.Column="3" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
             <Image Source="{StaticResource ResourceKey=DebugImg}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
         </Button>
-        <Button ToolTip="Run immediate window content" Command="{Binding RunImmediateCommand}" Grid.Column="4" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
-            <Image Source="{StaticResource ResourceKey=ConsImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+        <Button Name="CancelButton" ToolTip="Stop interpreter" Command="{Binding CancelCommand}" Grid.Column="4" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
+            <Image Source="{StaticResource ResourceKey=StopImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
         </Button>
-        <Button ToolTip="Save file" Command="{Binding SaveCommand}" Grid.Column="5" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
+        <Button Name="SaveButton" ToolTip="Save file" Command="{Binding SaveCommand}" Grid.Column="5" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
             <Image Source="{StaticResource ResourceKey=SaveImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
         </Button>
-        <Button ToolTip="Save file as..." Command="{Binding SaveAsCommand}" Grid.Column="6" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="10,0,9,0">
+        <Button Name="SaveAsButton" ToolTip="Save file as..." Command="{Binding SaveAsCommand}" Grid.Column="6" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="10,0,9,0">
             <Image Source="{StaticResource ResourceKey=SaveAsImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
         </Button>
-        <Button ToolTip="Open file" Command="{Binding OpenCommand}" Grid.Column="7" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
+        <Button Name="OpenButton" ToolTip="Open file" Command="{Binding OpenCommand}" Grid.Column="7" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
             <Image Source="{StaticResource ResourceKey=OpenImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+        </Button>
+        <Button Name="ImmediateButton" ToolTip="Run immediate window content" Command="{Binding RunImmediateCommand}" Grid.Column="8" Grid.Row="1" Width="35" Background="Transparent" BorderBrush="Transparent" Margin="9,0">
+            <Image Source="{StaticResource ResourceKey=ConsImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
         </Button>
         <avalonEdit:TextEditor HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="0" Margin="10"
             xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"

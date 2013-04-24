@@ -6,7 +6,6 @@ using AEGIScript.Lang;
 using AEGIScript.Lang.Evaluation;
 using AEGIScript.Lang.FunCalls;
 using AEGIScript.Lang.Scoping;
-using AEGIScript.Lang.SymbolTables;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 
@@ -14,39 +13,26 @@ namespace AEGIScript.GUI.Model
 {
     internal class Interpreter
     {
-        private readonly Dictionary<CommonTree, DfsHelper> _visitHelper = new Dictionary<CommonTree, DfsHelper>();
         private readonly FunCallHelper _helper = new FunCallHelper();
         private readonly Random _rand = new Random();
         private readonly Scope _scope = new Scope();
-        private readonly Stack<SymbolTable> _scopes = new Stack<SymbolTable>();
+        private readonly Dictionary<CommonTree, DfsHelper> _visitHelper = new Dictionary<CommonTree, DfsHelper>();
         private DateTime _beginTime;
         private int _treeDepth;
 
-        public Interpreter()
-        {
-            ScopeMediator.newScope += ScopeMediator_newScope;
-            ScopeMediator.removeScope += ScopeMediator_removeScope;
-        }
-
+        /// <summary>
+        /// Fields provided by ANTLR
+        /// </summary>
         private ANTLRStringStream SStream { get; set; }
         private aegiscriptLexer Lexer { get; set; }
         private CommonTokenStream Tokens { get; set; }
         private aegiscriptParser Parser { get; set; }
         public event EventHandler<PrintEventArgs> Print;
+        public StringBuilder Output { get; private set; }
 
-        // far from final implementation
-        private void ScopeMediator_removeScope(object sender, EventArgs e)
+        public Interpreter()
         {
-            if (_scopes.Count != 0)
-            {
-                _scopes.Pop();
-            }
-        }
-
-        // not final implementation
-        private void ScopeMediator_newScope(object sender, EventArgs e)
-        {
-            _scopes.Push(new SymbolTable());
+            Output = new StringBuilder();
         }
 
         /// <summary>
@@ -99,22 +85,31 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="node"></param>
         /// <returns>String representation for debug purposes</returns>
-        private string Walk(ASTNode node)
+        /// TODO: 
+        ///     - Remove string as a return value, should increase performance
+        ///       by a big margin
+        private void Walk(ASTNode node)
         {
             switch (node.ActualType)
             {
                 case ASTNode.Type.ASSIGN:
-                    return Walk(node as AssignNode);
+                    Walk(node as AssignNode);
+                    break;
                 case ASTNode.Type.WHILE:
-                    return Walk(node as WhileNode);
+                    Walk(node as WhileNode);
+                    break;
                 case ASTNode.Type.IF:
-                    return Walk(node as IfNode);
+                    Walk(node as IfNode);
+                    break;
                 case ASTNode.Type.ELIF:
-                    return Walk(node as ElsifNode);
+                    Walk(node as ElsifNode);
+                    break;
                 case ASTNode.Type.ELSE:
-                    return Walk(node as ElseNode);
+                    Walk(node as ElseNode);
+                    break;
                 case ASTNode.Type.FUNCALL:
-                    return Walk(node as FunCallNode);
+                    Walk(node as FunCallNode);
+                    break;
                 default:
                     throw new Exception("RUNTIME ERROR! \n Invalid statement on line: " + node.Line);
             }
@@ -127,8 +122,9 @@ namespace AEGIScript.GUI.Model
         /// <param name="source">Source code to interpret</param>
         /// <param name="fromImmediate">True, if we need to interpret immediate code</param>
         /// <returns>Interpreter output</returns>
-        public string Walk(string source, bool fromImmediate = false)
+        public void Walk(string source, bool fromImmediate = false)
         {
+            Output.Clear();
             if (!fromImmediate)
             {
                 _scope.Clear();
@@ -141,60 +137,62 @@ namespace AEGIScript.GUI.Model
             // ANTLR suppresses errors during parsing and lexing
             if (Lexer.NumberOfSyntaxErrors > 0)
             {
-                Print(this, new PrintEventArgs("Lexical error!"));
-                return "Lexical error!";
+                //Print(this, new PrintEventArgs("Lexical error!"));
+                Output.Append("Lexical error!");
             }
             if (Parser.NumberOfSyntaxErrors > 0)
             {
-                Print(this, new PrintEventArgs("Syntax error!"));
-                return "Syntax error!";
+                //Print(this, new PrintEventArgs("Syntax error!"));
+                Output.Append("Syntax error!");
             }
-            return Walk(ret.Tree);
+            Walk(ret.Tree);
         }
 
         /// <summary>
         ///     The soul of the interpreter -- walks the AST and interprets it
         /// </summary>
         /// <param name="node">Root of the AST</param>
-        private string Walk(BeginNode node)
+        private void Walk(BeginNode node)
         {
             _beginTime = DateTime.Now;
 
-            var builder = new StringBuilder();
 
             foreach (ASTNode n in node.Children)
             {
                 try
                 {
-                    builder.Append(Walk(n));
+                    Walk(n);
                 }
                 catch (Exception ex)
                 {
                     // crashes here if the exception raised is not a built-in type
-                    builder.AppendLine(ex.Message);
                     PrintFun(ex.Message);
-                    return builder.ToString();
                 }
             }
-            var elapsedTime = DateTime.Now - _beginTime;
+            TimeSpan elapsedTime = DateTime.Now - _beginTime;
             double asDouble = Math.Truncate(elapsedTime.TotalSeconds*10000)/10000;
-            Print(this,
-                  new PrintEventArgs("Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
-                                     " second(s)."));
-            return builder.ToString();
+            Output.Append("Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
+                          " second(s).");
+            /*Print(this,
+                  new PrintEventArgsx("Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
+                                     " second(s)."));*/
         }
 
-        private string Walk(CommonTree tree)
+        /// <summary>
+        /// Internal use only
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <returns></returns>
+        private void Walk(CommonTree tree)
         {
             try
             {
                 var begin = new BeginNode(tree);
-                return Walk(begin);
+                Walk(begin);
             }
             catch (Exception ex)
             {
                 PrintFun(ex.Message);
-                return ex.Message;
             }
         }
 
@@ -203,7 +201,7 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="node">An AssignNode</param>
         /// <returns>Assigned variable as string</returns>
-        private string Walk(AssignNode node)
+        private void Walk(AssignNode node)
         {
             TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
             if (node.Children[0].ActualType == ASTNode.Type.ARRACC)
@@ -250,7 +248,6 @@ namespace AEGIScript.GUI.Model
             }
             else
                 _scope.AddVar((node.Children[0] as VarNode).Symbol, resolved);
-            return resolved + " " + resolved.ActualType + "\n";
         }
 
 
@@ -259,17 +256,15 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="node"></param>
         /// <returns>Clause result as string</returns>
-        private string Walk(ElsifNode node)
+        private void Walk(ElsifNode node)
         {
-            var builder = new StringBuilder();
-            foreach (var elif in node.Children)
+            foreach (ASTNode elif in node.Children)
             {
                 if (elif != node.Children[0])
                 {
-                    builder.Append(Walk(elif));
+                    Walk(elif);
                 }
             }
-            return builder.ToString();
         }
 
 
@@ -278,19 +273,18 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="node"></param>
         /// <returns>Statement result as string</returns>
-        private string Walk(IfNode node)
+        private void Walk(IfNode node)
         {
             var cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode;
-            var builder = new StringBuilder();
             if (cond.Value)
             {
                 _scope.NewScope();
-                foreach (var n in node.Children)
+                foreach (ASTNode n in node.Children)
                 {
                     if (!(n is ElsifNode) && !(n is ElseNode) && n != node.Children[0])
                         // we skip the else and elif clauses
                     {
-                        builder.Append(Walk(n));
+                        Walk(n);
                     }
                 }
                 _scope.RemoveScope();
@@ -298,12 +292,12 @@ namespace AEGIScript.GUI.Model
             else if (node.Clauses.Count > 0) // if the if statement has elif clauses
             {
                 _scope.NewScope();
-                foreach (var cl in node.Clauses)
+                foreach (ElsifNode cl in node.Clauses)
                 {
                     cond = Resolve(cl.Children[0], ASTNode.Type.BOOL) as BooleanNode;
                     if (cond.Value)
                     {
-                        builder.Append(Walk(cl));
+                        Walk(cl);
                         break; // we only want to walk a single elif clause
                     }
                 }
@@ -311,9 +305,8 @@ namespace AEGIScript.GUI.Model
             }
             else if (node.Else != null)
             {
-                builder.Append(Walk(node.Else));
+                Walk(node.Else);
             }
-            return builder.ToString();
         }
 
         /// <summary>
@@ -321,56 +314,17 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="node"></param>
         /// <returns>Clause result as string</returns>
-        private string Walk(ElseNode node)
+        private void Walk(ElseNode node)
         {
             _scope.NewScope();
-            var builder = new StringBuilder();
-            foreach (var n in node.Children)
+            foreach (ASTNode n in node.Children)
             {
                 if (n != node.Children[0])
                 {
-                    builder.Append(Walk(n));
+                    Walk(n);
                 }
             }
             _scope.RemoveScope();
-            return builder.ToString();
-        }
-
-        /// <summary>
-        ///     Provides a method to call functions with parameters provided by the interpreter
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        private string Walk(FunCallNode node)
-        {
-            if (node.FunName == "print" && node.Children.Count == 2)
-            {
-                TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
-                PrintFun(resolved);
-                // should return something meaningful
-                return resolved.ToString();
-            }
-            if (_helper.Contains(node.FunName))
-            {
-                return "";
-            }
-            var b = new StringBuilder();
-            for (int i = 1; i < node.Children.Count; i++)
-            {
-                b.Append(node.Children[i] + " ");
-            }
-            throw new Exception("RUNTIME ERROR! \n Undefined function call to: " + node.FunName + "\n" +
-                                "with args: " + b);
-        }
-
-        private void PrintFun(TermNode node)
-        {
-            Print(this, new PrintEventArgs(node));
-        }
-
-        private void PrintFun(String message)
-        {
-            Print(this, new PrintEventArgs(message));
         }
 
         /// <summary>
@@ -378,7 +332,7 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="node">While node</param>
         /// <returns>Whole result of the loop</returns>
-        private string Walk(WhileNode node)
+        private void Walk(WhileNode node)
         {
             var builder = new StringBuilder();
             var cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode;
@@ -387,13 +341,58 @@ namespace AEGIScript.GUI.Model
                 _scope.NewScope();
                 for (int i = 1; i < node.Children.Count; i++) // we skip the condition
                 {
-                    builder.Append(Walk(node.Children[i]));
+                    Walk(node.Children[i]);
                 }
                 _scope.RemoveScope();
                 cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode; // resolve it every time
             }
-            return builder.ToString();
         }
+
+        /// <summary>
+        ///     Provides a method to call functions with parameters provided by the interpreter
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private void Walk(FunCallNode node)
+        {
+            if (node.FunName == "print" && node.Children.Count == 2)
+            {
+                TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
+                PrintFun(resolved);
+                // should return something meaningful
+            }
+            if (node.FunName == "append" && node.Children.Count == 3)
+            {
+                ArrayNode arr = Resolve(node.Children[1], ASTNode.Type.BOOL) as ArrayNode;
+                TermNode term = Resolve(node.Children[2], ASTNode.Type.BOOL);
+                arr.Elements.Add(term);
+            }
+            /*
+            if (_helper.Contains(node.FunName))
+            {
+
+            }
+            var b = new StringBuilder();
+            for (int i = 1; i < node.Children.Count; i++)
+            {
+                b.Append(node.Children[i] + " ");
+            }
+            throw new Exception("RUNTIME ERROR! \n Undefined function call to: " + node.FunName + "\n" +
+                                "with args: " + b);
+             * */
+        }
+
+        private void PrintFun(TermNode node)
+        {
+            Output.Append(node.ToString() + "\n");
+        }
+
+        private void PrintFun(String message)
+        {
+            Output.Append(message);
+        }
+
+        
 
         /// <summary>
         ///     Resolves an arithmetic node recursively
@@ -401,7 +400,9 @@ namespace AEGIScript.GUI.Model
         /// <param name="toRes">Node to be resolved</param>
         /// <param name="currentType">Current strongest type</param>
         /// <returns>Type of the arithmetic expression</returns>
-        /// TODO: eliminate second parameter
+        /// TODO: 
+        ///     - eliminate second parameter, because it's useless in the current 
+        ///       implementation of resolve
         private TermNode Resolve(ArithmeticNode toRes, ASTNode.Type currentType)
         {
             TermNode left = Resolve(toRes.Children[0], currentType);
@@ -440,6 +441,17 @@ namespace AEGIScript.GUI.Model
                             throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
                                                 "\n");
                         }
+                    }
+                    else
+                    {
+                        throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
+                                            "\n");
+                    }
+                case "len":
+                    var arg = resolvedArgs[0];
+                    if (fun.Children.Count == 2 && arg.ActualType == ASTNode.Type.ARRAY)
+                    {
+                        return new IntNode((arg as ArrayNode).Elements.Count);
                     }
                     else
                     {
@@ -689,7 +701,7 @@ namespace AEGIScript.GUI.Model
                 SetTreeDepth(tree);
             }
             PreOrder(tree, ref builder, -1, tokenTextOnly, printTypes);
-                // reason for depth == -1 is that ANTLR builds the tree with the root as null
+            // reason for depth == -1 is that ANTLR builds the tree with the root as null
             return builder.ToString();
         }
 

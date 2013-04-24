@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using AEGIScript.GUI.Model;
 using AEGIScript.IO;
 using ICSharpCode.AvalonEdit.Document;
@@ -20,6 +21,26 @@ namespace AEGIScript.GUI.ViewModel
             InputDoc = new TextDocument();
             OutputDoc = new TextDocument();
             ImmediateDoc = new TextDocument();
+            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(400)};
+            _timer.Tick += _timer_Tick;
+        }
+
+        void _timer_Tick(object sender, EventArgs e)
+        {
+            if (!TaskRunning)
+            {
+                return;
+            }
+
+            if (OutputDoc.Text == "Working....")
+            {
+                OutputDoc.Text = "Working";
+            }
+            else
+            {
+                OutputDoc.Text = OutputDoc.Text + ".";
+            }
+            OnPropertyChanged("OutputDoc");
         }
 
         public TextDocument OutputDoc { get; set; }
@@ -30,6 +51,8 @@ namespace AEGIScript.GUI.ViewModel
         private Boolean HasOpenFile { get; set; }
         private CancellationToken CToken { get; set; }
         private CancellationTokenSource CTokenS { get; set; }
+        private Boolean TaskRunning { get; set; }
+        private DispatcherTimer _timer { get; set; }
 
         public DelegateCommand BuildCommand { get; private set; }
         public DelegateCommand OpenCommand { get; private set; }
@@ -54,6 +77,8 @@ namespace AEGIScript.GUI.ViewModel
         public event EventHandler<SaveFileEventArgs> OnSaveAsFile;
         public event EventHandler<EventArgs> OnFileUpToDate;
         public event EventHandler OnClose;
+        public event EventHandler OnRunning;
+        public event EventHandler OnFinished;
 
 
         private void Aes_Interpreter_Print(object sender, PrintEventArgs e)
@@ -92,7 +117,7 @@ namespace AEGIScript.GUI.ViewModel
             {
                 Clear();
                 ImmediateDoc.Text = "";
-                OnPropertyChanged("immediateDoc");
+                OnPropertyChanged("ImmediateDoc");
                 return;
             }
 
@@ -107,7 +132,7 @@ namespace AEGIScript.GUI.ViewModel
                 var newSource = "begin\n" + ImmediateDoc.Text + "\nend;";
                 AesInterpreter.Walk(newSource, true);
             }
-            OnPropertyChanged("outputDoc");
+            OnPropertyChanged("OutputDoc");
         }
 
         private void Build()
@@ -118,27 +143,64 @@ namespace AEGIScript.GUI.ViewModel
         private void Clear()
         {
             OutputDoc.Text = "";
-            OnPropertyChanged("outputDoc");
+            OnPropertyChanged("OutputDoc");
         }
 
         private void Debug()
         {
-            OutputDoc.Text = AesInterpreter.Walk(InputDoc.Text);
-            OnPropertyChanged("outputDoc");
+            if (!TaskRunning)
+            {
+                Clear();
+                CTokenS = new CancellationTokenSource();
+                CToken = CTokenS.Token;
+                AesInterpreter = new Interpreter();
+                String source = InputDoc.Text;
+                OutputDoc.Text = "Working";
+                OnPropertyChanged("OutputDoc");
+                TaskRunning = true;
+                _timer.Start();
+                OnRunning(this, new EventArgs());
+                Task.Factory.StartNew(() => Run(source), CToken)
+                            .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
+            }
+        }
+
+        private void Update()
+        {
+            Clear();
+            TaskRunning = false;
+            _timer.Stop();
+            OnFinished(this, new EventArgs());
+            OutputDoc.Text = AesInterpreter.Output.ToString();
+            OnPropertyChanged("OutputDoc");
         }
 
         private void Run()
         {
-            Clear();
-            AesInterpreter.Walk(InputDoc.Text);
+            if (!TaskRunning)
+            {
+                Clear();
+                CTokenS = new CancellationTokenSource();
+                CToken = CTokenS.Token;
+                // causes task to be stuck -- why?
+                //AesInterpreter = new Interpreter();
+                String source = InputDoc.Text;
+                OutputDoc.Text = "Working";
+                OnPropertyChanged("OutputDoc");
+                TaskRunning = true;
+                _timer.Start();
+                OnRunning(this, new EventArgs());
+                var T = Task.Factory.StartNew(() => Run(source), CToken)
+                            .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
+            }
         }
 
-/*
+
         private void Run(String source)
         {
             AesInterpreter.Walk(source);
         }
-*/
+
 
         private void New()
         {
@@ -182,20 +244,27 @@ namespace AEGIScript.GUI.ViewModel
             OnPropertyChanged("outputDoc");
         }
 
-/*
+        /*
         private void Interpret()
         {
             CTokenS = new CancellationTokenSource();
             CToken = CTokenS.Token;
-            outputDoc.Text = "";
-            string Source = TDoc.Text;
+            string Source = InputDoc.Text;
             Task InterpretTask = Task.Factory.StartNew(() => Run(Source), CToken);
-        }
-*/
+        }*/
+
 
         private void Cancel()
         {
-            CTokenS.Cancel();
+            if (TaskRunning)
+            {
+                CTokenS.Cancel();
+                TaskRunning = false;
+                _timer.Stop();
+                OnFinished(this, new EventArgs());
+                OutputDoc.Text = "Canceled";
+                OnPropertyChanged("OutputDoc");
+            }
         }
 
         /// <summary>
