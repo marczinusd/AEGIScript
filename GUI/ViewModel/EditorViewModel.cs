@@ -1,21 +1,30 @@
-﻿using AEGIScript.GUI.Model;
-using AEGIScript.IO;
-using ICSharpCode.AvalonEdit.Document;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Threading.Tasks;
 using System.Threading;
-using System.Windows.Threading;
+using System.Threading.Tasks;
+using AEGIScript.GUI.Model;
+using AEGIScript.IO;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace AEGIScript.GUI.ViewModel
 {
-    class EditorViewModel : ViewModelBase
+    internal class EditorViewModel : ViewModelBase
     {
-        public TextDocument outputDoc { get; set; }
-        public TextDocument TDoc { get; set; }
-        public TextDocument immediateDoc { get; set; }
+        public EditorViewModel()
+        {
+            SetCommands();
+            AesInterpreter = new Interpreter();
+            AesInterpreter.Print += Aes_Interpreter_Print;
+            InputDoc = new TextDocument();
+            OutputDoc = new TextDocument();
+            ImmediateDoc = new TextDocument();
+        }
+
+        public TextDocument OutputDoc { get; set; }
+        public TextDocument InputDoc { get; set; }
+        public TextDocument ImmediateDoc { get; set; }
 
         private String CurrentFilePath { get; set; }
         private Boolean HasOpenFile { get; set; }
@@ -23,8 +32,8 @@ namespace AEGIScript.GUI.ViewModel
         private CancellationTokenSource CTokenS { get; set; }
 
         public DelegateCommand BuildCommand { get; private set; }
-        public DelegateCommand OpenCommand  { get; private set; }
-        public DelegateCommand SaveCommand  { get; private set; }
+        public DelegateCommand OpenCommand { get; private set; }
+        public DelegateCommand SaveCommand { get; private set; }
         public DelegateCommand SaveAsCommand { get; private set; }
         public DelegateCommand NewCommand { get; private set; }
         public DelegateCommand RunCommand { get; private set; }
@@ -37,7 +46,7 @@ namespace AEGIScript.GUI.ViewModel
         public DelegateCommand PrintASTObjectsCommand { get; private set; }
         public DelegateCommand WalkCommand { get; private set; }
 
-        private Interpreter Aes_Interpreter { get; set; }
+        private Interpreter AesInterpreter { get; set; }
 
         public event EventHandler OnOpenFile;
         public event EventHandler<SaveFileEventArgs> OnSaveFile;
@@ -47,19 +56,9 @@ namespace AEGIScript.GUI.ViewModel
         public event EventHandler OnClose;
 
 
-        public EditorViewModel()
+        private void Aes_Interpreter_Print(object sender, PrintEventArgs e)
         {
-            SetCommands();
-            Aes_Interpreter = new Interpreter();
-            Aes_Interpreter.Print += Aes_Interpreter_Print;
-            TDoc = new TextDocument();
-            outputDoc = new TextDocument();
-            immediateDoc = new TextDocument();
-        }
-
-        void Aes_Interpreter_Print(object sender, PrintEventArgs e)
-        {
-            outputDoc.Text = outputDoc.Text + e.ToString() + "\n";
+            OutputDoc.Text = OutputDoc.Text + e + "\n";
             OnPropertyChanged("outputDoc");
         }
 
@@ -88,25 +87,25 @@ namespace AEGIScript.GUI.ViewModel
 
         private void RunImmediate()
         {
-            if (immediateDoc.Text == "clear()" || immediateDoc.Text == "clear" || 
-                immediateDoc.Text == "clear();")
+            if (ImmediateDoc.Text == "clear()" || ImmediateDoc.Text == "clear" ||
+                ImmediateDoc.Text == "clear();")
             {
                 Clear();
-                immediateDoc.Text = "";
+                ImmediateDoc.Text = "";
                 OnPropertyChanged("immediateDoc");
                 return;
             }
 
-            String Pattern = @"begin [.\n]* end;";
-            Regex reg = new Regex(Pattern);
-            if (reg.IsMatch(immediateDoc.Text))
+            string Pattern = @"begin [.\n]* end;";
+            var reg = new Regex(Pattern);
+            if (reg.IsMatch(ImmediateDoc.Text))
             {
-                Aes_Interpreter.Walk(immediateDoc.Text, true);
+                AesInterpreter.Walk(ImmediateDoc.Text, true);
             }
             else
             {
-                String NewSource = "begin\n" + immediateDoc.Text + "\nend;";
-                Aes_Interpreter.Walk(NewSource, true);
+                var newSource = "begin\n" + ImmediateDoc.Text + "\nend;";
+                AesInterpreter.Walk(newSource, true);
             }
             OnPropertyChanged("outputDoc");
         }
@@ -118,29 +117,32 @@ namespace AEGIScript.GUI.ViewModel
 
         private void Clear()
         {
-            outputDoc.Text = "";
+            OutputDoc.Text = "";
             OnPropertyChanged("outputDoc");
         }
 
         private void Debug()
         {
-            outputDoc.Text = Aes_Interpreter.Walk(TDoc.Text);
+            OutputDoc.Text = AesInterpreter.Walk(InputDoc.Text);
             OnPropertyChanged("outputDoc");
         }
 
         private void Run()
         {
             Clear();
-            Aes_Interpreter.Walk(TDoc.Text);
+            AesInterpreter.Walk(InputDoc.Text);
         }
+
+/*
         private void Run(String source)
         {
-            Aes_Interpreter.Walk(source);
+            AesInterpreter.Walk(source);
         }
+*/
 
         private void New()
         {
-            TDoc.Text = "";
+            InputDoc.Text = "";
             HasOpenFile = false;
             OnNewFile(this, new EventArgs());
             OnPropertyChanged("TDoc");
@@ -148,46 +150,48 @@ namespace AEGIScript.GUI.ViewModel
 
         private void Open()
         {
-            this.OnOpenFile(this, new EventArgs());
+            OnOpenFile(this, new EventArgs());
         }
 
         private void Save()
         {
             if (HasOpenFile)
             {
-                SourceIO.SaveToFile(TDoc.Text, CurrentFilePath);
+                SourceIO.SaveToFile(InputDoc.Text, CurrentFilePath);
             }
             else
             {
-                this.OnSaveAsFile(this, new SaveFileEventArgs(TDoc, ""));
+                OnSaveAsFile(this, new SaveFileEventArgs(InputDoc, ""));
             }
             OnFileUpToDate(this, new EventArgs());
         }
 
         private void SaveAs()
         {
-            OnSaveAsFile(this, new SaveFileEventArgs(TDoc, ""));
+            OnSaveAsFile(this, new SaveFileEventArgs(InputDoc, ""));
         }
 
 
         /// <summary>
-        /// Runs the ANTLR grammar on the source file -- output is an AST at the moment
+        ///     Runs the ANTLR grammar on the source file -- output is an AST at the moment
         /// </summary>
         /// TODO: Move to model
         private void RunBuildOnSource()
         {
-            outputDoc.Text = Aes_Interpreter.Interpret(TDoc.Text);
+            OutputDoc.Text = AesInterpreter.Interpret(InputDoc.Text);
             OnPropertyChanged("outputDoc");
         }
 
+/*
         private void Interpret()
         {
             CTokenS = new CancellationTokenSource();
             CToken = CTokenS.Token;
             outputDoc.Text = "";
             string Source = TDoc.Text;
-            Task InterpretTask = Task.Factory.StartNew(() => Run(Source),CToken);
+            Task InterpretTask = Task.Factory.StartNew(() => Run(Source), CToken);
         }
+*/
 
         private void Cancel()
         {
@@ -195,44 +199,44 @@ namespace AEGIScript.GUI.ViewModel
         }
 
         /// <summary>
-        /// Method to respond to a file opening
+        ///     Method to respond to a file opening
         /// </summary>
         /// <param name="path">Path to source file</param>
         public void OnFileToOpenSelected(string path)
         {
-            var res = SourceIO.ReadFromFile(path);
+            List<string> res = SourceIO.ReadFromFile(path);
             CurrentFilePath = path;
             HasOpenFile = true;
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             foreach (string s in res)
             {
                 builder.Append(s + "\n");
             }
-            TDoc.Text = builder.ToString();
+            InputDoc.Text = builder.ToString();
             OnFileUpToDate(this, new EventArgs());
         }
 
         public void PrintAST()
         {
-            outputDoc.Text = Aes_Interpreter.GetAstAsString(TDoc.Text);
+            OutputDoc.Text = AesInterpreter.GetAstAsString(InputDoc.Text);
             OnPropertyChanged("outputDoc");
         }
 
         private void PrintASTTokens()
         {
-            outputDoc.Text = Aes_Interpreter.GetASTTokensAsString(TDoc.Text);
+            OutputDoc.Text = AesInterpreter.GetASTTokensAsString(InputDoc.Text);
             OnPropertyChanged("outputDoc");
         }
 
         private void PrintAST_DFS()
         {
-            outputDoc.Text = Aes_Interpreter.PrintAST_DFS(TDoc.Text);
+            OutputDoc.Text = AesInterpreter.PrintAST_DFS(InputDoc.Text);
             OnPropertyChanged("outputDoc");
         }
 
         private void PrintASTObjects()
         {
-            outputDoc.Text = Aes_Interpreter.GetASTObjectsAsString(TDoc.Text);
+            OutputDoc.Text = AesInterpreter.GetASTObjectsAsString(InputDoc.Text);
             OnPropertyChanged("outputDoc");
         }
 
@@ -240,6 +244,5 @@ namespace AEGIScript.GUI.ViewModel
         {
             base.OnPropertyChanged(propertyName);
         }
-
     }
 }

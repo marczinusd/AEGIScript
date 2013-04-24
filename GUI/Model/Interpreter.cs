@@ -1,54 +1,56 @@
-﻿using AEGIScript.Lang;
-using AEGIScript.Lang.Evaluation;
-using AEGIScript.Lang.FunCalls;
-using AEGIScript.Lang.Scope;
-using AEGIScript.Lang.SymbolTables;
-using Antlr.Runtime;
-using Antlr.Runtime.Tree;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using AEGIScript.Lang;
+using AEGIScript.Lang.Evaluation;
+using AEGIScript.Lang.FunCalls;
+using AEGIScript.Lang.Scoping;
+using AEGIScript.Lang.SymbolTables;
+using Antlr.Runtime;
+using Antlr.Runtime.Tree;
 
 namespace AEGIScript.GUI.Model
 {
-    class Interpreter
+    internal class Interpreter
     {
-        private FunCallHelper helper = new FunCallHelper();
-        private Random rand = new Random();
-        private Scope GlobalScope = new Scope();
-        private Stack<SymbolTable> Scopes = new Stack<SymbolTable>();
-        private StringBuilder OutputBuilder = new StringBuilder();
-        private DateTime BeginTime = new DateTime();
-        private ANTLRStringStream sStream { get; set; }
-        private aegiscriptLexer lexer { get; set; }
-        private CommonTokenStream tokens { get; set; }
-        private aegiscriptParser parser { get; set; }
-        public event EventHandler<PrintEventArgs> Print;
+        private readonly Dictionary<CommonTree, DfsHelper> _visitHelper = new Dictionary<CommonTree, DfsHelper>();
+        private readonly FunCallHelper _helper = new FunCallHelper();
+        private readonly Random _rand = new Random();
+        private readonly Scope _scope = new Scope();
+        private readonly Stack<SymbolTable> _scopes = new Stack<SymbolTable>();
+        private DateTime _beginTime;
+        private int _treeDepth;
 
-        public Interpreter() 
+        public Interpreter()
         {
             ScopeMediator.newScope += ScopeMediator_newScope;
             ScopeMediator.removeScope += ScopeMediator_removeScope;
         }
 
+        private ANTLRStringStream SStream { get; set; }
+        private aegiscriptLexer Lexer { get; set; }
+        private CommonTokenStream Tokens { get; set; }
+        private aegiscriptParser Parser { get; set; }
+        public event EventHandler<PrintEventArgs> Print;
+
         // far from final implementation
         private void ScopeMediator_removeScope(object sender, EventArgs e)
         {
-            if (Scopes.Count != 0)
+            if (_scopes.Count != 0)
             {
-                Scopes.Pop();
+                _scopes.Pop();
             }
         }
 
         // not final implementation
         private void ScopeMediator_newScope(object sender, EventArgs e)
         {
-            Scopes.Push(new SymbolTable());
+            _scopes.Push(new SymbolTable());
         }
 
         /// <summary>
-        /// Runs the source file through the lexer and the parser and then returns the AST representation.
+        ///     Runs the source file through the lexer and the parser and then returns the AST representation.
         /// </summary>
         /// <param name="source">Source file to be interpreted</param>
         /// <returns>AST representation of source file</returns>
@@ -58,8 +60,7 @@ namespace AEGIScript.GUI.Model
             SetParser(source);
             try
             {
-                output = parser.program().Tree.ToStringTree();
-                
+                output = Parser.program().Tree.ToStringTree();
             } // check for parsing errors
             catch (Exception ex)
             {
@@ -70,7 +71,7 @@ namespace AEGIScript.GUI.Model
 
 
         /// <summary>
-        /// Interpret presented source file
+        ///     Interpret presented source file
         /// </summary>
         /// <param name="source">source to be interpreted</param>
         /// <returns>Program output</returns>
@@ -82,7 +83,7 @@ namespace AEGIScript.GUI.Model
             {
                 //CommonTree root = parser.program().Tree.GetChild(0) as CommonTree;
                 //output = root.Token.ToString() + " " + root.Text;
-                output = PrettyPrinting(parser.program().Tree);
+                output = PrettyPrinting(Parser.program().Tree);
             } // check for parsing errors
             catch (Exception ex)
             {
@@ -92,13 +93,9 @@ namespace AEGIScript.GUI.Model
         }
 
 
-        
-
-
-
         /// <summary>
-        /// Provides a layer of abstraction for walking ASTNodes -- handles double dispatching gracefully
-        /// From a grammatical point of view, walk handle actual statements
+        ///     Provides a layer of abstraction for walking ASTNodes -- handles double dispatching gracefully
+        ///     From a grammatical point of view, walk handle actual statements
         /// </summary>
         /// <param name="node"></param>
         /// <returns>String representation for debug purposes</returns>
@@ -123,46 +120,47 @@ namespace AEGIScript.GUI.Model
             }
         }
 
-        
+
         /// <summary>
-        /// Interface provided for the ViewModel for UI actions
+        ///     Interface provided for the ViewModel for UI actions
         /// </summary>
         /// <param name="source">Source code to interpret</param>
+        /// <param name="fromImmediate">True, if we need to interpret immediate code</param>
         /// <returns>Interpreter output</returns>
-        public string Walk(string source, bool FromImmediate = false)
+        public string Walk(string source, bool fromImmediate = false)
         {
-            if (!FromImmediate)
+            if (!fromImmediate)
             {
-                GlobalScope.Clear();
+                _scope.Clear();
             }
             SetParser(source);
 
-            var ret = parser.program();
+            AstParserRuleReturnScope<CommonTree, IToken> ret = Parser.program();
 
             // can't really determine where the problem came from
             // ANTLR suppresses errors during parsing and lexing
-            if (lexer.NumberOfSyntaxErrors > 0)
-	        {
+            if (Lexer.NumberOfSyntaxErrors > 0)
+            {
                 Print(this, new PrintEventArgs("Lexical error!"));
                 return "Lexical error!";
-	        }
-            else if (parser.NumberOfSyntaxErrors > 0)
+            }
+            if (Parser.NumberOfSyntaxErrors > 0)
             {
                 Print(this, new PrintEventArgs("Syntax error!"));
                 return "Syntax error!";
             }
-            return Walk(ret.Tree as CommonTree);
+            return Walk(ret.Tree);
         }
 
         /// <summary>
-        /// The soul of the interpreter -- walks the AST and interprets it
+        ///     The soul of the interpreter -- walks the AST and interprets it
         /// </summary>
         /// <param name="node">Root of the AST</param>
         private string Walk(BeginNode node)
         {
-            BeginTime = DateTime.Now;
+            _beginTime = DateTime.Now;
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             foreach (ASTNode n in node.Children)
             {
@@ -178,16 +176,19 @@ namespace AEGIScript.GUI.Model
                     return builder.ToString();
                 }
             }
-            TimeSpan ElapsedTime = DateTime.Now - BeginTime;
-            var AsDouble = Math.Truncate(ElapsedTime.TotalSeconds * 10000) / 10000;
-            Print(this, new PrintEventArgs("Successfully finished in: " + AsDouble.ToString(CultureInfo.InvariantCulture) + " second(s)."));
+            var elapsedTime = DateTime.Now - _beginTime;
+            double asDouble = Math.Truncate(elapsedTime.TotalSeconds*10000)/10000;
+            Print(this,
+                  new PrintEventArgs("Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
+                                     " second(s)."));
             return builder.ToString();
         }
+
         private string Walk(CommonTree tree)
         {
             try
             {
-                BeginNode begin = new BeginNode(tree as CommonTree);
+                var begin = new BeginNode(tree);
                 return Walk(begin);
             }
             catch (Exception ex)
@@ -198,66 +199,69 @@ namespace AEGIScript.GUI.Model
         }
 
         /// <summary>
-        /// Performs basic assignment -- right now for globalscope only
+        ///     Performs basic assignment -- right now for globalscope only
         /// </summary>
         /// <param name="node">An AssignNode</param>
         /// <returns>Assigned variable as string</returns>
         private string Walk(AssignNode node)
         {
-            TermNode Resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
+            TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
             if (node.Children[0].ActualType == ASTNode.Type.ARRACC)
             {
-                var Accessor = node.Children[0] as ArrAccessNode;
-                if (GlobalScope.GetVar(Accessor.Symbol).ActualType != ASTNode.Type.ARRAY)
+                var accessor = node.Children[0] as ArrAccessNode;
+                if (accessor != null && _scope.GetVar(accessor.Symbol).ActualType != ASTNode.Type.ARRAY)
                 {
                     throw new Exception("RUNTIME ERROR!\n You are either trying to use an accessor on a " +
-                        "non-array object, or using an out-of-range index at line " + node.Line + "\n");
+                                        "non-array object, or using an out-of-range index at line " + node.Line + "\n");
                 }
-                var ActualArray = GlobalScope.GetVar(Accessor.Symbol) as ArrayNode;
-                var Orig = ActualArray;
-                TermNode ResolvedInd;
-                for (int i = 1; i < Accessor.Children.Count - 1; i++)
+                var actualArray = _scope.GetVar(accessor.Symbol) as ArrayNode;
+                ArrayNode orig = actualArray;
+                TermNode resolvedInd;
+                for (int i = 1; i < accessor.Children.Count - 1; i++)
                 {
-                    ResolvedInd = Resolve(Accessor.Children[i], ASTNode.Type.BOOL);
-                    if (ResolvedInd.ActualType != ASTNode.Type.INT)
+                    resolvedInd = Resolve(accessor.Children[i], ASTNode.Type.BOOL);
+                    if (resolvedInd.ActualType != ASTNode.Type.INT)
                     {
-                        throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " + node.Line + "\n");
+                        throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
+                                            node.Line + "\n");
                     }
-                    int Ind = (ResolvedInd as IntNode).Value;
-                    if (Ind >= 0 && Ind < ActualArray.Elements.Count
-                        && ActualArray[Ind].ActualType == ASTNode.Type.ARRAY)
+                    int ind = (resolvedInd as IntNode).Value;
+                    if (ind >= 0 && ind < actualArray.Elements.Count
+                        && actualArray[ind].ActualType == ASTNode.Type.ARRAY)
                     {
-                        ActualArray = ActualArray[Ind] as ArrayNode;
+                        actualArray = actualArray[ind] as ArrayNode;
                     }
                     else
                     {
                         throw new Exception("RUNTIME ERROR!\n You are either trying to use an accessor on a " +
-                        "non-array object, or using an out-of-range index at line " + node.Line + "\n");
+                                            "non-array object, or using an out-of-range index at line " + node.Line +
+                                            "\n");
                     }
                 }
-                ResolvedInd = Resolve(Accessor.Children[Accessor.Children.Count - 1], ASTNode.Type.BOOL);
-                if (ResolvedInd.ActualType != ASTNode.Type.INT)
+                resolvedInd = Resolve(accessor.Children[accessor.Children.Count - 1], ASTNode.Type.BOOL);
+                if (resolvedInd.ActualType != ASTNode.Type.INT)
                 {
-                    throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " + node.Line + "\n");
+                    throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
+                                        node.Line + "\n");
                 }
-                int finalInd = (ResolvedInd as IntNode).Value;
-                ActualArray[finalInd] = Resolved;
-                GlobalScope.AddVar(Accessor.Symbol, Orig);
+                int finalInd = (resolvedInd as IntNode).Value;
+                actualArray[finalInd] = resolved;
+                _scope.AddVar(accessor.Symbol, orig);
             }
-            else 
-                GlobalScope.AddVar((node.Children[0] as VarNode).Symbol, Resolved);
-            return Resolved.ToString() + " " + Resolved.ActualType.ToString() + "\n";
+            else
+                _scope.AddVar((node.Children[0] as VarNode).Symbol, resolved);
+            return resolved + " " + resolved.ActualType + "\n";
         }
 
 
         /// <summary>
-        /// Walks an elsif clause
+        ///     Walks an elsif clause
         /// </summary>
         /// <param name="node"></param>
         /// <returns>Clause result as string</returns>
         private string Walk(ElsifNode node)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             foreach (var elif in node.Children)
             {
                 if (elif != node.Children[0])
@@ -268,32 +272,32 @@ namespace AEGIScript.GUI.Model
             return builder.ToString();
         }
 
-        
 
         /// <summary>
-        /// Walks a whole 'if' statement
+        ///     Walks a whole 'if' statement
         /// </summary>
         /// <param name="node"></param>
         /// <returns>Statement result as string</returns>
         private string Walk(IfNode node)
         {
-            BooleanNode cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode;
-            StringBuilder builder = new StringBuilder();
+            var cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode;
+            var builder = new StringBuilder();
             if (cond.Value)
             {
-                GlobalScope.NewScope();
+                _scope.NewScope();
                 foreach (var n in node.Children)
                 {
-                    if (!(n is ElsifNode) && !(n is ElseNode) && n != node.Children[0]) // we skip the else and elif clauses
+                    if (!(n is ElsifNode) && !(n is ElseNode) && n != node.Children[0])
+                        // we skip the else and elif clauses
                     {
                         builder.Append(Walk(n));
                     }
                 }
-                GlobalScope.RemoveScope();
+                _scope.RemoveScope();
             }
-            else if(node.Clauses.Count > 0) // if the if statement has elif clauses
+            else if (node.Clauses.Count > 0) // if the if statement has elif clauses
             {
-                GlobalScope.NewScope();
+                _scope.NewScope();
                 foreach (var cl in node.Clauses)
                 {
                     cond = Resolve(cl.Children[0], ASTNode.Type.BOOL) as BooleanNode;
@@ -303,23 +307,24 @@ namespace AEGIScript.GUI.Model
                         break; // we only want to walk a single elif clause
                     }
                 }
-                GlobalScope.RemoveScope();
+                _scope.RemoveScope();
             }
-            else if(node.Else != null)
+            else if (node.Else != null)
             {
                 builder.Append(Walk(node.Else));
             }
             return builder.ToString();
         }
+
         /// <summary>
-        /// Walks the else part of an 'if' statement
+        ///     Walks the else part of an 'if' statement
         /// </summary>
         /// <param name="node"></param>
         /// <returns>Clause result as string</returns>
         private string Walk(ElseNode node)
         {
-            GlobalScope.NewScope();
-            StringBuilder builder = new StringBuilder();
+            _scope.NewScope();
+            var builder = new StringBuilder();
             foreach (var n in node.Children)
             {
                 if (n != node.Children[0])
@@ -327,12 +332,12 @@ namespace AEGIScript.GUI.Model
                     builder.Append(Walk(n));
                 }
             }
-            GlobalScope.RemoveScope();
+            _scope.RemoveScope();
             return builder.ToString();
         }
 
         /// <summary>
-        /// Provides a method to call functions with parameters provided by the interpreter
+        ///     Provides a method to call functions with parameters provided by the interpreter
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
@@ -340,25 +345,22 @@ namespace AEGIScript.GUI.Model
         {
             if (node.FunName == "print" && node.Children.Count == 2)
             {
-                var Resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
-                PrintFun(Resolved);
+                TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
+                PrintFun(resolved);
                 // should return something meaningful
-                return Resolved.ToString();
+                return resolved.ToString();
             }
-            else if (helper.Contains(node.FunName))
+            if (_helper.Contains(node.FunName))
             {
                 return "";
             }
-            else
+            var b = new StringBuilder();
+            for (int i = 1; i < node.Children.Count; i++)
             {
-                StringBuilder b = new StringBuilder();
-                for (int i = 1; i < node.Children.Count; i++)
-                {
-                    b.Append(node.Children[i].ToString() + " ");
-                }
-                throw new Exception("RUNTIME ERROR! \n Undefined function call to: " + node.FunName + "\n" + 
-                                    "with args: " + b.ToString());
+                b.Append(node.Children[i] + " ");
             }
+            throw new Exception("RUNTIME ERROR! \n Undefined function call to: " + node.FunName + "\n" +
+                                "with args: " + b);
         }
 
         private void PrintFun(TermNode node)
@@ -372,92 +374,89 @@ namespace AEGIScript.GUI.Model
         }
 
         /// <summary>
-        /// Walks a 'while' node statement
+        ///     Walks a 'while' node statement
         /// </summary>
         /// <param name="node">While node</param>
         /// <returns>Whole result of the loop</returns>
         private string Walk(WhileNode node)
         {
-            StringBuilder builder = new StringBuilder();
-            BooleanNode cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode;
+            var builder = new StringBuilder();
+            var cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode;
             while (cond.Value)
             {
-                GlobalScope.NewScope();
+                _scope.NewScope();
                 for (int i = 1; i < node.Children.Count; i++) // we skip the condition
-			    {
-			        builder.Append(Walk(node.Children[i]));
-			    }
-                GlobalScope.RemoveScope();
+                {
+                    builder.Append(Walk(node.Children[i]));
+                }
+                _scope.RemoveScope();
                 cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode; // resolve it every time
             }
             return builder.ToString();
         }
 
         /// <summary>
-        /// Trivial resolve 
+        ///     Resolves an arithmetic node recursively
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        private TermNode Resolve(TermNode node)
-        {
-            return node;
-        }
-
-        /// <summary>
-        /// Resolves an arithmetic node recursively
-        /// </summary>
-        /// <param name="node">Node to be resolved</param>
+        /// <param name="toRes">Node to be resolved</param>
         /// <param name="currentType">Current strongest type</param>
         /// <returns>Type of the arithmetic expression</returns>
         /// TODO: eliminate second parameter
         private TermNode Resolve(ArithmeticNode toRes, ASTNode.Type currentType)
         {
-            TermNode left, right;
-            left = Resolve(toRes.Children[0], currentType);
-            right = Resolve(toRes.Children[1], currentType);
+            TermNode left = Resolve(toRes.Children[0], currentType);
+            TermNode right = Resolve(toRes.Children[1], currentType);
             return NodeArithmetics.Op(left, right, toRes.op);
         }
 
+        /// <summary>
+        ///     Function to resolve FunCall expressions -- experimental
+        /// </summary>
+        /// <param name="fun"></param>
+        /// <param name="currentType"></param>
+        /// <returns></returns>
         private TermNode Resolve(FunCallNode fun, ASTNode.Type currentType)
         {
-            List<TermNode> ResolvedArgs = new List<TermNode>();
+            var resolvedArgs = new List<TermNode>();
             for (int i = 1; i < fun.Children.Count; i++)
             {
-                ResolvedArgs.Add(Resolve(fun.Children[i], currentType));
+                resolvedArgs.Add(Resolve(fun.Children[i], currentType));
             }
             switch (fun.FunName)
             {
                 case "rand":
-                    Random rand = new Random();
                     if (fun.Children.Count == 1)
                     {
-                        return new IntNode(rand.Next());
+                        return new IntNode(_rand.Next());
                     }
-                    else if(fun.Children.Count == 2)
+                    if (fun.Children.Count == 2)
                     {
-                        if (ResolvedArgs[0].ActualType == ASTNode.Type.INT)
+                        if (resolvedArgs[0].ActualType == ASTNode.Type.INT)
                         {
-                            return new IntNode(rand.Next((ResolvedArgs[0] as IntNode).Value));
+                            return new IntNode(_rand.Next((resolvedArgs[0] as IntNode).Value));
                         }
                         else
-	                    {
-                            throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line + "\n");
-	                    }
+                        {
+                            throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
+                                                "\n");
+                        }
                     }
                     else
-	                {
-                        throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line + "\n");
-	                }
+                    {
+                        throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
+                                            "\n");
+                    }
                 default:
-                    throw new Exception("RUNTIME ERROR!\n You are either calling a non-existing function, or trying to "+ 
-                                        "use a void functions return value.");
+                    throw new Exception(
+                        "RUNTIME ERROR!\n You are either calling a non-existing function, or trying to " +
+                        "use a void functions return value.");
             }
         }
 
         /// <summary>
-        /// Provides an abstraction layer for resolves -- handles double dispatching to the proper functions
-        /// From a grammatical point of view, resolve deals with all expressions, but not statements.
-        /// For statement handlng, see the Walk functions
+        ///     Provides an abstraction layer for resolves -- handles double dispatching to the proper functions
+        ///     From a grammatical point of view, resolve deals with all expressions, but not statements.
+        ///     For statement handlng, see the Walk functions
         /// </summary>
         /// <param name="toRes"></param>
         /// <param name="currentType"></param>
@@ -468,85 +467,97 @@ namespace AEGIScript.GUI.Model
             {
                 case ASTNode.Type.ARITH:
                     return Resolve(toRes as ArithmeticNode, currentType);
-                case ASTNode.Type.INTVAR: case ASTNode.Type.BOOLVAR: case ASTNode.Type.DOUBLEVAR: case ASTNode.Type.STRINGVAR: case ASTNode.Type.VAR:
+                case ASTNode.Type.INTVAR:
+                case ASTNode.Type.BOOLVAR:
+                case ASTNode.Type.DOUBLEVAR:
+                case ASTNode.Type.STRINGVAR:
+                case ASTNode.Type.VAR:
                     return Resolve(toRes as VarNode, currentType);
-                case ASTNode.Type.INT: case ASTNode.Type.STRING: case ASTNode.Type.BOOL: case ASTNode.Type.DOUBLE:
+                case ASTNode.Type.INT:
+                case ASTNode.Type.STRING:
+                case ASTNode.Type.BOOL:
+                case ASTNode.Type.DOUBLE:
                     return Resolve(toRes as TermNode, currentType);
                 case ASTNode.Type.ARRAY:
                     return Resolve(toRes as ArrayNode, currentType);
                 case ASTNode.Type.ASSIGN:
                     TermNode Resolved = Resolve(toRes.Children[1], ASTNode.Type.BOOL);
-                    GlobalScope.AddVar((toRes.Children[0] as VarNode).Symbol, Resolved);
+                    _scope.AddVar((toRes.Children[0] as VarNode).Symbol, Resolved);
                     return Resolved;
                 case ASTNode.Type.ARRACC:
                     return Resolve(toRes as ArrAccessNode, currentType);
                 case ASTNode.Type.FUNCALL:
                     return Resolve(toRes as FunCallNode, currentType);
                 default:
-                    throw new Exception("Unable to resolve ASTNode " + toRes.ActualType.ToString() + " " + toRes.Parent.ActualType.ToString());
+                    throw new Exception("Unable to resolve ASTNode " + toRes.ActualType.ToString() + " " +
+                                        toRes.Parent.ActualType.ToString());
             }
         }
 
         /// <summary>
-        /// Resolves Array Accessor. The main idea is that apart from the last index, all indices
-        /// need to resolve to arrays, so we iterate through them, and then we resolve the last element
+        ///     Resolves Array Accessor. The main idea is that apart from the last index, all indices
+        ///     need to resolve to arrays, so we iterate through them, and then we resolve the last element
         /// </summary>
         /// <param name="toRes"></param>
         /// <param name="currentType"></param>
         /// <returns></returns>
         private TermNode Resolve(ArrAccessNode toRes, ASTNode.Type currentType)
         {
-            var Ret = GlobalScope.GetVar(toRes.Symbol);
-            if (Ret.ActualType != ASTNode.Type.ARRAY)
+            TermNode ret = _scope.GetVar(toRes.Symbol);
+            if (ret.ActualType != ASTNode.Type.ARRAY)
             {
-                throw new Exception("RUNTIME ERROR!\n You are trying to use an accessor on a non-array object at line " + toRes.Line + "\n");
+                throw new Exception(
+                    "RUNTIME ERROR!\n You are trying to use an accessor on a non-array object at line " + toRes.Line +
+                    "\n");
             }
-            ArrayNode ActualArray = Ret as ArrayNode;
-            TermNode ResolvedInd;
+            var actualArray = ret as ArrayNode;
+            TermNode resolvedInd;
             for (int i = 1; i < toRes.Children.Count - 1; i++)
             {
-                ResolvedInd = Resolve(toRes.Children[i], currentType);
-                if (ResolvedInd.ActualType != ASTNode.Type.INT)
+                resolvedInd = Resolve(toRes.Children[i], currentType);
+                if (resolvedInd.ActualType != ASTNode.Type.INT)
                 {
-                    throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " + toRes.Line + "\n");
+                    throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
+                                        toRes.Line + "\n");
                 }
-                int Ind = (ResolvedInd as IntNode).Value;
-                if (Ind >= 0 && Ind < ActualArray.Elements.Count
-                    && ActualArray[Ind].ActualType == ASTNode.Type.ARRAY)
+                int Ind = (resolvedInd as IntNode).Value;
+                if (Ind >= 0 && Ind < actualArray.Elements.Count
+                    && actualArray[Ind].ActualType == ASTNode.Type.ARRAY)
                 {
-                    ActualArray = ActualArray[Ind] as ArrayNode;
+                    actualArray = actualArray[Ind] as ArrayNode;
                 }
                 else
                 {
                     throw new Exception("RUNTIME ERROR!\n You are either trying to use an accessor on a " +
-                    "non-array object, or using an out-of-range index at line " + toRes.Line + "\n");
+                                        "non-array object, or using an out-of-range index at line " + toRes.Line + "\n");
                 }
             }
-            ResolvedInd = Resolve(toRes.Children[toRes.Children.Count - 1], currentType);
-            if (ResolvedInd.ActualType != ASTNode.Type.INT)
+            resolvedInd = Resolve(toRes.Children[toRes.Children.Count - 1], currentType);
+            if (resolvedInd.ActualType != ASTNode.Type.INT)
             {
-                throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " + toRes.Line + "\n");
+                throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
+                                    toRes.Line + "\n");
             }
-            return Resolve(ActualArray[(ResolvedInd as IntNode).Value], currentType);
+            return Resolve(actualArray[(resolvedInd as IntNode).Value], currentType);
         }
 
         /// <summary>
-        /// Resolves array nodes
+        ///     Resolves array nodes
         /// </summary>
         /// <param name="toRes">An Array node</param>
         /// <param name="currentType"></param>
         /// <returns>Node with elements as terms</returns>
         private TermNode Resolve(ArrayNode toRes, ASTNode.Type currentType)
         {
-            foreach (var Node in toRes.Children)
+            foreach (ASTNode node in toRes.Children)
             {
-                toRes.Elements.Add(Resolve(Node, currentType));
+                toRes.Elements.Add(Resolve(node, currentType));
             }
             return toRes;
         }
 
         /// <summary>
-        /// Functional sugar -- hides the fact that we only need to resolve the right-hand size
+        ///     Functional sugar -- hides the fact that we only need to resolve the right-hand size
         /// </summary>
         /// <param name="toRes"></param>
         /// <param name="currentType"></param>
@@ -562,8 +573,8 @@ namespace AEGIScript.GUI.Model
         }
 
         /// <summary>
-        /// Deprecated function to resolve variable nodes -- now they're all handled
-        /// as TermNodes in all scopes
+        ///     Deprecated function to resolve variable nodes -- now they're all handled
+        ///     as TermNodes in all scopes
         /// </summary>
         /// <param name="toRes"></param>
         /// <param name="currentType"></param>
@@ -572,44 +583,45 @@ namespace AEGIScript.GUI.Model
         {
             TermNode node;
             switch (toRes.ActualType)
-	        {
+            {
                 case ASTNode.Type.INTVAR:
-                    node = (toRes as IntVarNode).Interpret(GlobalScope);
+                    node = (toRes as IntVarNode).Interpret(_scope);
                     if (ASTNode.Type.INT > currentType)
                     {
                         currentType = ASTNode.Type.INT;
                     }
                     return node;
                 case ASTNode.Type.BOOLVAR:
-                    node = (toRes as BoolVarNode).Interpret(GlobalScope);
+                    node = (toRes as BoolVarNode).Interpret(_scope);
                     if (ASTNode.Type.BOOL > currentType)
                     {
                         currentType = ASTNode.Type.BOOL;
                     }
                     return node;
                 case ASTNode.Type.DOUBLEVAR:
-                    node = (toRes as DoubleVarNode).Interpret(GlobalScope);
+                    node = (toRes as DoubleVarNode).Interpret(_scope);
                     if (ASTNode.Type.DOUBLE > currentType)
                     {
                         currentType = ASTNode.Type.DOUBLE;
                     }
                     return node;
                 case ASTNode.Type.STRINGVAR:
-                    node = (toRes as StringVarNode).Interpret(GlobalScope);
+                    node = (toRes as StringVarNode).Interpret(_scope);
                     if (ASTNode.Type.STRING > currentType)
                     {
                         currentType = ASTNode.Type.STRING;
                     }
                     return node;
                 case ASTNode.Type.VAR:
-                    return GlobalScope.GetVar(toRes.Symbol);
+                    return _scope.GetVar(toRes.Symbol);
                 case ASTNode.Type.ARRAY:
-                    return GlobalScope.GetVar(toRes.Symbol);
+                    return _scope.GetVar(toRes.Symbol);
                 default:
                     return toRes;
-	        }
+            }
         }
 
+/*
         private int IndexOfChild(ASTNode node)
         {
             for (int i = 0; i < node.Parent.Children.Count; i++)
@@ -621,21 +633,19 @@ namespace AEGIScript.GUI.Model
             }
             throw new Exception("Parent uninitialized");
         }
+*/
 
 
-
-
-        private int TreeDepth = 0;
         /// <summary>
-        /// Calculates the depth of the current AST.
+        ///     Calculates the depth of the current AST.
         /// </summary>
         /// <param name="tree">AST root</param>
         /// <param name="curDep">Recursive depth counter</param>
         private void SetTreeDepth(CommonTree tree, int curDep = 0)
         {
-            if (curDep > TreeDepth)
+            if (curDep > _treeDepth)
             {
-                TreeDepth = curDep;
+                _treeDepth = curDep;
             }
             for (int i = 0; i < tree.ChildCount; i++)
             {
@@ -644,103 +654,88 @@ namespace AEGIScript.GUI.Model
         }
 
         /// <summary>
-        /// Sets up the parser
+        ///     Sets up the parser
         /// </summary>
         /// <param name="source">Path to source file</param>
         private void SetParser(string source)
         {
-            sStream = new ANTLRStringStream(source);
-            lexer = new aegiscriptLexer(sStream);
-            tokens = new CommonTokenStream(lexer);
-            parser = new aegiscriptParser(tokens);
+            SStream = new ANTLRStringStream(source);
+            Lexer = new aegiscriptLexer(SStream);
+            Tokens = new CommonTokenStream(Lexer);
+            Parser = new aegiscriptParser(Tokens);
 
-            TokenTypeMediator.SetTokens(parser.TokenNames);
+            TokenTypeMediator.SetTokens(Parser.TokenNames);
         }
 
         public string GetASTTokensAsString(string source)
         {
             SetParser(source);
-            return PrettyPrinting(parser.program().Tree, true, true);
+            return PrettyPrinting(Parser.program().Tree, true, true);
         }
-
 
 
         public string GetASTObjectsAsString(string source)
         {
             SetParser(source);
-            return PrettyPrinting(parser.program().Tree, false, true);
+            return PrettyPrinting(Parser.program().Tree, false, true);
+        }
+
+        private string PrettyPrinting(CommonTree tree, bool tokenTextOnly = false, bool printTypes = false)
+        {
+            var builder = new StringBuilder();
+            if (printTypes)
+            {
+                _treeDepth = 0;
+                SetTreeDepth(tree);
+            }
+            PreOrder(tree, ref builder, -1, tokenTextOnly, printTypes);
+                // reason for depth == -1 is that ANTLR builds the tree with the root as null
+            return builder.ToString();
         }
 
         /// <summary>
-        /// Helper class for depth-first descent
-        /// </summary>
-        class CommonTreeWrapper
-        {
-            public CommonTreeWrapper(CommonTree ct)
-            {
-                Tree = ct;
-            }
-
-            public bool Visited { get; set; }
-            public int End { get; set; }
-            public int Depth { get; set; }
-            public CommonTree Tree { get; private set; }
-        }
-
-        private string PrettyPrinting(CommonTree tree, bool TokenTextOnly = false, bool PrintTypes = false)
-        {
-            StringBuilder Builder = new StringBuilder();
-            if (PrintTypes)
-            {
-                TreeDepth = 0;
-                SetTreeDepth(tree, 0);
-            }
-            PreOrder(tree, ref Builder, -1, TokenTextOnly, PrintTypes); // reason for depth == -1 is that ANTLR builds the tree with the root as null
-            return Builder.ToString();
-        }
-
-        /// <summary>
-        /// Does a pre-order walk of the ast to print out different nodes for debugging reasons
+        ///     Does a pre-order walk of the ast to print out different nodes for debugging reasons
         /// </summary>
         /// <param name="node">Current root</param>
         /// <param name="builder">A StringBuilder for prettyprinting</param>
         /// <param name="depth">Current Depth</param>
-        /// <param name="TokenTextOnly">PrintFun only the content contained in the token</param>
-        /// <param name="PrintTypes">PrintFun out the token's type</param>
-        private void PreOrder(CommonTree node, ref StringBuilder builder, int depth, bool TokenTextOnly = false, bool PrintTypes = false)
+        /// <param name="tokenTextOnly">PrintFun only the content contained in the token</param>
+        /// <param name="printTypes">PrintFun out the token's type</param>
+        private void PreOrder(CommonTree node, ref StringBuilder builder, int depth, bool tokenTextOnly = false,
+                              bool printTypes = false)
         {
             AddIndentation(ref builder, depth);
             if (node.Token != null)
             {
-                int TokenLengthFactor = node.Token.Text.Length / 4;
-                int OffsetFromMax = 2;
-                if (TokenTextOnly)
+                int tokenLengthFactor = node.Token.Text.Length/4;
+                int offsetFromMax = 2;
+                if (tokenTextOnly)
                 {
                     builder.Append(node.Token.Text);
-                    TokenLengthFactor = node.Token.Text.Length / 4;
+                    tokenLengthFactor = node.Token.Text.Length/4;
                 }
                 else
                 {
-                    builder.Append(node.Token.ToString());
-                    TokenLengthFactor = node.Token.ToString().Length / 4;
-                    OffsetFromMax += 4;
+                    builder.Append(node.Token);
+                    tokenLengthFactor = node.Token.ToString().Length/4;
+                    offsetFromMax += 4;
                 }
-                if (PrintTypes && node.Type >= 0 && node.Type < parser.TokenNames.Length)
+                if (printTypes && node.Type >= 0 && node.Type < Parser.TokenNames.Length)
                 {
-                    AddIndentation(ref builder, (TreeDepth + OffsetFromMax - TokenLengthFactor - depth));
-                    builder.Append(parser.TokenNames[node.Type]);
-                    ASTNode Node = new ASTNode(node, parser.TokenNames);
+                    AddIndentation(ref builder, (_treeDepth + offsetFromMax - tokenLengthFactor - depth));
+                    builder.Append(Parser.TokenNames[node.Type]);
+                    var Node = new ASTNode(node, Parser.TokenNames);
                 }
                 builder.Append('\n');
             }
             for (int i = 0; i < node.ChildCount; i++)
             {
-                PreOrder(node.GetChild(i) as CommonTree, ref builder, depth + 1, TokenTextOnly, PrintTypes);
+                PreOrder(node.GetChild(i) as CommonTree, ref builder, depth + 1, tokenTextOnly, printTypes);
             }
         }
 
         /// <summary>
-        /// PrettyPrinting helper, adds depth to the StringBuilder. Not conventional, but for deep trees, this is faster than the standard recursive call.
+        ///     PrettyPrinting helper, adds depth to the StringBuilder. Not conventional, but for deep trees, this is faster than the standard recursive call.
         /// </summary>
         /// <param name="builder">A stringbuilder</param>
         /// <param name="depth">Current depth</param>
@@ -752,25 +747,8 @@ namespace AEGIScript.GUI.Model
             }
         }
 
-        private Dictionary<CommonTree, DFS_Helper> VisitHelper = new Dictionary<CommonTree, DFS_Helper>();
-
-        private class DFS_Helper
-        {
-            public DFS_Helper(int depth, bool visited)
-            {
-                Depth = depth;
-                Visited = visited;
-            }
-
-            public int Depth { get; private set; }
-            public int Order { get; set; }
-            public int End { get; set; }
-            public bool Visited { get; private set; }
-
-        }
-
         /// <summary>
-        /// A standard DFS, for visiting and prettyprinting purposes
+        ///     A standard DFS, for visiting and prettyprinting purposes
         /// </summary>
         /// <param name="node">Current root</param>
         /// <param name="depth">Current depth</param>
@@ -778,43 +756,45 @@ namespace AEGIScript.GUI.Model
         /// <param name="e_current">Count of "ended" nodes</param>
         private void DepthFirstDescent(CommonTree node, int depth, ref int v_current, ref int e_current)
         {
-            if (!VisitHelper.ContainsKey(node))
+            if (!_visitHelper.ContainsKey(node))
             {
-                VisitHelper.Add(node, new DFS_Helper(depth, true));
-                VisitHelper[node].Order = v_current++;
+                _visitHelper.Add(node, new DfsHelper(depth, true));
+                _visitHelper[node].Order = v_current++;
             }
 
             for (int i = 0; i < node.ChildCount; i++)
             {
-                if (!VisitHelper.ContainsKey(node))
+                if (!_visitHelper.ContainsKey(node))
                 {
                     DepthFirstDescent(node, depth + 1, ref v_current, ref e_current);
                 }
             }
-            VisitHelper[node].End = e_current++;
+            _visitHelper[node].End = e_current++;
         }
 
 
-        private void DepthFirstDescent(CommonTree node, int depth, ref StringBuilder builder, ref int v_current, ref int e_current)
+        private void DepthFirstDescent(CommonTree node, int depth, ref StringBuilder builder, ref int v_current,
+                                       ref int e_current)
         {
-            if (!VisitHelper.ContainsKey(node))
+            if (!_visitHelper.ContainsKey(node))
             {
-                VisitHelper.Add(node, new DFS_Helper(depth, true));
-                VisitHelper[node].Order = v_current++;
+                _visitHelper.Add(node, new DfsHelper(depth, true));
+                _visitHelper[node].Order = v_current++;
             }
 
             for (int i = 0; i < node.ChildCount; i++)
             {
-                if (!VisitHelper.ContainsKey(node.GetChild(i) as CommonTree))
+                if (!_visitHelper.ContainsKey(node.GetChild(i) as CommonTree))
                 {
-                    DepthFirstDescent(node.GetChild(i) as CommonTree, depth + 1, ref builder, ref v_current, ref e_current);
+                    DepthFirstDescent(node.GetChild(i) as CommonTree, depth + 1, ref builder, ref v_current,
+                                      ref e_current);
                 }
             }
-            VisitHelper[node].End = e_current++;
+            _visitHelper[node].End = e_current++;
             if (node.Token != null)
             {
                 AddIndentation(ref builder, depth);
-                builder.Append(node.Token.Text + "\t\t Depth : " + VisitHelper[node].Depth +  "\n");
+                builder.Append(node.Token.Text + "\t\t Depth : " + _visitHelper[node].Depth + "\n");
             }
         }
 
@@ -824,9 +804,23 @@ namespace AEGIScript.GUI.Model
             //SetTreeDepth(parser.program().Tree);
             int depth = 0;
             int end = 0;
-            StringBuilder builder = new StringBuilder();
-            DepthFirstDescent(parser.program().Tree, 0, ref builder, ref depth, ref end);
+            var builder = new StringBuilder();
+            DepthFirstDescent(Parser.program().Tree, 0, ref builder, ref depth, ref end);
             return builder.ToString();
+        }
+
+        private class DfsHelper
+        {
+            public DfsHelper(int depth, bool visited)
+            {
+                Depth = depth;
+                Visited = visited;
+            }
+
+            public int Depth { get; private set; }
+            public int Order { get; set; }
+            public int End { get; set; }
+            private bool Visited { get; set; }
         }
     }
 }

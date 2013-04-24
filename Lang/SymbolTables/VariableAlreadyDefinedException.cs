@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AEGIScript.Lang.Scope;
+using AEGIScript.Lang.Scoping;
 
 namespace AEGIScript.Lang.SymbolTables
 {

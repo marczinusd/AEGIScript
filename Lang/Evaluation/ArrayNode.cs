@@ -1,9 +1,7 @@
 ﻿using Antlr.Runtime.Tree;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AEGIScript.Lang.Evaluation
 {
@@ -28,28 +26,28 @@ namespace AEGIScript.Lang.Evaluation
             }
         }
 
-        public ArrayNode Add(TermNode Node)
+        public ArrayNode Add(TermNode node)
         {
-            Elements.Add(Node);
+            Elements.Add(node);
             return this;
         }
 
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             builder.Append("[ ");
             if (Elements.Count > 0)
             {
-                foreach (var Elem in Elements)
+                foreach (var elem in Elements)
                 {
-                    builder.Append(Elem.ToString() + " ");
+                    builder.Append(elem + " ");
                 }
             }
             else if (Children.Count > 0)
             {
-                foreach (var Elem in Children)
+                foreach (var elem in Children)
                 {
-                    builder.Append(Elem.ToString() + " ");
+                    builder.Append(elem + " ");
                 }
             }
 

@@ -1,138 +1,138 @@
-﻿using AEGIScript.GUI.ViewModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Input;
+using System.Windows.Media;
+using AEGIScript.GUI.ViewModel;
 using AEGIScript.IO;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Input;
 
-namespace AEGIScript
+namespace AEGIScript.GUI
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        private EditorViewModel viewModel;
+        private readonly List<string> _keywords = new List<string>();
+        private readonly EditorViewModel _viewModel;
+        private CompletionWindow _completionWindow;
 
         public MainWindow()
         {
             InitializeComponent();
-            viewModel = new EditorViewModel();
-            this.DataContext = viewModel;
-            this.mainGrid.DataContext = viewModel;
+            _viewModel = new EditorViewModel();
+            DataContext = _viewModel;
+            mainGrid.DataContext = _viewModel;
             textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
             textEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
 
             // highlighting based on Ruby .xshd file from
             // AvalonEdit github repo
             textEditor.SyntaxHighlighting = ResourceLoader.LoadHighlightingDefinition("AEGIScript.xshd");
-            
-            viewModel.OnOpenFile += viewModel_OnOpenFile;
-            viewModel.OnSaveFile += viewModel_OnSaveFile;
-            viewModel.OnSaveAsFile += viewModel_OnSaveAsFile;
-            viewModel.OnFileUpToDate += viewModel_OnFileUpToDate;
-            viewModel.OnNewFile += viewModel_OnNewFile;
-            viewModel.OnClose += viewModel_OnClose;
-            initKeywords();
-            FileChangedButton.Background = System.Windows.Media.Brushes.Transparent;
+
+            _viewModel.OnOpenFile += viewModel_OnOpenFile;
+            _viewModel.OnSaveFile += viewModel_OnSaveFile;
+            _viewModel.OnSaveAsFile += viewModel_OnSaveAsFile;
+            _viewModel.OnFileUpToDate += viewModel_OnFileUpToDate;
+            _viewModel.OnNewFile += viewModel_OnNewFile;
+            _viewModel.OnClose += viewModel_OnClose;
+            InitKeywords();
+            FileChangedButton.Background = Brushes.Transparent;
         }
 
-        void viewModel_OnClose(object sender, EventArgs e)
+        private void viewModel_OnClose(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
-        void viewModel_OnNewFile(object sender, EventArgs e)
+        private void viewModel_OnNewFile(object sender, EventArgs e)
         {
-            FileChangedButton.Background = System.Windows.Media.Brushes.Transparent;
+            FileChangedButton.Background = Brushes.Transparent;
         }
 
-        void viewModel_OnFileUpToDate(object sender, EventArgs e)
+        private void viewModel_OnFileUpToDate(object sender, EventArgs e)
         {
-            FileChangedButton.Background = System.Windows.Media.Brushes.Transparent;
+            FileChangedButton.Background = Brushes.Transparent;
         }
 
         private void viewModel_OnSaveAsFile(object sender, SaveFileEventArgs e)
         {
-            SaveFileDialog saveDial = new SaveFileDialog();
-            saveDial.Title = "Save current file as...";
-            saveDial.Filter = "AEGIScript source files (*.aes) | *.aes";
+            var saveDial = new SaveFileDialog
+                {
+                    Title = "Save current file as...",
+                    Filter = "AEGIScript source files (*.aes) | *.aes"
+                };
             saveDial.ShowDialog();
             if (saveDial.FileName != "")
             {
                 SourceIO.SaveToFile(e.Doc.Text, saveDial.FileName);
-                FileChangedButton.Background = System.Windows.Media.Brushes.Transparent;
+                FileChangedButton.Background = Brushes.Transparent;
             } // check for file saved and signal VM
             else
             {
-                FileChangedButton.Background = System.Windows.Media.Brushes.Red;
+                FileChangedButton.Background = Brushes.Red;
             }
         }
 
         private void viewModel_OnSaveFile(object sender, EventArgs e)
         {
-            FileChangedButton.Background = System.Windows.Media.Brushes.Transparent;
+            FileChangedButton.Background = Brushes.Transparent;
         }
 
         private void viewModel_OnOpenFile(object sender, EventArgs e)
         {
-            OpenFileDialog openDial = new OpenFileDialog();
-            openDial.Filter = "AEGIScript source files|*.aes";
-            openDial.Title = "Open existing AEGIScript source file";
-            if (openDial.ShowDialog().Value) 
+            var openDial = new OpenFileDialog
+                {
+                    Filter = "AEGIScript source files|*.aes",
+                    Title = "Open existing AEGIScript source file"
+                };
+            if (openDial.ShowDialog().Value)
             {
-                viewModel.OnFileToOpenSelected(openDial.FileName);
+                _viewModel.OnFileToOpenSelected(openDial.FileName);
             }
         }
 
         /*
          *  AVALONEDIT boilerplate begin
          * */
-        private CompletionWindow completionWindow;
 
-        private List<string> Keywords = new List<string>();
-
-        private void initKeywords()
+        private void InitKeywords()
         {
-            Keywords.Add("for");
-            Keywords.Add("new");
-            Keywords.Add("while");
-            Keywords.Add("begin");
-            Keywords.Add("end");
-            Keywords.Add("var");
-            Keywords.Add("true");
-            Keywords.Add("false");
+            _keywords.Add("for");
+            _keywords.Add("new");
+            _keywords.Add("while");
+            _keywords.Add("begin");
+            _keywords.Add("end");
+            _keywords.Add("var");
+            _keywords.Add("true");
+            _keywords.Add("false");
         }
 
         private void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
         {
             if (e.Text == " ")
             {
-                completionWindow = new CompletionWindow(textEditor.TextArea);
-                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                foreach (var k in Keywords)
+                _completionWindow = new CompletionWindow(textEditor.TextArea);
+                IList<ICompletionData> data = _completionWindow.CompletionList.CompletionData;
+                foreach (string k in _keywords)
                 {
                     data.Add(new CompData(k));
                 }
-                completionWindow.Show();
-                completionWindow.Closed += delegate
-                {
-                    completionWindow = null;
-                };
+                _completionWindow.Show();
+                _completionWindow.Closed += delegate { _completionWindow = null; };
             }
         }
 
         private void textEditor_TextArea_TextEntering(object sender, TextCompositionEventArgs e)
         {
-            if (e.Text.Length > 0 && completionWindow != null)
+            if (e.Text.Length > 0 && _completionWindow != null)
             {
                 if (!char.IsLetterOrDigit(e.Text[0]))
                 {
-                    completionWindow.CompletionList.RequestInsertion(e);
+                    _completionWindow.CompletionList.RequestInsertion(e);
                 }
             }
         }
@@ -143,33 +143,20 @@ namespace AEGIScript
 
         private void textEditor_TextChanged(object sender, EventArgs e)
         {
-            FileChangedButton.Background = System.Windows.Media.Brushes.Red;
+            FileChangedButton.Background = Brushes.Red;
         }
     }
 
     public class CompData : ICompletionData
     {
-        double priority;
-
-        public double Priority
-        {
-            get
-            {
-                return priority;
-            }
-
-            set
-            {
-                priority = value;
-            }
-        }
-
         public CompData(string text)
         {
-            this.Text = text;
+            Text = text;
         }
 
-        public System.Windows.Media.ImageSource Image
+        public double Priority { get; set; }
+
+        public ImageSource Image
         {
             get { return null; }
         }
@@ -179,18 +166,18 @@ namespace AEGIScript
         // Use this property if you want to show a fancy UIElement in the list.
         public object Content
         {
-            get { return this.Text; }
+            get { return Text; }
         }
 
         public object Description
         {
-            get { return "Description for " + this.Text; }
+            get { return "Description for " + Text; }
         }
 
         public void Complete(TextArea textArea, ISegment completionSegment,
-            EventArgs insertionRequestEventArgs)
+                             EventArgs insertionRequestEventArgs)
         {
-            textArea.Document.Replace(completionSegment, this.Text);
+            textArea.Document.Replace(completionSegment, Text);
         }
     }
 }

@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using AEGIScript.Lang.Evaluation;
 
 namespace AEGIScript.GUI.Model
 {
     class PrintEventArgs : EventArgs
     {
-        public PrintEventArgs(TermNode node) : base()
+        public PrintEventArgs(TermNode node)
         {
             Node = node;
         }
 
-        public PrintEventArgs(String ToPrint) : base()
+        public PrintEventArgs(String toPrint)
         {
-            Message = ToPrint;
+            Message = toPrint;
         }
 
         public TermNode Node { get; private set; }
@@ -23,14 +20,7 @@ namespace AEGIScript.GUI.Model
 
         public override string ToString()
         {
-            if (Node != null)
-            {
-                return Node.ToString();   
-            }
-            else
-            {
-                return Message;
-            }
+            return Node != null ? Node.ToString() : Message;
         }
     }
 }

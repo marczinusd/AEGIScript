@@ -9,8 +9,8 @@ namespace AEGIScript.Lang.Evaluation
 {
     class ArrAccessNode : VarNode
     {
-        public ArrAccessNode(CommonTree tree, String Symbol)
-            : base(tree, Symbol)
+        public ArrAccessNode(CommonTree tree, String symbol)
+            : base(tree, symbol)
         {
             Indices = new List<int>();
             //for (int i = 1; i < Children.Count; i++)

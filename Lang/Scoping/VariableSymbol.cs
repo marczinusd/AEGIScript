@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AEGIScript.Lang.Scope
+namespace AEGIScript.Lang.Scoping
 {
     class VariableSymbol : Symbol
     {

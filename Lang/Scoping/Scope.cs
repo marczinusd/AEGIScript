@@ -7,7 +7,7 @@ using AEGIScript.Lang.SymbolTables;
 using AEGIScript.Lang.Evaluation;
 
 
-namespace AEGIScript.Lang.Scope
+namespace AEGIScript.Lang.Scoping
 {
     class Scope
     {
