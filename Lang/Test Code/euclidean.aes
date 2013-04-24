@@ -1,0 +1,10 @@
+begin
+
+a = 0;
+b = 20;
+while b != 0:
+	t = b;
+	b = a mod t;
+	a = t;
+end while;
+end;

@@ -1,0 +1,15 @@
+﻿begin
+
+while x < 10:
+	if y = 20:
+		x = x + 2;
+	elsif y = 10:
+		x = x + 3;
+	else:
+		x = x - 1;
+	end if;
+	x = x + 1;
+end while;
+y = 20;
+
+end;

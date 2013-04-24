@@ -1,0 +1,301 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FDD8FBDF-300C-4E3B-96F1-40FEFD164535}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AEGIScript</RootNamespace>
+    <AssemblyName>AEGIScript</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>aegiscript.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.1, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL" />
+    <Reference Include="ICSharpCode.AvalonEdit, Version=4.2.0.8783, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\AvalonEdit.4.2.0.8783\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\DLLs\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="GUI\App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="GUI\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="GUI\App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GUI\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GUI\Model\Interpreter.cs" />
+    <Compile Include="GUI\Model\PrintEventArgs.cs" />
+    <Compile Include="GUI\ViewModel\DelegateCommand.cs" />
+    <Compile Include="GUI\ViewModel\EditorViewModel.cs" />
+    <Compile Include="GUI\ViewModel\SaveFileEventArgs.cs" />
+    <Compile Include="GUI\ViewModel\ViewModelBase.cs" />
+    <Compile Include="IO\ResourceLoader.cs" />
+    <Compile Include="IO\SourceIO.cs" />
+    <Compile Include="IO\Unit tests\SourceIO_tests.cs" />
+    <Compile Include="Lang\aegiscriptLexer.cs" />
+    <Compile Include="Lang\aegiscriptParser.cs" />
+    <Compile Include="Lang\Evaluation\ArithmeticNode.cs" />
+    <Compile Include="Lang\Evaluation\ArithmeticVisitor.cs" />
+    <Compile Include="Lang\Evaluation\ArrAccessNode.cs" />
+    <Compile Include="Lang\Evaluation\ArrayNode.cs" />
+    <Compile Include="Lang\Evaluation\AssignNode.cs" />
+    <Compile Include="Lang\Evaluation\ASTNode.cs" />
+    <Compile Include="Lang\Evaluation\ASTNodeFactory.cs" />
+    <Compile Include="Lang\Evaluation\BeginNode.cs" />
+    <Compile Include="Lang\Evaluation\BooleanNode.cs" />
+    <Compile Include="Lang\Exceptions\InvalidOperationException.cs" />
+    <Compile Include="Lang\Exceptions\LangException.cs" />
+    <Compile Include="Lang\Evaluation\FloatNode.cs" />
+    <Compile Include="Lang\Evaluation\IfNode.cs" />
+    <Compile Include="Lang\Evaluation\IntArray.cs" />
+    <Compile Include="Lang\Evaluation\IntNode.cs" />
+    <Compile Include="Lang\Evaluation\IVisitor.cs" />
+    <Compile Include="Lang\Evaluation\NodeArithmetics.cs" />
+    <Compile Include="Lang\Evaluation\StringNode.cs" />
+    <Compile Include="Lang\Evaluation\TermNode.cs" />
+    <Compile Include="Lang\Evaluation\TokenTypeMediator.cs" />
+    <Compile Include="Lang\Evaluation\VarNode.cs" />
+    <Compile Include="Lang\Evaluation\WhileNode.cs" />
+    <Compile Include="Lang\Evaluation\FunCallNode.cs" />
+    <Compile Include="Lang\Exceptions\UndefinedVariableException.cs" />
+    <Compile Include="Lang\FunCalls\FunCallHelper.cs" />
+    <Compile Include="Lang\Scope\GlobalScope.cs" />
+    <Compile Include="Lang\Scope\LocalScope.cs" />
+    <Compile Include="Lang\Scope\Scope.cs" />
+    <Compile Include="Lang\Scope\ScopeMediator.cs" />
+    <Compile Include="Lang\Scope\Symbol.cs" />
+    <Compile Include="Lang\Scope\VariableSymbol.cs" />
+    <Compile Include="Lang\SymbolTables\SymbolTable.cs" />
+    <Compile Include="Lang\SymbolTables\VariableAlreadyDefinedException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Antlr3 Include="Lang\aegiscript.g3">
+      <Generator>MSBuild:Compile</Generator>
+    </Antlr3>
+    <AntlrTokens Include="Lang\aegiscript2.tokens">
+      <Generator>MSBuild:Compile</Generator>
+    </AntlrTokens>
+    <None Include="Lang\Test Code\euclidean.aes" />
+    <None Include="Lang\Test Code\newton_method.aes" />
+    <None Include="Lang\Test Code\test.aes" />
+    <None Include="Lang\Test Code\test1.aes" />
+    <None Include="Lang\Test Code\test_2.aes" />
+    <None Include="Lang\Test Code\test_3.aes" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+    <None Include="Res\ANTLR3\Antlr3.exe.config" />
+    <None Include="Res\ANTLR3\Antlr3.targets" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ActionScript\ActionScript.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ActionScript\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ActionScript\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ActionScript\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CPP\CPP.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp2\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp2\ASTDbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp2\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp2\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp2\CSharp2.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp2\Dbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp2\ST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp3\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp3\ASTDbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp3\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp3\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp3\CSharp3.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp3\Dbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\CSharp3\ST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\C\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\C\ASTDbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\C\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\C\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\C\C.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\C\Dbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Delphi\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Delphi\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Delphi\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Delphi\Delphi.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\JavaScript\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\JavaScript\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\JavaScript\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\JavaScript\JavaScript.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Java\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Java\ASTDbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Java\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Java\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Java\Dbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Java\Java.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Java\ST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\LeftRecursiveRules.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ObjC\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ObjC\ASTDbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ObjC\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ObjC\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ObjC\Dbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\ObjC\ObjC.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Perl5\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Perl5\Perl5.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Python\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Python\ASTDbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Python\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Python\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Python\Dbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Python\Python.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Python\ST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Ruby\AST.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Ruby\ASTDbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Ruby\ASTParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Ruby\ASTTreeParser.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Ruby\Dbg.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Ruby\Ruby.stg" />
+    <None Include="Res\ANTLR3\Codegen\Templates\Ruby\ST.stg" />
+    <None Include="Res\ANTLR3\Tool\Templates\depend.stg" />
+    <None Include="Res\ANTLR3\Tool\Templates\dot\dot.stg" />
+    <None Include="Res\ANTLR3\Tool\Templates\messages\formats\antlr.stg" />
+    <None Include="Res\ANTLR3\Tool\Templates\messages\formats\gnu.stg" />
+    <None Include="Res\ANTLR3\Tool\Templates\messages\formats\vs2005.stg" />
+    <None Include="Res\ANTLR3\Tool\Templates\messages\languages\en.stg" />
+    <EmbeddedResource Include="IO\AEGIScript.xshd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GUI\App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GUI\Model\Unit tests\" />
+    <Folder Include="GUI\View\" />
+    <Folder Include="Lang\Unit tests\" />
+    <Folder Include="Res\DLLs\" />
+    <Folder Include="Res\Syntax\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Res\Icons\add.png" />
+    <Resource Include="Res\Icons\bug.png" />
+    <Resource Include="Res\Icons\console.png" />
+    <Resource Include="Res\Icons\documents.png" />
+    <Resource Include="Res\Icons\play.png" />
+    <Resource Include="Res\Icons\save.png" />
+    <Resource Include="Res\Icons\save_as.png" />
+    <Resource Include="aegiscript.ico" />
+    <Content Include="Lang\CodeGen\aegiscript_arith_codegen.py" />
+    <Content Include="Res\ANTLR3\Antlr3.exe" />
+    <Content Include="Res\ANTLR3\Antlr3.pdb" />
+    <Content Include="Res\ANTLR3\Antlr3.Runtime.Debug.dll" />
+    <Content Include="Res\ANTLR3\Antlr3.Runtime.Debug.pdb" />
+    <Content Include="Res\ANTLR3\Antlr3.Runtime.dll" />
+    <Content Include="Res\ANTLR3\Antlr3.Runtime.pdb" />
+    <Content Include="Res\ANTLR3\Antlr4.StringTemplate.dll" />
+    <Content Include="Res\ANTLR3\Antlr4.StringTemplate.pdb" />
+    <Content Include="Res\ANTLR3\Antlr4.StringTemplate.Visualizer.dll" />
+    <Content Include="Res\ANTLR3\Antlr4.StringTemplate.Visualizer.pdb" />
+    <Content Include="Res\ANTLR3\AntlrBuildTask.dll" />
+    <Content Include="Res\ANTLR3\AntlrBuildTask.pdb" />
+    <Resource Include="Res\ANTLR3\LICENSE.txt" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.ActionScript.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.ActionScript.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.C.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.C.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Cpp.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Cpp.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.CSharp2.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.CSharp2.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.CSharp3.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.CSharp3.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Delphi.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Delphi.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Java.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Java.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.JavaScript.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.JavaScript.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.ObjC.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.ObjC.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Perl5.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Perl5.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Python.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Python.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Python3.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Python3.pdb" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Ruby.dll" />
+    <Content Include="Res\ANTLR3\Targets\Antlr3.Targets.Ruby.pdb" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
