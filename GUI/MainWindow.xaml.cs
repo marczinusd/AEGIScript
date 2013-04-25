@@ -7,6 +7,7 @@ using AEGIScript.IO;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using MahApps.Metro.Controls;
 using Microsoft.Win32;
 
 namespace AEGIScript.GUI
@@ -14,7 +15,7 @@ namespace AEGIScript.GUI
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : MetroWindow
     {
         private readonly List<string> _keywords = new List<string>();
         private readonly EditorViewModel _viewModel;
@@ -92,7 +93,7 @@ namespace AEGIScript.GUI
             } // check for file saved and signal VM
             else
             {
-                FileChangedButton.Background = Brushes.Red;
+                FileChangedButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
             }
         }
 
@@ -162,7 +163,8 @@ namespace AEGIScript.GUI
 
         private void textEditor_TextChanged(object sender, EventArgs e)
         {
-            FileChangedButton.Background = Brushes.Red;
+            //FileChangedButton.Background = Brushes.DodgerBlue;
+            FileChangedButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
         }
     }
 
