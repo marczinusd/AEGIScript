@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -11,18 +12,41 @@ using ICSharpCode.AvalonEdit.Document;
 
 namespace AEGIScript.GUI.ViewModel
 {
+    /// <summary>
+    ///     Eventargs for continuous output of the interpreter
+    ///     Should consider the performance before actual use
+    /// </summary>
+    class InterpreterProgressChangedArgs : ProgressChangedEventArgs
+    {
+        public InterpreterProgressChangedArgs(int progressPercentage, object userState, StringBuilder currentOutput) 
+                : base(progressPercentage, userState)
+        {
+            CurrentOutput = currentOutput;
+        }
+
+        public StringBuilder CurrentOutput { get; set; }
+    }
+
     internal class EditorViewModel : ViewModelBase
     {
         public EditorViewModel()
         {
             SetCommands();
             AesInterpreter = new Interpreter();
+            CancelTokens = new List<CancellationToken>();
             AesInterpreter.Print += Aes_Interpreter_Print;
+            AesInterpreter.ProgressChanged += AesInterpreter_ProgressChanged;
             InputDoc = new TextDocument();
             OutputDoc = new TextDocument();
             ImmediateDoc = new TextDocument();
-            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(400)};
+            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(750)};
             _timer.Tick += _timer_Tick;
+        }
+
+        void AesInterpreter_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            CurrentProgress = e.ProgressPercentage;
+            OnPropertyChanged("CurrentProgress");
         }
 
         void _timer_Tick(object sender, EventArgs e)
@@ -46,10 +70,12 @@ namespace AEGIScript.GUI.ViewModel
         public TextDocument OutputDoc { get; set; }
         public TextDocument InputDoc { get; set; }
         public TextDocument ImmediateDoc { get; set; }
+        public int CurrentProgress { get; set; }
 
         private String CurrentFilePath { get; set; }
         private Boolean HasOpenFile { get; set; }
         private CancellationToken CToken { get; set; }
+        private List<CancellationToken> CancelTokens { get; set; } 
         private CancellationTokenSource CTokenS { get; set; }
         private Boolean TaskRunning { get; set; }
         private DispatcherTimer _timer { get; set; }
@@ -132,6 +158,7 @@ namespace AEGIScript.GUI.ViewModel
                 var newSource = "begin\n" + ImmediateDoc.Text + "\nend;";
                 AesInterpreter.Walk(newSource, true);
             }
+            OutputDoc.Text = AesInterpreter.Output.ToString();
             OnPropertyChanged("OutputDoc");
         }
 
@@ -146,22 +173,32 @@ namespace AEGIScript.GUI.ViewModel
             OnPropertyChanged("OutputDoc");
         }
 
+
+        /// <summary>
+        ///     Deprecated function, since massive string building has been eliminated from the interpreter
+        ///     because of performance issues.
+        /// </summary>
         private void Debug()
         {
             if (!TaskRunning)
             {
                 Clear();
+                //CancellationTokenSource ctoks = new CancellationTokenSource();
                 CTokenS = new CancellationTokenSource();
                 CToken = CTokenS.Token;
-                AesInterpreter = new Interpreter();
+                CancelTokens.Add(CTokenS.Token);
+                // causes task to be stuck -- why?
+                //AesInterpreter = new Interpreter();
                 String source = InputDoc.Text;
                 OutputDoc.Text = "Working";
                 OnPropertyChanged("OutputDoc");
                 TaskRunning = true;
                 _timer.Start();
                 OnRunning(this, new EventArgs());
-                Task.Factory.StartNew(() => Run(source), CToken)
-                            .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
+                int TaskId = 12345;
+                AsyncOperation op = AsyncOperationManager.CreateOperation(TaskId);
+                var T = Task.Factory.StartNew(() => RunParallel(source, CToken, op), CToken)
+                                    .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 
@@ -173,6 +210,8 @@ namespace AEGIScript.GUI.ViewModel
             OnFinished(this, new EventArgs());
             OutputDoc.Text = AesInterpreter.Output.ToString();
             OnPropertyChanged("OutputDoc");
+            CurrentProgress = 0;
+            OnPropertyChanged("CurrentProgress");
         }
 
         private void Run()
@@ -182,25 +221,24 @@ namespace AEGIScript.GUI.ViewModel
                 Clear();
                 CTokenS = new CancellationTokenSource();
                 CToken = CTokenS.Token;
-                // causes task to be stuck -- why?
-                //AesInterpreter = new Interpreter();
+                CancelTokens.Add(CTokenS.Token);
                 String source = InputDoc.Text;
                 OutputDoc.Text = "Working";
                 OnPropertyChanged("OutputDoc");
                 TaskRunning = true;
                 _timer.Start();
                 OnRunning(this, new EventArgs());
-                var T = Task.Factory.StartNew(() => Run(source), CToken)
-                            .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
+                AsyncOperation op = AsyncOperationManager.CreateOperation(null);
+                var T = Task.Factory.StartNew(() => RunParallel(source, CToken, op), CToken)
+                                    .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
+                
             }
         }
 
-
-        private void Run(String source)
+        private void RunParallel(String source, CancellationToken token, AsyncOperation operation)
         {
-            AesInterpreter.Walk(source);
+            AesInterpreter.WalkParallel(source, token, operation);
         }
-
 
         private void New()
         {
@@ -264,6 +302,8 @@ namespace AEGIScript.GUI.ViewModel
                 OnFinished(this, new EventArgs());
                 OutputDoc.Text = "Canceled";
                 OnPropertyChanged("OutputDoc");
+                CurrentProgress = 0;
+                OnPropertyChanged("CurrentProgress");
             }
         }
 
@@ -288,25 +328,25 @@ namespace AEGIScript.GUI.ViewModel
         public void PrintAST()
         {
             OutputDoc.Text = AesInterpreter.GetAstAsString(InputDoc.Text);
-            OnPropertyChanged("outputDoc");
+            OnPropertyChanged("OutputDoc");
         }
 
         private void PrintASTTokens()
         {
             OutputDoc.Text = AesInterpreter.GetASTTokensAsString(InputDoc.Text);
-            OnPropertyChanged("outputDoc");
+            OnPropertyChanged("OutputDoc");
         }
 
         private void PrintAST_DFS()
         {
             OutputDoc.Text = AesInterpreter.PrintAST_DFS(InputDoc.Text);
-            OnPropertyChanged("outputDoc");
+            OnPropertyChanged("OutputDoc");
         }
 
         private void PrintASTObjects()
         {
             OutputDoc.Text = AesInterpreter.GetASTObjectsAsString(InputDoc.Text);
-            OnPropertyChanged("outputDoc");
+            OnPropertyChanged("OutputDoc");
         }
 
         protected override void OnPropertyChanged(string propertyName)
