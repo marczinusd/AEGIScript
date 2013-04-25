@@ -12,21 +12,6 @@ using ICSharpCode.AvalonEdit.Document;
 
 namespace AEGIScript.GUI.ViewModel
 {
-    /// <summary>
-    ///     Eventargs for continuous output of the interpreter
-    ///     Should consider the performance before actual use
-    /// </summary>
-    class InterpreterProgressChangedArgs : ProgressChangedEventArgs
-    {
-        public InterpreterProgressChangedArgs(int progressPercentage, object userState, StringBuilder currentOutput) 
-                : base(progressPercentage, userState)
-        {
-            CurrentOutput = currentOutput;
-        }
-
-        public StringBuilder CurrentOutput { get; set; }
-    }
-
     internal class EditorViewModel : ViewModelBase
     {
         public EditorViewModel()
@@ -39,18 +24,23 @@ namespace AEGIScript.GUI.ViewModel
             InputDoc = new TextDocument();
             OutputDoc = new TextDocument();
             ImmediateDoc = new TextDocument();
-            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(750)};
-            _timer.Tick += _timer_Tick;
+            Timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(750)};
+            Timer.Tick += _timer_Tick;
         }
 
         void AesInterpreter_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             CurrentProgress = e.ProgressPercentage;
+            var args = e as InterpreterProgressChangedArgs;
+            if (args != null)
+                OutputDoc.Text = args.CurrentOutput;
+            OnPropertyChanged("OutputDoc");
             OnPropertyChanged("CurrentProgress");
         }
 
         void _timer_Tick(object sender, EventArgs e)
         {
+            /*
             if (!TaskRunning)
             {
                 return;
@@ -65,6 +55,7 @@ namespace AEGIScript.GUI.ViewModel
                 OutputDoc.Text = OutputDoc.Text + ".";
             }
             OnPropertyChanged("OutputDoc");
+             * */
         }
 
         public TextDocument OutputDoc { get; set; }
@@ -78,7 +69,7 @@ namespace AEGIScript.GUI.ViewModel
         private List<CancellationToken> CancelTokens { get; set; } 
         private CancellationTokenSource CTokenS { get; set; }
         private Boolean TaskRunning { get; set; }
-        private DispatcherTimer _timer { get; set; }
+        private DispatcherTimer Timer { get; set; }
 
         public DelegateCommand BuildCommand { get; private set; }
         public DelegateCommand OpenCommand { get; private set; }
@@ -193,12 +184,13 @@ namespace AEGIScript.GUI.ViewModel
                 OutputDoc.Text = "Working";
                 OnPropertyChanged("OutputDoc");
                 TaskRunning = true;
-                _timer.Start();
+                Timer.Start();
                 OnRunning(this, new EventArgs());
-                int TaskId = 12345;
-                AsyncOperation op = AsyncOperationManager.CreateOperation(TaskId);
-                var T = Task.Factory.StartNew(() => RunParallel(source, CToken, op), CToken)
-                                    .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
+                // wat
+                var TaskId = 12345;
+                var op = AsyncOperationManager.CreateOperation(TaskId);
+                Task.Factory.StartNew(() => RunParallel(source, CToken, op), CToken)
+                            .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 
@@ -206,7 +198,7 @@ namespace AEGIScript.GUI.ViewModel
         {
             Clear();
             TaskRunning = false;
-            _timer.Stop();
+            Timer.Stop();
             OnFinished(this, new EventArgs());
             OutputDoc.Text = AesInterpreter.Output.ToString();
             OnPropertyChanged("OutputDoc");
@@ -226,11 +218,11 @@ namespace AEGIScript.GUI.ViewModel
                 OutputDoc.Text = "Working";
                 OnPropertyChanged("OutputDoc");
                 TaskRunning = true;
-                _timer.Start();
+                Timer.Start();
                 OnRunning(this, new EventArgs());
                 AsyncOperation op = AsyncOperationManager.CreateOperation(null);
-                var T = Task.Factory.StartNew(() => RunParallel(source, CToken, op), CToken)
-                                    .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
+                Task.Factory.StartNew(() => RunParallel(source, CToken, op), CToken)
+                            .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
                 
             }
         }
@@ -298,7 +290,7 @@ namespace AEGIScript.GUI.ViewModel
             {
                 CTokenS.Cancel();
                 TaskRunning = false;
-                _timer.Stop();
+                Timer.Stop();
                 OnFinished(this, new EventArgs());
                 OutputDoc.Text = "Canceled";
                 OnPropertyChanged("OutputDoc");

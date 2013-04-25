@@ -58,7 +58,7 @@
             <ColumnDefinition Width="18*"/>
         </Grid.ColumnDefinitions>
         <Border BorderBrush="#41B1E1" Grid.Column="8" Grid.Row="2" Grid.RowSpan="3" BorderThickness="0,0,1,0" Margin="0,20,10,10"/>
-        <Border BorderBrush="#41B1E1" Grid.Column="9" Grid.Row="3" Grid.RowSpan="1" BorderThickness="0,1,0,1" Margin="0,0,3,0" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
+        <Border BorderBrush="#41B1E1" Grid.Column="9" Grid.Row="3" Grid.RowSpan="1" BorderThickness="1,1,1,0" Margin="0,0,3,0" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
         <Border BorderBrush="#41B1E1" Grid.Column="9" Grid.Row="4" Grid.RowSpan="1" BorderThickness="1,0,1,0" Margin="0,0,3,10" SnapsToDevicePixels="True" UseLayoutRounding="True" />
         <Menu Name="menu" HorizontalAlignment="Stretch" Height="26" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="11" Margin="0,2,0,3">
             <MenuItem  Header="FILE" FontWeight="ExtraLight" Margin="40,0,0,0" FontSize="16">

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using AEGIScript.Lang;
 using AEGIScript.Lang.Evaluation;
 using AEGIScript.Lang.FunCalls;
@@ -14,6 +13,21 @@ using Antlr.Runtime.Tree;
 
 namespace AEGIScript.GUI.Model
 {
+    /// <summary>
+    ///     Eventargs for continuous output of the interpreter
+    ///     Should consider the performance before actual use
+    /// </summary>
+    class InterpreterProgressChangedArgs : ProgressChangedEventArgs
+    {
+        public InterpreterProgressChangedArgs(int progressPercentage, object userState, String currentOutput)
+            : base(progressPercentage, userState)
+        {
+            CurrentOutput = currentOutput;
+        }
+
+        public String CurrentOutput { get; set; }
+    }
+
 
     internal class Interpreter
     {
@@ -21,10 +35,10 @@ namespace AEGIScript.GUI.Model
         private readonly Random _rand = new Random();
         private readonly Scope _scope = new Scope();
         private readonly Dictionary<CommonTree, DfsHelper> _visitHelper = new Dictionary<CommonTree, DfsHelper>();
-        private DateTime _beginTime;
-        private int _treeDepth;
         private AsyncOperation _async;
+        private DateTime _beginTime;
         private Boolean _hasAsync;
+        private int _treeDepth;
 
         public Interpreter()
         {
@@ -43,6 +57,8 @@ namespace AEGIScript.GUI.Model
         private aegiscriptLexer Lexer { get; set; }
         private CommonTokenStream Tokens { get; set; }
         private aegiscriptParser Parser { get; set; }
+        private int CurrentNode { get; set; }
+        private int AllNodes { get; set; }
         public StringBuilder Output { get; private set; }
         public event EventHandler<PrintEventArgs> Print;
         public event ProgressChangedEventHandler ProgressChanged;
@@ -98,9 +114,6 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="node"></param>
         /// <returns>String representation for debug purposes</returns>
-        /// TODO: 
-        /// - Remove string as a return value, should increase performance
-        /// by a big margin
         private void Walk(ASTNode node)
         {
             switch (node.ActualType)
@@ -149,32 +162,31 @@ namespace AEGIScript.GUI.Model
 
             // can't really determine where the problem came from
             // ANTLR suppresses errors during parsing and lexing
-            if (Lexer.NumberOfSyntaxErrors > 0)
-            {
-                //Print(this, new PrintEventArgs("Lexical error!"));
-                Output.Append("Lexical error!");
-            }
-            if (Parser.NumberOfSyntaxErrors > 0)
-            {
-                //Print(this, new PrintEventArgs("Syntax error!"));
-                Output.Append("Syntax error!");
-            }
+            CheckANTLRErrors();
             Walk(ret.Tree);
         }
 
         public void WalkParallel(String source, CancellationToken token, AsyncOperation async)
         {
-            _async = async;
             _hasAsync = true;
+            _async = async;
+            Token = token;
             Output.Clear();
             _scope.Clear();
             SetParser(source);
-            Token = token;
             Token.ThrowIfCancellationRequested();
             AstParserRuleReturnScope<CommonTree, IToken> ret = Parser.program();
-
-            // can't really determine where the problem came from
-            // ANTLR suppresses errors during parsing and lexing
+            CheckANTLRErrors();
+            Walk(ret.Tree);
+            _hasAsync = false;
+        }
+        /// <summary>
+        ///     Trivial checks to ANTLR's output --
+        ///     can't really determine where the problem came from
+        //      ANTLR suppresses errors during parsing and lexing
+        /// </summary>
+        private void CheckANTLRErrors()
+        {
             if (Lexer.NumberOfSyntaxErrors > 0)
             {
                 //Print(this, new PrintEventArgs("Lexical error!"));
@@ -185,8 +197,6 @@ namespace AEGIScript.GUI.Model
                 //Print(this, new PrintEventArgs("Syntax error!"));
                 Output.Append("Syntax error!");
             }
-            Walk(ret.Tree);
-            _hasAsync = false;
         }
 
         private void OnProgressChanged(ProgressChangedEventArgs e)
@@ -204,25 +214,16 @@ namespace AEGIScript.GUI.Model
         private void Walk(BeginNode node)
         {
             _beginTime = DateTime.Now;
-
+            AllNodes = node.Children.Count;
             for (int i = 0; i < node.Children.Count; i++)
             {
+                CurrentNode = i;
                 ASTNode n = node.Children[i];
                 try
                 {
                     Token.ThrowIfCancellationRequested();
                     Walk(n);
-                    // posts current progress to ViewModel
-                    if (_hasAsync)
-                    {
-                        int Progress = (100 * (i + 1)/node.Children.Count);
-                        _async.Post(o =>
-                            {
-                                var e = o as ProgressChangedEventArgs;
-                                OnProgressChanged(e);
-                            }, 
-                        new ProgressChangedEventArgs(Progress, _async.UserSuppliedState));
-                    }
+                    ReportProgress();
                 }
                 catch (OperationCanceledException)
                 {
@@ -230,14 +231,41 @@ namespace AEGIScript.GUI.Model
                 }
                 catch (Exception ex)
                 {
-                    // crashes here if the exception raised is not a built-in type
                     PrintFun(ex.Message);
                 }
             }
+            ReportCompletionTime();
+        }
+
+
+        private void ReportCompletionTime()
+        {
             TimeSpan elapsedTime = DateTime.Now - _beginTime;
             double asDouble = Math.Truncate(elapsedTime.TotalSeconds*10000)/10000;
-            Output.Append("\nSuccessfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
-                          " second(s).");
+            Output.Insert(0, "Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
+                             " second(s). \n\n");
+            //Output.Append("Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
+            //" second(s). \n");
+        }
+
+
+        /// <summary>
+        ///     Runs an async progress report
+        /// </summary>
+        private void ReportProgress()
+        {
+            if (_hasAsync)
+            {
+                int progress = (100*(CurrentNode + 1)/AllNodes);
+                _async.Post
+                (o =>
+                    {
+                        var e = o as ProgressChangedEventArgs;
+                        OnProgressChanged(e);
+                    },
+                    new InterpreterProgressChangedArgs(progress, _async.UserSuppliedState, Output.ToString())
+                );
+            }
         }
 
         /// <summary>
@@ -440,29 +468,18 @@ namespace AEGIScript.GUI.Model
             {
                 throw new Exception("RUNTIME ERROR! \n Undefined function call at line " + node.Line + " \n");
             }
-            /*
-            if (_helper.Contains(node.FunName))
-            {
-
-            }
-            var b = new StringBuilder();
-            for (int i = 1; i < node.Children.Count; i++)
-            {
-                b.Append(node.Children[i] + " ");
-            }
-            throw new Exception("RUNTIME ERROR! \n Undefined function call to: " + node.FunName + "\n" +
-                                "with args: " + b);
-             * */
         }
 
         private void PrintFun(TermNode node)
         {
             Output.Append(node + "\n");
+            ReportProgress();
         }
 
         private void PrintFun(String message)
         {
             Output.Append(message);
+            ReportProgress();
         }
 
 
@@ -877,6 +894,8 @@ namespace AEGIScript.GUI.Model
             DepthFirstDescent(Parser.program().Tree, 0, ref builder, ref depth, ref end);
             return builder.ToString();
         }
+
+
 
         private class DfsHelper
         {
