@@ -86,6 +86,24 @@ namespace AEGIScript.IO
             return lines;
         }
 
+        public static String ReadWKT(string path)
+        {
+            StringBuilder builder = new StringBuilder();
+            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        builder.AppendLine(reader.ReadLine());
+                    }
+                    reader.Close();
+                }
+                stream.Close();
+            }
+            return builder.ToString();
+        }
+
         public static bool isValidPath(string path)
         {
             return path.Contains(".aes") && File.Exists(path);

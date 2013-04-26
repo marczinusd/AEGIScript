@@ -52,6 +52,10 @@ namespace AEGIScript.Lang.Evaluation
                 case "ARRAY":
                     node = new ArrayNode(tree, content) {ActualType = ASTNode.Type.ARRAY};
                     return node;
+
+                case "FIELD_ACCESS":
+                    node = new FieldAccessNode(tree, content) { ActualType =  ASTNode.Type.FIELDACCESS };
+                    return node;
                 case "ACCESS":
                     node = new ArrAccessNode(tree, (tree.Children[0] as CommonTree).Text)
                         {

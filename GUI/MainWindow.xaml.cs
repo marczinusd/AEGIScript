@@ -122,22 +122,39 @@ namespace AEGIScript.GUI
 
         private void InitKeywords()
         {
-            _keywords.Add("for");
-            _keywords.Add("new");
-            _keywords.Add("while");
-            _keywords.Add("begin");
-            _keywords.Add("end");
-            _keywords.Add("true");
-            _keywords.Add("false");
-            _keywords.Add("endif");
-            _keywords.Add("print");
-            _keywords.Add("len");
-            _keywords.Add("append");
+            _keywords.Add("Append");
+            _keywords.Add("Count");
+            _keywords.Add("Read");
+            _keywords.Add("Boundary");
+            _keywords.Add("ConvexHull");
+            _keywords.Add("Envelope");
+            _keywords.Add("Centroid");
+            _keywords.Add("Clone");
+            _keywords.Add("Dimension");
+            _keywords.Add("DimensionType");
+            _keywords.Add("Name");
+            _keywords.Add("ReferenceSystem");
+            _keywords.Add("IsValid");
+            _keywords.Add("IsSimple");
+            _keywords.Add("IsEmpty");
+            _keywords.Add("Center");
+            _keywords.Add("Crosses");
+            _keywords.Add("Disjoint");
+            _keywords.Add("Expand");
+            _keywords.Add("Distance");
+            _keywords.Add("Overlaps");
+            _keywords.Add("Touches");
+            _keywords.Add("Within");
+            _keywords.Add("Intersects");
+            _keywords.Add("Maximum");
+            _keywords.Add("Minimum");
+            _keywords.Add("IsPlanar");
+            _keywords.Add("Dimension");
         }
 
         private void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
         {
-            if (e.Text == " ")
+            if (e.Text == ".")
             {
                 _completionWindow = new CompletionWindow(textEditor.TextArea);
                 IList<ICompletionData> data = _completionWindow.CompletionList.CompletionData;

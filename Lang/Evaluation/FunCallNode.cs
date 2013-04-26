@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using Antlr.Runtime.Tree;
+using ELTE.AEGIS.IO;
+using ELTE.AEGIS.IO.GeoTiff;
+using ELTE.AEGIS.IO.Shapefile;
+
 
 namespace AEGIScript.Lang.Evaluation
 {
@@ -21,6 +26,7 @@ namespace AEGIScript.Lang.Evaluation
         public TermNode ReturnValue { get; set; }
         public string FunName { get; private set; }
         public FunCallAttributes Attributes { get; set; }
+        public List<TermNode> ResolvedArgs { get; set; } 
 
         public Boolean MatchesSignature(List<Type> types)
         {
@@ -31,6 +37,15 @@ namespace AEGIScript.Lang.Evaluation
             return !types.Where((t, i) => t != Attributes.Signature[i]).Any();
         }
 
+        public virtual void Call(List<TermNode> args, Type caller)
+        {
+            ResolvedArgs = args;
+        }
+
+        public String BadCallMessage()
+        {
+            return "RUNTIME ERROR! Invalid function call with name: " + FunName + " at line: " + Line;
+        }
 
         public class FunCallAttributes
         {
@@ -76,23 +91,5 @@ namespace AEGIScript.Lang.Evaluation
             public Boolean IsVoid { get; private set; }
             public Boolean NoParam { get; private set; }
         }
-    }
-
-    internal class AEGISReaderNode : FunCallNode
-    {
-        public AEGISReaderNode(CommonTree tree, String path) : base(tree)
-        {
-            Attributes = new FunCallAttributes(Type.GEOMETRY);
-            _path = path;
-        }
-
-        public AEGISReaderNode(CommonTree tree, Stream stream) : base(tree)
-        {
-            Attributes = new FunCallAttributes(Type.GEOMETRY);
-            _stream = stream;
-        }
-
-        private String _path;
-        private Stream _stream;
     }
 }

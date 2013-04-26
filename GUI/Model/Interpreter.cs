@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Threading;
 using AEGIScript.Lang;
@@ -10,7 +11,15 @@ using AEGIScript.Lang.FunCalls;
 using AEGIScript.Lang.Scoping;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
+using ELTE.AEGIS.Core;
+using ELTE.AEGIS.Core.Geometry;
 
+
+/*  TODO:
+ *      - Fix negation operator and negative numbers
+ *      - Add nested function calls as expressions
+ *      - Implement all AEGIS classes
+ */
 namespace AEGIScript.GUI.Model
 {
     internal class Interpreter
@@ -27,6 +36,7 @@ namespace AEGIScript.GUI.Model
         public Interpreter()
         {
             Output = new StringBuilder();
+            _constructors = new HashSet<string> {"Array", "ShapeFileReader", "TiffReader", "GeoTiffReader"};
         }
 
 
@@ -38,9 +48,11 @@ namespace AEGIScript.GUI.Model
         private CommonTokenStream Tokens { get; set; }
         private aegiscriptParser Parser { get; set; }
 
+        private HashSet<String> _constructors; 
         private CancellationToken Token { get; set; }
         private int CurrentNode { get; set; }
         private int AllNodes { get; set; }
+        private bool ErrorsIgnored;
         public StringBuilder Output { get; private set; }
         public event EventHandler<PrintEventArgs> Print;
         public event ProgressChangedEventHandler ProgressChanged;
@@ -58,27 +70,6 @@ namespace AEGIScript.GUI.Model
             try
             {
                 output = Parser.program().Tree.ToStringTree();
-            } // check for parsing errors
-            catch (Exception ex)
-            {
-                output = ex.Message;
-            }
-            return output;
-        }
-
-
-        /// <summary>
-        ///     Interpret presented source file
-        /// </summary>
-        /// <param name="source">source to be interpreted</param>
-        /// <returns>Program output</returns>
-        public string Interpret(string source)
-        {
-            string output;
-            SetParser(source);
-            try
-            {
-                output = PrettyPrinting(Parser.program().Tree);
             } // check for parsing errors
             catch (Exception ex)
             {
@@ -127,11 +118,13 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="source">Source code to interpret</param>
         /// <param name="fromImmediate">True, if we need to interpret immediate code</param>
+        /// <param name="errorsIgnored">If true, the interpreter will keep on running after a runtime error</param>
         /// <returns>Interpreter output</returns>
         public void Walk(string source, bool fromImmediate = false)
         {
             Output.Clear();
             Token = new CancellationToken();
+            ErrorsIgnored = true;
             if (!fromImmediate)
             {
                 _scope.Clear();
@@ -146,11 +139,12 @@ namespace AEGIScript.GUI.Model
             Walk(ret.Tree);
         }
 
-        public void WalkParallel(String source, CancellationToken token, AsyncOperation async)
+        public void WalkParallel(String source, CancellationToken token, AsyncOperation async, bool errorsIgnored = false)
         {
             _hasAsync = true;
             _async = async;
             Token = token;
+            ErrorsIgnored = errorsIgnored;
             Output.Clear();
             _scope.Clear();
             SetParser(source);
@@ -188,6 +182,26 @@ namespace AEGIScript.GUI.Model
         }
 
         /// <summary>
+        ///     Interpret presented source file
+        /// </summary>
+        /// <param name="source">source to be interpreted</param>
+        /// <returns>Program output</returns>
+        public string Interpret(string source)
+        {
+            string output;
+            SetParser(source);
+            try
+            {
+                output = PrettyPrinting(Parser.program().Tree);
+            } // check for parsing errors
+            catch (Exception ex)
+            {
+                output = ex.Message;
+            }
+            return output;
+        }
+
+        /// <summary>
         ///     The soul of the interpreter -- walks the AST and interprets it
         /// </summary>
         /// <param name="node">Root of the AST</param>
@@ -212,10 +226,14 @@ namespace AEGIScript.GUI.Model
                 catch (Exception ex)
                 {
                     PrintLineFun(ex.Message);
+
+                    if (!ErrorsIgnored)
+                        return;
                 }
             }
             ReportCompletionTime();
         }
+
 
 
         private void ReportCompletionTime()
@@ -224,8 +242,6 @@ namespace AEGIScript.GUI.Model
             double asDouble = Math.Truncate(elapsedTime.TotalSeconds*10000)/10000;
             Output.Insert(0, "Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
                              " second(s). \n\n");
-            //Output.Append("Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
-            //" second(s). \n");
         }
 
 
@@ -455,6 +471,8 @@ namespace AEGIScript.GUI.Model
             }
         }
 
+
+
         private void PrintFun(TermNode node)
         {
             Output.Append(node);
@@ -509,6 +527,10 @@ namespace AEGIScript.GUI.Model
             {
                 resolvedArgs.Add(Resolve(fun.Children[i], currentType));
             }
+            if (_constructors.Contains(fun.FunName))
+            {
+                return Construct(resolvedArgs, fun);
+            }
             switch (fun.FunName)
             {
                 case "rand":
@@ -544,11 +566,111 @@ namespace AEGIScript.GUI.Model
                         throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
                                             "\n");
                     }
+                case "ReadWKT":
+                    IReferenceSystem referenceSystem = GeometryFactory.ReferenceSystem;
+                    if (resolvedArgs[0].ActualType == ASTNode.Type.STRING && File.Exists((resolvedArgs[0] as StringNode).Value) && resolvedArgs.Count == 1)
+                    {
+                        try
+                        {
+                            String read = IO.SourceIO.ReadWKT((resolvedArgs[0] as StringNode).Value);
+                            var res = ELTE.AEGIS.IO.GeometryConverter.ToGeometry(read, referenceSystem);
+                            return new IGeometryNode(res);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("RUNTIME ERROR!\nWell-known text read failed with message: " + ex.Message + "\n at line: " + fun.Line);
+                        }
+                        
+                    }
+                    else throw new Exception(fun.BadCallMessage());
+
                 default:
                     throw new Exception(
                         "RUNTIME ERROR!\n You are either calling a non-existing function, or trying to " +
                         "use a void functions return value.");
             }
+        }
+
+        private TermNode Construct(List<TermNode> args, FunCallNode fun)
+        {
+            switch (args.Count)
+            {
+                case 0:
+                    switch (fun.FunName)
+                    {
+                        case "Array":
+                            return new ArrayNode();
+                        default:
+                            throw new Exception("RUNTIME ERROR! \n Array has no constructors that take " + args.Count +
+                                                " arguments. Line " + fun.Line);
+                    }
+                case 1:
+                    switch (fun.FunName)
+                    {
+                        case "TiffReader":
+                            if (args[0].ActualType == ASTNode.Type.STRING)
+                            {
+                                try
+                                {
+                                    return new TiffReaderNode((args[0] as StringNode).Value);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception("RUNTIME ERROR! \nTiffReader error: " + ex.Message + " on line " + fun.Line);
+                                }
+                                
+                            }
+                            throw new Exception("RUNTIME ERROR! \n TiffReader has no constructor that takes type: "
+                                                     + args[0].ActualType + " as a parameter. Line " + fun.Line);
+                        case "ShapeFileReader":
+                            if (args[0].ActualType == ASTNode.Type.STRING)
+                            {
+                                try
+                                {
+                                    return new ShapeFileReaderNode((args[0] as StringNode).Value);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception("RUNTIME ERROR! \nShapeFileReader error: " + ex.Message + " on line " + fun.Line);
+                                }
+                            }
+                            throw new Exception("RUNTIME ERROR! \n ShapeFileReader has no constructor that takes type: " 
+                                                     + args[0].ActualType + " as a parameter. Line "  + fun.Line);
+                        default:
+                            throw new Exception("RUNTIME ERROR! \n Unknown error in construct");
+
+                    }
+                default:
+                    throw new Exception("RUNTIME ERROR! \n" + fun.FunName + " has no constructor that takes " + args.Count + " arguments!" );
+
+            }
+        }
+
+        private TermNode Resolve(FieldAccessNode node)
+        {
+            if (node.Children[0].ActualType != ASTNode.Type.VAR)
+            {
+                return Resolve(node.Children[0], ASTNode.Type.GEOMETRY);
+            }
+
+            var First = node.Children[0] as VarNode;
+            var Resolved = Resolve(First, ASTNode.Type.GEOMETRY);
+            for (int i = 1; i < node.Children.Count; i++)
+            {
+                Resolved = ResolveGenFun(Resolved, node.Children[i] as FunCallNode);
+            }
+            return Resolved;
+        }
+
+        private TermNode ResolveGenFun(TermNode caller, FunCallNode node)
+        {
+            var args = new List<TermNode>();
+            for (int i = 1; i < node.Children.Count; i++)
+            {
+                args.Add(Resolve(node.Children[i], ASTNode.Type.GEOMETRY));
+            }
+            node.ResolvedArgs = args;
+            return caller.CallFun(node);
         }
 
         /// <summary>
@@ -586,6 +708,8 @@ namespace AEGIScript.GUI.Model
                     return Resolve(toRes as ArrAccessNode, currentType);
                 case ASTNode.Type.FUNCALL:
                     return Resolve(toRes as FunCallNode, currentType);
+                case ASTNode.Type.FIELDACCESS:
+                    return Resolve(toRes as FieldAccessNode);
                 default:
                     throw new Exception("Unable to resolve ASTNode " + toRes.ActualType.ToString() + " " +
                                         toRes.Parent.ActualType.ToString());

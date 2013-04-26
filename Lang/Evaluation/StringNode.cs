@@ -27,6 +27,27 @@ namespace AEGIScript.Lang.Evaluation
             return "";
         }
 
+        public override TermNode CallFun(FunCallNode func)
+        {
+            switch (func.FunName)
+            {
+                case "Count":
+                    if (func.ResolvedArgs.Count == 0)
+                    {
+                        return Count();
+                    }
+                    else throw new Exception(func.BadCallMessage());
+                default:
+                    throw new Exception(func.BadCallMessage());
+            }
+        }
+
+
+        private IntNode Count()
+        {
+            return new IntNode(Value.Length);
+        }
+
         public string Value { get; private set; }
 
         public override string ToString()

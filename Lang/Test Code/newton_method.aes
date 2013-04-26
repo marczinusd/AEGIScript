@@ -1,6 +1,6 @@
 begin
-	Precision = 30;
-	Data = 215123;
+	Precision = 200;
+	Data = 2151230;
 	Counter = 0;
 	p = 1.0;
 	while Counter < Precision:

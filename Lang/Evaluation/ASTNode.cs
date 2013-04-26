@@ -30,9 +30,22 @@ namespace AEGIScript.Lang.Evaluation
             INT,
             STRING,
             BOOL,
+
             GEOMETRY,
+            GEOMREADER,
+            TIFFREADER,
+            GEOTIFFREADER,
+            SHAPEFREADER,
+
+            ENVELOPE,
+            COORDINATE,
+            GEOMETRYDIM,
+            METADATA,
+            REFERENCESYS,
+
             DOUBLE,
             PRINT,
+            FIELDACCESS,
         }
 
 

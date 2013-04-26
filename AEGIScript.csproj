@@ -125,6 +125,7 @@
     <Compile Include="Lang\Evaluation\ASTNodeFactory.cs" />
     <Compile Include="Lang\Evaluation\BeginNode.cs" />
     <Compile Include="Lang\Evaluation\BooleanNode.cs" />
+    <Compile Include="Lang\Evaluation\FieldAccessNode.cs" />
     <Compile Include="Lang\Exceptions\InvalidOperationException.cs" />
     <Compile Include="Lang\Exceptions\LangException.cs" />
     <Compile Include="Lang\Evaluation\DoubleNode.cs" />

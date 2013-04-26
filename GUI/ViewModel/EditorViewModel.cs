@@ -236,7 +236,7 @@ namespace AEGIScript.GUI.ViewModel
             }
         }
 
-        private void RunParallel(String source, CancellationToken token, AsyncOperation operation)
+        private void RunParallel(String source, CancellationToken token, AsyncOperation operation, bool errorsIgnored = false)
         {
             AesInterpreter.WalkParallel(source, token, operation);
         }
