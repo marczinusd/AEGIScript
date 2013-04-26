@@ -26,11 +26,14 @@ namespace AEGIScript.GUI.ViewModel
             ImmediateDoc = new TextDocument();
             Timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(750)};
             Timer.Tick += _timer_Tick;
+            ProgressPercentage = "IDLE";
         }
 
         void AesInterpreter_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             CurrentProgress = e.ProgressPercentage;
+            ProgressPercentage = CurrentProgress.ToString() + "%";
+            OnPropertyChanged("ProgressPercentage");
             var args = e as InterpreterProgressChangedArgs;
             if (args != null)
                 OutputDoc.Text = args.CurrentOutput;
@@ -68,7 +71,6 @@ namespace AEGIScript.GUI.ViewModel
         private CancellationToken CToken { get; set; }
         private List<CancellationToken> CancelTokens { get; set; } 
         private CancellationTokenSource CTokenS { get; set; }
-        private Boolean TaskRunning { get; set; }
         private DispatcherTimer Timer { get; set; }
 
         public DelegateCommand BuildCommand { get; private set; }
@@ -85,6 +87,8 @@ namespace AEGIScript.GUI.ViewModel
         public DelegateCommand PrintASTTokensCommand { get; private set; }
         public DelegateCommand PrintASTObjectsCommand { get; private set; }
         public DelegateCommand WalkCommand { get; private set; }
+        public Boolean TaskRunning { get; set; }
+        public String ProgressPercentage { get; set; }
 
         private Interpreter AesInterpreter { get; set; }
 
@@ -184,6 +188,7 @@ namespace AEGIScript.GUI.ViewModel
                 OutputDoc.Text = "Working";
                 OnPropertyChanged("OutputDoc");
                 TaskRunning = true;
+                OnPropertyChanged("TaskRunning");
                 Timer.Start();
                 OnRunning(this, new EventArgs());
                 // wat
@@ -198,6 +203,9 @@ namespace AEGIScript.GUI.ViewModel
         {
             Clear();
             TaskRunning = false;
+            OnPropertyChanged("TaskRunning");
+            ProgressPercentage = "IDLE";
+            OnPropertyChanged("ProgressPercentage");
             Timer.Stop();
             OnFinished(this, new EventArgs());
             OutputDoc.Text = AesInterpreter.Output.ToString();
@@ -218,6 +226,7 @@ namespace AEGIScript.GUI.ViewModel
                 OutputDoc.Text = "Working";
                 OnPropertyChanged("OutputDoc");
                 TaskRunning = true;
+                OnPropertyChanged("TaskRunning");
                 Timer.Start();
                 OnRunning(this, new EventArgs());
                 AsyncOperation op = AsyncOperationManager.CreateOperation(null);
@@ -263,6 +272,12 @@ namespace AEGIScript.GUI.ViewModel
             OnSaveAsFile(this, new SaveFileEventArgs(InputDoc, ""));
         }
 
+        public void UpdateSession(String path)
+        {
+            CurrentFilePath = path;
+            HasOpenFile = true;
+        }
+
 
         /// <summary>
         ///     Runs the ANTLR grammar on the source file -- output is an AST at the moment
@@ -290,6 +305,9 @@ namespace AEGIScript.GUI.ViewModel
             {
                 CTokenS.Cancel();
                 TaskRunning = false;
+                OnPropertyChanged("TaskRunning");
+                ProgressPercentage = "IDLE";
+                OnPropertyChanged("ProgressPercentage");
                 Timer.Stop();
                 OnFinished(this, new EventArgs());
                 OutputDoc.Text = "Canceled";

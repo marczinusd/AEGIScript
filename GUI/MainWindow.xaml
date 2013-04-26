@@ -3,7 +3,7 @@
         xmlns:a="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        Title="AEGIScript editor" Height="550" Width="800"
+        Title="AEGIScript editor" Height="580" Width="800"
         >
     <Window.Resources>
         <ResourceDictionary>
@@ -42,7 +42,8 @@
             <RowDefinition Height="32*"/>
             <RowDefinition Height="284*"/>
             <RowDefinition Height="31*"/>
-            <RowDefinition Height="142*"/>
+            <RowDefinition Height="100*"/>
+            <RowDefinition Height="25*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="28"/>
@@ -59,8 +60,8 @@
         </Grid.ColumnDefinitions>
         <Border BorderBrush="#41B1E1" Grid.Column="8" Grid.Row="2" Grid.RowSpan="3" BorderThickness="0,0,1,0" Margin="0,20,10,10"/>
         <Border BorderBrush="#41B1E1" Grid.Column="9" Grid.Row="3" Grid.RowSpan="1" BorderThickness="1,1,1,0" Margin="0,0,3,0" SnapsToDevicePixels="True" UseLayoutRounding="True"/>
-        <Border BorderBrush="#41B1E1" Grid.Column="9" Grid.Row="4" Grid.RowSpan="1" BorderThickness="1,0,1,0" Margin="0,0,3,10" SnapsToDevicePixels="True" UseLayoutRounding="True" />
-        <Menu Name="menu" HorizontalAlignment="Stretch" Height="26" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="11" Margin="0,2,0,3">
+        <Border BorderBrush="#41B1E1" Grid.Column="9" Grid.Row="4" Grid.RowSpan="1" BorderThickness="1,0,1,1" Margin="0,0,3,10" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+        <Menu Name="menu" HorizontalAlignment="Stretch" Height="26" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="11" Margin="0,2,0,0">
             <MenuItem  Header="FILE" FontWeight="ExtraLight" Margin="40,0,0,0" FontSize="16">
                 <MenuItem InputGestureText="Ctrl+N" Header="New file" Command="{Binding NewCommand}" FontSize="14"/>
                 <Separator/>
@@ -73,7 +74,7 @@
             </MenuItem>
             <Separator/>
             <MenuItem Header="BUILD" FontWeight="Thin" FontSize="16">
-                <MenuItem InputGestureText="F5" Header="Run"  Command="{Binding BuildCommand}" FontSize="14"/>
+                <MenuItem InputGestureText="F5" Header="Run"  Command="{Binding RunCommand}" FontSize="14"/>
             </MenuItem>
             <MenuItem Header="DEBUG" FontWeight="Thin" Margin="20,0,0,0" FontSize="16">
                 <MenuItem InputGestureText="F6" Header="Print AST" Command="{Binding PrintASTCommand}" FontSize="14"/>
@@ -116,8 +117,10 @@
                 Grid.Column="8" Grid.Row="1" Background="Transparent" BorderBrush="Transparent" Margin="10,0">
             <Image Source="{StaticResource ResourceKey=ConsImg}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
         </Button>
-        <ProgressBar Grid.Column="9" Grid.Row="1" Name="ProgressBar" Value="{Binding CurrentProgress}" 
-                     Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="Auto" Margin="0,10" />
+        <StackPanel Grid.Column="9" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center" Width="100" HorizontalAlignment="Stretch">
+            <Controls:ProgressRing IsActive="{Binding TaskRunning}"  />
+        </StackPanel>
+        
         <avalonEdit:TextEditor HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="0" Margin="10"
             xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
             Name="textEditor"
@@ -154,5 +157,14 @@
             HorizontalScrollBarVisibility="Hidden"
             VerticalScrollBarVisibility="Hidden"
          />
+        <StatusBar Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="11">
+            <StatusBarItem HorizontalAlignment="Right">
+                <Label FontFamily="SegoeUI" FontSize="9" FontWeight="ExtraLight" Content="{Binding ProgressPercentage}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <ProgressBar Name="ProgressBar" Value="{Binding CurrentProgress}" 
+                      HorizontalAlignment="Right" Width="250" VerticalAlignment="Stretch"  Margin="0,0,40,0" />
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Controls:MetroWindow>

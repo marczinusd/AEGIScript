@@ -31,8 +31,8 @@ namespace AEGIScript.Lang.Evaluation
 
         public override string ToString()
         {
-            return '"' + Value + '"';
-            //return Value;
+            //return '"' + Value + '"';
+            return Value;
         }
     }
 }

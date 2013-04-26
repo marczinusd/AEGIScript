@@ -30,6 +30,7 @@ namespace AEGIScript.Lang.Evaluation
             INT,
             STRING,
             BOOL,
+            GEOMETRY,
             DOUBLE,
             PRINT,
         }

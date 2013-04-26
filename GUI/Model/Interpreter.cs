@@ -13,22 +13,6 @@ using Antlr.Runtime.Tree;
 
 namespace AEGIScript.GUI.Model
 {
-    /// <summary>
-    ///     Eventargs for continuous output of the interpreter
-    ///     Should consider the performance before actual use
-    /// </summary>
-    class InterpreterProgressChangedArgs : ProgressChangedEventArgs
-    {
-        public InterpreterProgressChangedArgs(int progressPercentage, object userState, String currentOutput)
-            : base(progressPercentage, userState)
-        {
-            CurrentOutput = currentOutput;
-        }
-
-        public String CurrentOutput { get; set; }
-    }
-
-
     internal class Interpreter
     {
         private readonly FunCallHelper _helper = new FunCallHelper();
@@ -45,18 +29,16 @@ namespace AEGIScript.GUI.Model
             Output = new StringBuilder();
         }
 
-        private CancellationToken Token { get; set; }
-        //private AsyncOperation Operation { get; set; }
-        //private AsyncCallback Callback { get; set; }
 
         /// <summary>
         ///     Fields provided by ANTLR
         /// </summary>
         private ANTLRStringStream SStream { get; set; }
-
         private aegiscriptLexer Lexer { get; set; }
         private CommonTokenStream Tokens { get; set; }
         private aegiscriptParser Parser { get; set; }
+
+        private CancellationToken Token { get; set; }
         private int CurrentNode { get; set; }
         private int AllNodes { get; set; }
         public StringBuilder Output { get; private set; }
@@ -96,8 +78,6 @@ namespace AEGIScript.GUI.Model
             SetParser(source);
             try
             {
-                //CommonTree root = parser.program().Tree.GetChild(0) as CommonTree;
-                //output = root.Token.ToString() + " " + root.Text;
                 output = PrettyPrinting(Parser.program().Tree);
             } // check for parsing errors
             catch (Exception ex)
@@ -231,7 +211,7 @@ namespace AEGIScript.GUI.Model
                 }
                 catch (Exception ex)
                 {
-                    PrintFun(ex.Message);
+                    PrintLineFun(ex.Message);
                 }
             }
             ReportCompletionTime();
@@ -288,7 +268,7 @@ namespace AEGIScript.GUI.Model
             }
             catch (Exception ex)
             {
-                PrintFun(ex.Message);
+                PrintLineFun(ex.Message);
             }
         }
 
@@ -464,6 +444,11 @@ namespace AEGIScript.GUI.Model
                 TermNode term = Resolve(node.Children[2], ASTNode.Type.BOOL);
                 arr.Elements.Add(term);
             }
+            else if (node.FunName == "printline" && node.Children.Count == 2)
+            {
+                TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
+                PrintLineFun(resolved);
+            }
             else
             {
                 throw new Exception("RUNTIME ERROR! \n Undefined function call at line " + node.Line + " \n");
@@ -472,7 +457,19 @@ namespace AEGIScript.GUI.Model
 
         private void PrintFun(TermNode node)
         {
+            Output.Append(node);
+            ReportProgress();
+        }
+
+        private void PrintLineFun(TermNode node)
+        {
             Output.Append(node + "\n");
+            ReportProgress();
+        }
+
+        private void PrintLineFun(String message)
+        {
+            Output.Append(message + "\n");
             ReportProgress();
         }
 

@@ -90,6 +90,7 @@ namespace AEGIScript.GUI
             {
                 SourceIO.SaveToFile(e.Doc.Text, saveDial.FileName);
                 FileChangedButton.Background = Brushes.Transparent;
+                _viewModel.UpdateSession(saveDial.FileName);
             } // check for file saved and signal VM
             else
             {
@@ -126,9 +127,12 @@ namespace AEGIScript.GUI
             _keywords.Add("while");
             _keywords.Add("begin");
             _keywords.Add("end");
-            _keywords.Add("var");
             _keywords.Add("true");
             _keywords.Add("false");
+            _keywords.Add("endif");
+            _keywords.Add("print");
+            _keywords.Add("len");
+            _keywords.Add("append");
         }
 
         private void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
