@@ -26,4 +26,13 @@ namespace AEGIScript.Lang.Evaluation
             return Value.ToString(CultureInfo.InvariantCulture);
         }
     }
+
+    class NegativeNode : TermNode
+    {
+        public NegativeNode(CommonTree tree, String content)
+            : base(tree, content)
+        {
+            ActualType = Type.Negative;
+        }
+    }
 }

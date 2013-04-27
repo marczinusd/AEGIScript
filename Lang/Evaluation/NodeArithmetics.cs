@@ -67,6 +67,22 @@ namespace AEGIScript.Lang.Evaluation
                     }
                 case ASTNode.Type.Array:
                     return Op(left as ArrayNode, right, op);
+                case ASTNode.Type.Negation:
+                    if (right.ActualType == ASTNode.Type.Bool)
+                    {
+                        return new BooleanNode(!(((BooleanNode) right).Value));
+                    }
+                    else throw new Exception(BuildExMessage(left, right, op.ToString()));
+                case ASTNode.Type.Negative:
+                    switch (right.ActualType)
+                    {
+                        case ASTNode.Type.Int:
+                            return new IntNode(-(((IntNode) right).Value));
+                        case ASTNode.Type.Double:
+                            return new DoubleNode(-(((DoubleNode) right).Value));
+                        default:
+                            throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    }
                 default:
                     throw new Exception(BuildExMessage(left, right, op.ToString()));
             }
@@ -165,6 +181,11 @@ namespace AEGIScript.Lang.Evaluation
                 default:
                     throw new Exception(BuildExMessage(left, right, op.ToString()));
             }
+        }
+
+        public static TermNode Op(NegationNode left, BooleanNode right, ArithmeticNode.Operator op)
+        {
+            return new BooleanNode(!right.Value);
         }
 
 

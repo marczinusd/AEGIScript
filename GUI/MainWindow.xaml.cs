@@ -35,7 +35,6 @@ namespace AEGIScript.GUI
             textEditor.SyntaxHighlighting = ResourceLoader.LoadHighlightingDefinition("AEGIScript.xshd");
 
             _viewModel.OnOpenFile += viewModel_OnOpenFile;
-            _viewModel.OnSaveFile += viewModel_OnSaveFile;
             _viewModel.OnSaveAsFile += viewModel_OnSaveAsFile;
             _viewModel.OnFileUpToDate += viewModel_OnFileUpToDate;
             _viewModel.OnNewFile += viewModel_OnNewFile;
@@ -98,10 +97,6 @@ namespace AEGIScript.GUI
             }
         }
 
-        private void viewModel_OnSaveFile(object sender, EventArgs e)
-        {
-            FileChangedButton.Background = Brushes.Transparent;
-        }
 
         private void viewModel_OnOpenFile(object sender, EventArgs e)
         {

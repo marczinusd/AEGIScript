@@ -89,7 +89,16 @@ namespace AEGIScript.Lang.Evaluation
                 case "'/'":
                 case "'%'":
                 case "'mod'":
+                    if (tokenType == "'-'" && tree.Children.Count == 1)
+                    {
+                        node = new NegativeNode(tree, tree.Text) {ActualType = ASTNode.Type.Negative, Dispose = false};
+                        return node;
+                    }
                     node = new ArithmeticNode(tree, tree.Text) {ActualType = ASTNode.Type.Arith, Dispose = false};
+                    return node;
+
+                case "'not'":
+                    node = new NegationNode(tree, tree.Text) {ActualType = ASTNode.Type.Negation, Dispose = false};
                     return node;
 
                 case "'='":

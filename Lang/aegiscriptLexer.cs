@@ -32,7 +32,6 @@ namespace
 
 {
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "3.5")]
-[System.CLSCompliant(false)]
 public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 {
 	public const int EOF=-1;

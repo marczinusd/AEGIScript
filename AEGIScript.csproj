@@ -163,9 +163,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Antlr3 Include="Lang\aegiscript.g3">
-      <Generator>MSBuild:Compile</Generator>
-    </Antlr3>
     <AntlrTokens Include="Lang\aegiscript2.tokens">
       <Generator>MSBuild:Compile</Generator>
     </AntlrTokens>

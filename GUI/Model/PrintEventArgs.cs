@@ -14,7 +14,6 @@ namespace AEGIScript.GUI.Model
         {
             Message = toPrint;
         }
-
         public TermNode Node { get; private set; }
         public String Message { get; private set; }
 
@@ -23,4 +22,5 @@ namespace AEGIScript.GUI.Model
             return Node != null ? Node.ToString() : Message;
         }
     }
+
 }

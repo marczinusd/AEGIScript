@@ -45,6 +45,8 @@ namespace AEGIScript.Lang.Evaluation
 
             Print,
             FieldAccess,
+            Negation,
+            Negative
         }
 
 

@@ -6,7 +6,7 @@ namespace AEGIScript.Lang.Evaluation
 {
     class IntArrayNode : ArrayNode
     {
-        private List<int> Content = new List<int>();
+        private readonly List<int> Content = new List<int>();
 
         public IntArrayNode(CommonTree tree, String content) : base(tree, content)
         {
@@ -17,18 +17,11 @@ namespace AEGIScript.Lang.Evaluation
         {
             foreach (ASTNode elem in Children)
             {
-                try
-                {
-                    Content.Add(Int32.Parse(elem.Tree.Text));
-                }
-                catch (Exception ex)
-                {
-                    throw ex; // todo: implement invalid element exception
-                }
+                Content.Add(Int32.Parse(elem.Tree.Text));
             }
         }
 
-        public int this[int key]
+        public new int this[int key]
         {
             get
             {
@@ -40,10 +33,7 @@ namespace AEGIScript.Lang.Evaluation
                 {
                     throw new IndexOutOfRangeException();
                 }
-                else
-                {
-                    Content[key] = value;
-                }
+                Content[key] = value;
             }
         }
     }

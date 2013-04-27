@@ -20,7 +20,6 @@ namespace AEGIScript.GUI.ViewModel
             SetCommands();
             AesInterpreter = new Interpreter();
             CancelTokens = new List<CancellationToken>();
-            AesInterpreter.Print += Aes_Interpreter_Print;
             AesInterpreter.ProgressChanged += AesInterpreter_ProgressChanged;
             InputDoc = new TextDocument();
             OutputDoc = new TextDocument();
@@ -94,20 +93,12 @@ namespace AEGIScript.GUI.ViewModel
         private Interpreter AesInterpreter { get; set; }
 
         public event EventHandler OnOpenFile;
-        public event EventHandler<SaveFileEventArgs> OnSaveFile;
         public event EventHandler<EventArgs> OnNewFile;
         public event EventHandler<SaveFileEventArgs> OnSaveAsFile;
         public event EventHandler<EventArgs> OnFileUpToDate;
         public event EventHandler OnClose;
         public event EventHandler OnRunning;
         public event EventHandler OnFinished;
-
-
-        private void Aes_Interpreter_Print(object sender, PrintEventArgs e)
-        {
-            OutputDoc.Text = OutputDoc.Text + e + "\n";
-            OnPropertyChanged("outputDoc");
-        }
 
         private void SetCommands()
         {

@@ -52,9 +52,7 @@ namespace AEGIScript.GUI.Model
         private int AllNodes { get; set; }
         private bool _errorsIgnored;
         public StringBuilder Output { get; private set; }
-        public event EventHandler<PrintEventArgs> Print;
         public event ProgressChangedEventHandler ProgressChanged;
-        public event ProgressChangedEventHandler InterpretFinished;
 
         /// <summary>
         ///     Runs the source file through the lexer and the parser and then returns the AST representation.
@@ -282,7 +280,7 @@ namespace AEGIScript.GUI.Model
         {
             try
             {
-                var begin = new BeginNode(tree);
+                var begin = new BeginNode(tree); // negation 52 negative 30
                 Walk(begin);
             }
             catch (OperationCanceledException)
@@ -708,10 +706,24 @@ namespace AEGIScript.GUI.Model
                     return Resolve(toRes as FunCallNode);
                 case ASTNode.Type.FieldAccess:
                     return Resolve(toRes as FieldAccessNode);
+                case ASTNode.Type.Negation:
+                    return Resolve(toRes as NegationNode);
+                case ASTNode.Type.Negative:
+                    return Resolve(toRes as NegativeNode);
                 default:
                     throw new Exception("Unable to resolve ASTNode " + toRes.ActualType.ToString() + " " +
                                         toRes.Parent.ActualType.ToString());
             }
+        }
+
+        private TermNode Resolve(NegationNode node)
+        {
+            return NodeArithmetics.Op(node, Resolve(node.Children[0]), ArithmeticNode.Operator.ADD);
+        }
+
+        private TermNode Resolve(NegativeNode node)
+        {
+            return NodeArithmetics.Op(node, Resolve(node.Children[0]), ArithmeticNode.Operator.ADD);
         }
 
         /// <summary>

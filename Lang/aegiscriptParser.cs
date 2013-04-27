@@ -36,7 +36,6 @@ namespace
 
 {
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "3.5")]
-[System.CLSCompliant(false)]
 public partial class aegiscriptParser : Antlr.Runtime.Parser
 {
 	internal static readonly string[] tokenNames = new string[] {
@@ -129,7 +128,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	public override string[] TokenNames { get { return aegiscriptParser.tokenNames; } }
 	public override string GrammarFileName { get { return "D:\\Eclipse\\aegiscript_live\\aegiscript.g"; } }
 
-	int HIDDEN = Hidden;
+	//int HIDDEN = Hidden;
 
 	partial void OnCreated();
 	partial void EnterRule(string ruleName, int ruleIndex);

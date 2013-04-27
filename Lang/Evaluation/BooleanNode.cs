@@ -31,4 +31,13 @@ namespace AEGIScript.Lang.Evaluation
             return Value.ToString();
         }
     }
+
+    class NegationNode : TermNode
+    {
+        public NegationNode(CommonTree tree, string content)
+            : base(tree, content)
+        {
+            ActualType = Type.Negation;
+        }
+    }
 }
