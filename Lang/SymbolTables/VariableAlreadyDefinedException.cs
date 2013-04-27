@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AEGIScript.Lang.Scoping;
 
 namespace AEGIScript.Lang.SymbolTables
 {
@@ -20,6 +15,6 @@ namespace AEGIScript.Lang.SymbolTables
             }
         }
 
-        private string VarName;
+        private readonly string VarName;
     }
 }

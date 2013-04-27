@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Antlr.Runtime.Tree;
+using System;
 using System.Text;
-using System.Threading.Tasks;
-using Antlr.Runtime.Tree;
 
 namespace AEGIScript.Lang.Evaluation
 {

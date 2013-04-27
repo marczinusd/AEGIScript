@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -32,7 +33,7 @@ namespace AEGIScript.GUI.ViewModel
         void AesInterpreter_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             CurrentProgress = e.ProgressPercentage;
-            ProgressPercentage = CurrentProgress.ToString() + "%";
+            ProgressPercentage = CurrentProgress.ToString(CultureInfo.InvariantCulture) + "%";
             OnPropertyChanged("ProgressPercentage");
             var args = e as InterpreterProgressChangedArgs;
             if (args != null)
@@ -142,8 +143,8 @@ namespace AEGIScript.GUI.ViewModel
                 return;
             }
 
-            string Pattern = @"begin [.\n]* end;";
-            var reg = new Regex(Pattern);
+            const string pattern = @"begin [.\n]* end;";
+            var reg = new Regex(pattern);
             if (reg.IsMatch(ImmediateDoc.Text))
             {
                 AesInterpreter.Walk(ImmediateDoc.Text, true);
@@ -178,12 +179,9 @@ namespace AEGIScript.GUI.ViewModel
             if (!TaskRunning)
             {
                 Clear();
-                //CancellationTokenSource ctoks = new CancellationTokenSource();
                 CTokenS = new CancellationTokenSource();
                 CToken = CTokenS.Token;
                 CancelTokens.Add(CTokenS.Token);
-                // causes task to be stuck -- why?
-                //AesInterpreter = new Interpreter();
                 String source = InputDoc.Text;
                 OutputDoc.Text = "Working";
                 OnPropertyChanged("OutputDoc");
@@ -236,7 +234,7 @@ namespace AEGIScript.GUI.ViewModel
             }
         }
 
-        private void RunParallel(String source, CancellationToken token, AsyncOperation operation, bool errorsIgnored = false)
+        private void RunParallel(String source, CancellationToken token, AsyncOperation operation)
         {
             AesInterpreter.WalkParallel(source, token, operation);
         }
@@ -282,7 +280,6 @@ namespace AEGIScript.GUI.ViewModel
         /// <summary>
         ///     Runs the ANTLR grammar on the source file -- output is an AST at the moment
         /// </summary>
-        /// TODO: Move to model
         private void RunBuildOnSource()
         {
             OutputDoc.Text = AesInterpreter.Interpret(InputDoc.Text);
@@ -359,9 +356,11 @@ namespace AEGIScript.GUI.ViewModel
             OnPropertyChanged("OutputDoc");
         }
 
+// ReSharper disable RedundantOverridenMember
         protected override void OnPropertyChanged(string propertyName)
         {
             base.OnPropertyChanged(propertyName);
         }
+// ReSharper restore RedundantOverridenMember
     }
 }

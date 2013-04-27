@@ -1,9 +1,6 @@
 ﻿using Antlr.Runtime.Tree;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AEGIScript.Lang.Evaluation
 {
@@ -13,10 +10,10 @@ namespace AEGIScript.Lang.Evaluation
 
         public IntArrayNode(CommonTree tree, String content) : base(tree, content)
         {
-            ParseArrayElements(content);
+            ParseArrayElements();
         }
 
-        private void ParseArrayElements(String content)
+        private void ParseArrayElements()
         {
             foreach (ASTNode elem in Children)
             {

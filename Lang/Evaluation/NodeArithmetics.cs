@@ -15,57 +15,57 @@ namespace AEGIScript.Lang.Evaluation
         {
             switch (left.ActualType)
             {
-                case ASTNode.Type.INT:
+                case ASTNode.Type.Int:
                     switch(right.ActualType)
                     {
-                        case ASTNode.Type.INT:
+                        case ASTNode.Type.Int:
                             return Op(left as IntNode, right as IntNode, op);
-                        case ASTNode.Type.STRING:
+                        case ASTNode.Type.String:
                             return Op(left as IntNode, right as StringNode, op);
-                        case ASTNode.Type.BOOL:
+                        case ASTNode.Type.Bool:
                             return Op(left as IntNode, right as BooleanNode, op);
-                        case ASTNode.Type.DOUBLE:
+                        case ASTNode.Type.Double:
                             return Op(left as IntNode, right as DoubleNode, op);
                         default:
                             throw new Exception(BuildExMessage(left, right, op.ToString()));
                     }
-                case ASTNode.Type.STRING:
+                case ASTNode.Type.String:
                     switch (right.ActualType)
                     {
-                        case ASTNode.Type.INT:
+                        case ASTNode.Type.Int:
                             return Op(left as StringNode, right as IntNode, op);
-                        case ASTNode.Type.STRING:
+                        case ASTNode.Type.String:
                             return Op(left as StringNode, right as StringNode, op);
-                        case ASTNode.Type.BOOL:
+                        case ASTNode.Type.Bool:
                             return Op(left as StringNode, right as BooleanNode, op);
-                        case ASTNode.Type.DOUBLE:
+                        case ASTNode.Type.Double:
                             return Op(left as StringNode, right as DoubleNode, op);
                         default:
                             throw new Exception(BuildExMessage(left, right, op.ToString()));
                     }
-                case ASTNode.Type.BOOL:
+                case ASTNode.Type.Bool:
                     switch (right.ActualType)
                     {
-                        case ASTNode.Type.BOOL:
+                        case ASTNode.Type.Bool:
                             return Op(left as BooleanNode, right as BooleanNode, op);
                         default:
                             throw new Exception(BuildExMessage(left, right, op.ToString()));
                     }
-                case ASTNode.Type.DOUBLE:
+                case ASTNode.Type.Double:
                     switch (right.ActualType)
                     {
-                        case ASTNode.Type.INT:
+                        case ASTNode.Type.Int:
                             return Op(left as DoubleNode, right as IntNode, op);
-                        case ASTNode.Type.STRING:
+                        case ASTNode.Type.String:
                             return Op(left as DoubleNode, right as StringNode, op);
-                        case ASTNode.Type.BOOL:
+                        case ASTNode.Type.Bool:
                             return Op(left as DoubleNode, right as BooleanNode, op);
-                        case ASTNode.Type.DOUBLE:
+                        case ASTNode.Type.Double:
                             return Op(left as DoubleNode, right as DoubleNode, op);
                         default:
                             throw new Exception(BuildExMessage(left, right, op.ToString()));
                     }
-                case ASTNode.Type.ARRAY:
+                case ASTNode.Type.Array:
                     return Op(left as ArrayNode, right, op);
                 default:
                     throw new Exception(BuildExMessage(left, right, op.ToString()));

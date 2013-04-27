@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using AEGIScript.Lang;
 using AEGIScript.Lang.Evaluation;
-using AEGIScript.Lang.FunCalls;
 using AEGIScript.Lang.Scoping;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
@@ -24,7 +23,6 @@ namespace AEGIScript.GUI.Model
 {
     internal class Interpreter
     {
-        private readonly FunCallHelper _helper = new FunCallHelper();
         private readonly Random _rand = new Random();
         private readonly Scope _scope = new Scope();
         private readonly Dictionary<CommonTree, DfsHelper> _visitHelper = new Dictionary<CommonTree, DfsHelper>();
@@ -52,7 +50,7 @@ namespace AEGIScript.GUI.Model
         private CancellationToken Token { get; set; }
         private int CurrentNode { get; set; }
         private int AllNodes { get; set; }
-        private bool ErrorsIgnored;
+        private bool _errorsIgnored;
         public StringBuilder Output { get; private set; }
         public event EventHandler<PrintEventArgs> Print;
         public event ProgressChangedEventHandler ProgressChanged;
@@ -89,22 +87,22 @@ namespace AEGIScript.GUI.Model
         {
             switch (node.ActualType)
             {
-                case ASTNode.Type.ASSIGN:
+                case ASTNode.Type.Assign:
                     Walk(node as AssignNode);
                     break;
-                case ASTNode.Type.WHILE:
+                case ASTNode.Type.While:
                     Walk(node as WhileNode);
                     break;
-                case ASTNode.Type.IF:
+                case ASTNode.Type.If:
                     Walk(node as IfNode);
                     break;
-                case ASTNode.Type.ELIF:
+                case ASTNode.Type.Elif:
                     Walk(node as ElsifNode);
                     break;
-                case ASTNode.Type.ELSE:
+                case ASTNode.Type.Else:
                     Walk(node as ElseNode);
                     break;
-                case ASTNode.Type.FUNCALL:
+                case ASTNode.Type.FunCall:
                     Walk(node as FunCallNode);
                     break;
                 default:
@@ -118,13 +116,12 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="source">Source code to interpret</param>
         /// <param name="fromImmediate">True, if we need to interpret immediate code</param>
-        /// <param name="errorsIgnored">If true, the interpreter will keep on running after a runtime error</param>
         /// <returns>Interpreter output</returns>
         public void Walk(string source, bool fromImmediate = false)
         {
             Output.Clear();
             Token = new CancellationToken();
-            ErrorsIgnored = true;
+            _errorsIgnored = true;
             if (!fromImmediate)
             {
                 _scope.Clear();
@@ -144,7 +141,7 @@ namespace AEGIScript.GUI.Model
             _hasAsync = true;
             _async = async;
             Token = token;
-            ErrorsIgnored = errorsIgnored;
+            _errorsIgnored = errorsIgnored;
             Output.Clear();
             _scope.Clear();
             SetParser(source);
@@ -194,6 +191,11 @@ namespace AEGIScript.GUI.Model
             {
                 output = PrettyPrinting(Parser.program().Tree);
             } // check for parsing errors
+            catch (InvalidOperationException ex)
+            {
+                output = "RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message + ", TargetSite: " +
+                         ex.TargetSite + ", Source: " + ex.Source;
+            }
             catch (Exception ex)
             {
                 output = ex.Message;
@@ -223,11 +225,18 @@ namespace AEGIScript.GUI.Model
                 {
                     throw;
                 }
+                catch (InvalidOperationException ex)
+                {
+                    PrintLineFun("RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message + ", TargetSite: " + ex.TargetSite + ", Source: " + ex.Source);
+
+                    if (!_errorsIgnored)
+                        return;
+                }
                 catch (Exception ex)
                 {
                     PrintLineFun(ex.Message);
 
-                    if (!ErrorsIgnored)
+                    if (!_errorsIgnored)
                         return;
                 }
             }
@@ -282,6 +291,10 @@ namespace AEGIScript.GUI.Model
                 _scope.Clear();
                 Output.Append("OPERATION CANCELLED BY USER.");
             }
+            catch (InvalidOperationException ex)
+            {
+                PrintLineFun("RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message+ ", TargetSite: " + ex.TargetSite + ", Source: " + ex.Source);
+            }
             catch (Exception ex)
             {
                 PrintLineFun(ex.Message);
@@ -295,11 +308,11 @@ namespace AEGIScript.GUI.Model
         /// <returns>Assigned variable as string</returns>
         private void Walk(AssignNode node)
         {
-            TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
-            if (node.Children[0].ActualType == ASTNode.Type.ARRACC)
+            TermNode resolved = Resolve(node.Children[1]);
+            if (node.Children[0].ActualType == ASTNode.Type.ArrAcc)
             {
                 var accessor = node.Children[0] as ArrAccessNode;
-                if (accessor != null && _scope.GetVar(accessor.Symbol).ActualType != ASTNode.Type.ARRAY)
+                if (accessor != null && _scope.GetVar(accessor.Symbol).ActualType != ASTNode.Type.Array)
                 {
                     throw new Exception("RUNTIME ERROR!\n You are either trying to use an accessor on a " +
                                         "non-array object, or using an out-of-range index at line " + node.Line + "\n");
@@ -309,15 +322,15 @@ namespace AEGIScript.GUI.Model
                 TermNode resolvedInd;
                 for (int i = 1; i < accessor.Children.Count - 1; i++)
                 {
-                    resolvedInd = Resolve(accessor.Children[i], ASTNode.Type.BOOL);
-                    if (resolvedInd.ActualType != ASTNode.Type.INT)
+                    resolvedInd = Resolve(accessor.Children[i]);
+                    if (resolvedInd.ActualType != ASTNode.Type.Int)
                     {
                         throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
                                             node.Line + "\n");
                     }
                     int ind = (resolvedInd as IntNode).Value;
                     if (ind >= 0 && ind < actualArray.Elements.Count
-                        && actualArray[ind].ActualType == ASTNode.Type.ARRAY)
+                        && actualArray[ind].ActualType == ASTNode.Type.Array)
                     {
                         actualArray = actualArray[ind] as ArrayNode;
                     }
@@ -328,8 +341,8 @@ namespace AEGIScript.GUI.Model
                                             "\n");
                     }
                 }
-                resolvedInd = Resolve(accessor.Children[accessor.Children.Count - 1], ASTNode.Type.BOOL);
-                if (resolvedInd.ActualType != ASTNode.Type.INT)
+                resolvedInd = Resolve(accessor.Children[accessor.Children.Count - 1]);
+                if (resolvedInd.ActualType != ASTNode.Type.Int)
                 {
                     throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
                                         node.Line + "\n");
@@ -367,7 +380,7 @@ namespace AEGIScript.GUI.Model
         /// <returns>Statement result as string</returns>
         private void Walk(IfNode node)
         {
-            var cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode;
+            var cond = Resolve(node.Children[0]) as BooleanNode;
             if (cond.Value)
             {
                 _scope.NewScope();
@@ -386,7 +399,7 @@ namespace AEGIScript.GUI.Model
                 _scope.NewScope();
                 foreach (ElsifNode cl in node.Clauses)
                 {
-                    cond = Resolve(cl.Children[0], ASTNode.Type.BOOL) as BooleanNode;
+                    cond = Resolve(cl.Children[0]) as BooleanNode;
                     if (cond.Value)
                     {
                         Walk(cl);
@@ -411,10 +424,7 @@ namespace AEGIScript.GUI.Model
             _scope.NewScope();
             foreach (ASTNode n in node.Children)
             {
-                if (n != node.Children[0])
-                {
-                    Walk(n);
-                }
+                Walk(n);
             }
             _scope.RemoveScope();
         }
@@ -427,7 +437,7 @@ namespace AEGIScript.GUI.Model
         private void Walk(WhileNode node)
         {
             var builder = new StringBuilder();
-            var cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode;
+            var cond = Resolve(node.Children[0]) as BooleanNode;
             while (cond.Value)
             {
                 _scope.NewScope();
@@ -437,7 +447,7 @@ namespace AEGIScript.GUI.Model
                     Walk(node.Children[i]);
                 }
                 _scope.RemoveScope();
-                cond = Resolve(node.Children[0], ASTNode.Type.BOOL) as BooleanNode; // resolve it every time
+                cond = Resolve(node.Children[0]) as BooleanNode; // resolve it every time
             }
         }
 
@@ -450,19 +460,19 @@ namespace AEGIScript.GUI.Model
         {
             if (node.FunName == "print" && node.Children.Count == 2)
             {
-                TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
+                TermNode resolved = Resolve(node.Children[1]);
                 PrintFun(resolved);
                 // should return something meaningful
             }
             else if (node.FunName == "append" && node.Children.Count == 3)
             {
-                var arr = Resolve(node.Children[1], ASTNode.Type.BOOL) as ArrayNode;
-                TermNode term = Resolve(node.Children[2], ASTNode.Type.BOOL);
+                var arr = Resolve(node.Children[1]) as ArrayNode;
+                TermNode term = Resolve(node.Children[2]);
                 arr.Elements.Add(term);
             }
             else if (node.FunName == "printline" && node.Children.Count == 2)
             {
-                TermNode resolved = Resolve(node.Children[1], ASTNode.Type.BOOL);
+                TermNode resolved = Resolve(node.Children[1]);
                 PrintLineFun(resolved);
             }
             else
@@ -502,30 +512,28 @@ namespace AEGIScript.GUI.Model
         ///     Resolves an arithmetic node recursively
         /// </summary>
         /// <param name="toRes">Node to be resolved</param>
-        /// <param name="currentType">Current strongest type</param>
         /// <returns>Type of the arithmetic expression</returns>
         /// TODO: 
         /// - eliminate second parameter, because it's useless in the current 
         /// implementation of resolve
-        private TermNode Resolve(ArithmeticNode toRes, ASTNode.Type currentType)
+        private TermNode Resolve(ArithmeticNode toRes)
         {
-            TermNode left = Resolve(toRes.Children[0], currentType);
-            TermNode right = Resolve(toRes.Children[1], currentType);
-            return NodeArithmetics.Op(left, right, toRes.op);
+            TermNode left = Resolve(toRes.Children[0]);
+            TermNode right = Resolve(toRes.Children[1]);
+            return NodeArithmetics.Op(left, right, toRes.Op);
         }
 
         /// <summary>
         ///     Function to resolve FunCall expressions -- experimental
         /// </summary>
         /// <param name="fun"></param>
-        /// <param name="currentType"></param>
         /// <returns></returns>
-        private TermNode Resolve(FunCallNode fun, ASTNode.Type currentType)
+        private TermNode Resolve(FunCallNode fun)
         {
             var resolvedArgs = new List<TermNode>();
             for (int i = 1; i < fun.Children.Count; i++)
             {
-                resolvedArgs.Add(Resolve(fun.Children[i], currentType));
+                resolvedArgs.Add(Resolve(fun.Children[i]));
             }
             if (_constructors.Contains(fun.FunName))
             {
@@ -540,35 +548,26 @@ namespace AEGIScript.GUI.Model
                     }
                     if (fun.Children.Count == 2)
                     {
-                        if (resolvedArgs[0].ActualType == ASTNode.Type.INT)
+                        if (resolvedArgs[0].ActualType == ASTNode.Type.Int)
                         {
                             return new IntNode(_rand.Next((resolvedArgs[0] as IntNode).Value));
                         }
-                        else
-                        {
-                            throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
-                                                "\n");
-                        }
-                    }
-                    else
-                    {
                         throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
                                             "\n");
                     }
+                    throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
+                                        "\n");
                 case "len":
                     TermNode arg = resolvedArgs[0];
-                    if (fun.Children.Count == 2 && arg.ActualType == ASTNode.Type.ARRAY)
+                    if (fun.Children.Count == 2 && arg.ActualType == ASTNode.Type.Array)
                     {
                         return new IntNode((arg as ArrayNode).Elements.Count);
                     }
-                    else
-                    {
-                        throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
-                                            "\n");
-                    }
+                    throw new Exception("RUNTIME ERROR!\n Function called with invalid args at line" + fun.Line +
+                                        "\n");
                 case "ReadWKT":
                     IReferenceSystem referenceSystem = GeometryFactory.ReferenceSystem;
-                    if (resolvedArgs[0].ActualType == ASTNode.Type.STRING && File.Exists((resolvedArgs[0] as StringNode).Value) && resolvedArgs.Count == 1)
+                    if (resolvedArgs[0].ActualType == ASTNode.Type.String && File.Exists((resolvedArgs[0] as StringNode).Value) && resolvedArgs.Count == 1)
                     {
                         try
                         {
@@ -582,7 +581,7 @@ namespace AEGIScript.GUI.Model
                         }
                         
                     }
-                    else throw new Exception(fun.BadCallMessage());
+                    throw new Exception(fun.BadCallMessage());
 
                 default:
                     throw new Exception(
@@ -608,7 +607,7 @@ namespace AEGIScript.GUI.Model
                     switch (fun.FunName)
                     {
                         case "TiffReader":
-                            if (args[0].ActualType == ASTNode.Type.STRING)
+                            if (args[0].ActualType == ASTNode.Type.String)
                             {
                                 try
                                 {
@@ -623,7 +622,7 @@ namespace AEGIScript.GUI.Model
                             throw new Exception("RUNTIME ERROR! \n TiffReader has no constructor that takes type: "
                                                      + args[0].ActualType + " as a parameter. Line " + fun.Line);
                         case "ShapeFileReader":
-                            if (args[0].ActualType == ASTNode.Type.STRING)
+                            if (args[0].ActualType == ASTNode.Type.String)
                             {
                                 try
                                 {
@@ -648,18 +647,18 @@ namespace AEGIScript.GUI.Model
 
         private TermNode Resolve(FieldAccessNode node)
         {
-            if (node.Children[0].ActualType != ASTNode.Type.VAR)
+            if (node.Children[0].ActualType != ASTNode.Type.Var)
             {
-                return Resolve(node.Children[0], ASTNode.Type.GEOMETRY);
+                return Resolve(node.Children[0]);
             }
 
-            var First = node.Children[0] as VarNode;
-            var Resolved = Resolve(First, ASTNode.Type.GEOMETRY);
+            var first = node.Children[0] as VarNode;
+            var resolved = Resolve(first);
             for (int i = 1; i < node.Children.Count; i++)
             {
-                Resolved = ResolveGenFun(Resolved, node.Children[i] as FunCallNode);
+                resolved = ResolveGenFun(resolved, node.Children[i] as FunCallNode);
             }
-            return Resolved;
+            return resolved;
         }
 
         private TermNode ResolveGenFun(TermNode caller, FunCallNode node)
@@ -667,7 +666,7 @@ namespace AEGIScript.GUI.Model
             var args = new List<TermNode>();
             for (int i = 1; i < node.Children.Count; i++)
             {
-                args.Add(Resolve(node.Children[i], ASTNode.Type.GEOMETRY));
+                args.Add(Resolve(node.Children[i]));
             }
             node.ResolvedArgs = args;
             return caller.CallFun(node);
@@ -679,36 +678,35 @@ namespace AEGIScript.GUI.Model
         ///     For statement handlng, see the Walk functions
         /// </summary>
         /// <param name="toRes"></param>
-        /// <param name="currentType"></param>
         /// <returns></returns>
-        private TermNode Resolve(ASTNode toRes, ASTNode.Type currentType)
+        private TermNode Resolve(ASTNode toRes)
         {
             switch (toRes.ActualType)
             {
-                case ASTNode.Type.ARITH:
-                    return Resolve(toRes as ArithmeticNode, currentType);
-                case ASTNode.Type.INTVAR:
-                case ASTNode.Type.BOOLVAR:
-                case ASTNode.Type.DOUBLEVAR:
-                case ASTNode.Type.STRINGVAR:
-                case ASTNode.Type.VAR:
-                    return Resolve(toRes as VarNode, currentType);
-                case ASTNode.Type.INT:
-                case ASTNode.Type.STRING:
-                case ASTNode.Type.BOOL:
-                case ASTNode.Type.DOUBLE:
-                    return Resolve(toRes as TermNode, currentType);
-                case ASTNode.Type.ARRAY:
-                    return Resolve(toRes as ArrayNode, currentType);
-                case ASTNode.Type.ASSIGN:
-                    TermNode Resolved = Resolve(toRes.Children[1], ASTNode.Type.BOOL);
-                    _scope.AddVar((toRes.Children[0] as VarNode).Symbol, Resolved);
-                    return Resolved;
-                case ASTNode.Type.ARRACC:
-                    return Resolve(toRes as ArrAccessNode, currentType);
-                case ASTNode.Type.FUNCALL:
-                    return Resolve(toRes as FunCallNode, currentType);
-                case ASTNode.Type.FIELDACCESS:
+                case ASTNode.Type.Arith:
+                    return Resolve(toRes as ArithmeticNode);
+                case ASTNode.Type.Intvar:
+                case ASTNode.Type.Boolvar:
+                case ASTNode.Type.Doublevar:
+                case ASTNode.Type.Stringvar:
+                case ASTNode.Type.Var:
+                    return Resolve(toRes as VarNode);
+                case ASTNode.Type.Int:
+                case ASTNode.Type.String:
+                case ASTNode.Type.Bool:
+                case ASTNode.Type.Double:
+                    return Resolve(toRes as TermNode);
+                case ASTNode.Type.Array:
+                    return Resolve(toRes as ArrayNode);
+                case ASTNode.Type.Assign:
+                    TermNode resolved = Resolve(toRes.Children[1]);
+                    _scope.AddVar((toRes.Children[0] as VarNode).Symbol, resolved);
+                    return resolved;
+                case ASTNode.Type.ArrAcc:
+                    return Resolve(toRes as ArrAccessNode);
+                case ASTNode.Type.FunCall:
+                    return Resolve(toRes as FunCallNode);
+                case ASTNode.Type.FieldAccess:
                     return Resolve(toRes as FieldAccessNode);
                 default:
                     throw new Exception("Unable to resolve ASTNode " + toRes.ActualType.ToString() + " " +
@@ -721,12 +719,11 @@ namespace AEGIScript.GUI.Model
         ///     need to resolve to arrays, so we iterate through them, and then we resolve the last element
         /// </summary>
         /// <param name="toRes"></param>
-        /// <param name="currentType"></param>
         /// <returns></returns>
-        private TermNode Resolve(ArrAccessNode toRes, ASTNode.Type currentType)
+        private TermNode Resolve(ArrAccessNode toRes)
         {
             TermNode ret = _scope.GetVar(toRes.Symbol);
-            if (ret.ActualType != ASTNode.Type.ARRAY)
+            if (ret.ActualType != ASTNode.Type.Array)
             {
                 throw new Exception(
                     "RUNTIME ERROR!\n You are trying to use an accessor on a non-array object at line " + toRes.Line +
@@ -736,17 +733,17 @@ namespace AEGIScript.GUI.Model
             TermNode resolvedInd;
             for (int i = 1; i < toRes.Children.Count - 1; i++)
             {
-                resolvedInd = Resolve(toRes.Children[i], currentType);
-                if (resolvedInd.ActualType != ASTNode.Type.INT)
+                resolvedInd = Resolve(toRes.Children[i]);
+                if (resolvedInd.ActualType != ASTNode.Type.Int)
                 {
                     throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
                                         toRes.Line + "\n");
                 }
-                int Ind = (resolvedInd as IntNode).Value;
-                if (Ind >= 0 && Ind < actualArray.Elements.Count
-                    && actualArray[Ind].ActualType == ASTNode.Type.ARRAY)
+                int ind = (resolvedInd as IntNode).Value;
+                if (ind >= 0 && ind < actualArray.Elements.Count
+                    && actualArray[ind].ActualType == ASTNode.Type.Array)
                 {
-                    actualArray = actualArray[Ind] as ArrayNode;
+                    actualArray = actualArray[ind] as ArrayNode;
                 }
                 else
                 {
@@ -754,26 +751,25 @@ namespace AEGIScript.GUI.Model
                                         "non-array object, or using an out-of-range index at line " + toRes.Line + "\n");
                 }
             }
-            resolvedInd = Resolve(toRes.Children[toRes.Children.Count - 1], currentType);
-            if (resolvedInd.ActualType != ASTNode.Type.INT)
+            resolvedInd = Resolve(toRes.Children[toRes.Children.Count - 1]);
+            if (resolvedInd.ActualType != ASTNode.Type.Int)
             {
                 throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
                                     toRes.Line + "\n");
             }
-            return Resolve(actualArray[(resolvedInd as IntNode).Value], currentType);
+            return Resolve(actualArray[(resolvedInd as IntNode).Value]);
         }
 
         /// <summary>
         ///     Resolves array nodes
         /// </summary>
         /// <param name="toRes">An Array node</param>
-        /// <param name="currentType"></param>
         /// <returns>Node with elements as terms</returns>
-        private TermNode Resolve(ArrayNode toRes, ASTNode.Type currentType)
+        private TermNode Resolve(ArrayNode toRes)
         {
             foreach (ASTNode node in toRes.Children)
             {
-                toRes.Elements.Add(Resolve(node, currentType));
+                toRes.Elements.Add(Resolve(node));
             }
             return toRes;
         }
@@ -782,14 +778,13 @@ namespace AEGIScript.GUI.Model
         ///     Functional sugar -- hides the fact that we only need to resolve the right-hand size
         /// </summary>
         /// <param name="toRes"></param>
-        /// <param name="currentType"></param>
         /// <returns></returns>
-        private TermNode Resolve(AssignNode toRes, ASTNode.Type currentType)
+        private TermNode Resolve(AssignNode toRes)
         {
-            return Resolve(toRes.Children[1], currentType);
+            return Resolve(toRes.Children[1]);
         }
 
-        private TermNode Resolve(TermNode toRes, ASTNode.Type currentType)
+        private TermNode Resolve(TermNode toRes)
         {
             return toRes;
         }
@@ -799,44 +794,27 @@ namespace AEGIScript.GUI.Model
         ///     as TermNodes in all scopes
         /// </summary>
         /// <param name="toRes"></param>
-        /// <param name="currentType"></param>
         /// <returns>Variable's actual value</returns>
-        private TermNode Resolve(VarNode toRes, ASTNode.Type currentType)
+        private TermNode Resolve(VarNode toRes)
         {
             TermNode node;
             switch (toRes.ActualType)
             {
-                case ASTNode.Type.INTVAR:
-                    node = (toRes as IntVarNode).Interpret(_scope);
-                    if (ASTNode.Type.INT > currentType)
-                    {
-                        currentType = ASTNode.Type.INT;
-                    }
+                case ASTNode.Type.Intvar:
+                    node = ((IntVarNode) toRes).Interpret(_scope);
                     return node;
-                case ASTNode.Type.BOOLVAR:
-                    node = (toRes as BoolVarNode).Interpret(_scope);
-                    if (ASTNode.Type.BOOL > currentType)
-                    {
-                        currentType = ASTNode.Type.BOOL;
-                    }
+                case ASTNode.Type.Boolvar:
+                    node = ((BoolVarNode) toRes).Interpret(_scope);
                     return node;
-                case ASTNode.Type.DOUBLEVAR:
-                    node = (toRes as DoubleVarNode).Interpret(_scope);
-                    if (ASTNode.Type.DOUBLE > currentType)
-                    {
-                        currentType = ASTNode.Type.DOUBLE;
-                    }
+                case ASTNode.Type.Doublevar:
+                    node = ((DoubleVarNode) toRes).Interpret(_scope);
                     return node;
-                case ASTNode.Type.STRINGVAR:
-                    node = (toRes as StringVarNode).Interpret(_scope);
-                    if (ASTNode.Type.STRING > currentType)
-                    {
-                        currentType = ASTNode.Type.STRING;
-                    }
+                case ASTNode.Type.Stringvar:
+                    node = ((StringVarNode) toRes).Interpret(_scope);
                     return node;
-                case ASTNode.Type.VAR:
+                case ASTNode.Type.Var:
                     return _scope.GetVar(toRes.Symbol);
-                case ASTNode.Type.ARRAY:
+                case ASTNode.Type.Array:
                     return _scope.GetVar(toRes.Symbol);
                 default:
                     return toRes;
@@ -1008,7 +986,6 @@ namespace AEGIScript.GUI.Model
         public string PrintAST_DFS(string source)
         {
             SetParser(source);
-            //SetTreeDepth(parser.program().Tree);
             int depth = 0;
             int end = 0;
             var builder = new StringBuilder();

@@ -1,10 +1,5 @@
 ﻿using Antlr.Runtime.Tree;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace AEGIScript.Lang.Evaluation
 {
@@ -12,7 +7,7 @@ namespace AEGIScript.Lang.Evaluation
     {
         public IfNode(CommonTree tree, string content) : base(tree)
         {
-            this.ActualType = Type.IF;
+            ActualType = Type.If;
 
             Clauses = new List<ElsifNode>();
             foreach (ASTNode n in Children)
@@ -30,14 +25,13 @@ namespace AEGIScript.Lang.Evaluation
 
         public List<ElsifNode> Clauses { get; set; }
         public ElseNode Else { get; set; }
-        bool Cond;
     }
 
     class ElsifNode : ASTNode
     {
         public ElsifNode(CommonTree tree) : base(tree)
         {
-            this.ActualType = Type.ELIF;
+            ActualType = Type.Elif;
         }
     }
 
@@ -45,7 +39,7 @@ namespace AEGIScript.Lang.Evaluation
     {
         public ElseNode(CommonTree tree) : base(tree)
         {
-            this.ActualType = Type.ELSE;
+            ActualType = Type.Else;
         }
     }
 }

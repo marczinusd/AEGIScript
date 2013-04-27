@@ -18,48 +18,57 @@ namespace AEGIScript.Lang.Evaluation
             switch (tokenType)
             {
                 case "INTEGER":
-                    node = new IntNode(tree, content) {ActualType = ASTNode.Type.INT};
+                    node = new IntNode(tree, content) {ActualType = ASTNode.Type.Int};
                     return node;
 
                 case "FLOAT":
-                    node = new DoubleNode(tree, content) {ActualType = ASTNode.Type.DOUBLE, dispose = false};
+                    node = new DoubleNode(tree, content) {ActualType = ASTNode.Type.Double, Dispose = false};
                     return node;
 
                 case "STRING":
-                    node = new StringNode(tree, content) {ActualType = ASTNode.Type.STRING, dispose = false};
+                    node = new StringNode(tree, content) {ActualType = ASTNode.Type.String, Dispose = false};
                     return node;
 
+
+                //case "'NOT'":
+                //    bool negated = true;
+                //    while (tree.Children != null)
+                //    {
+                //        tree = tree.Children[0] as CommonTree;
+                //        negated = negated ^ true;
+                //    }
+                //    node = new BooleanNode(tree, content) { ActualType = ASTNode.Type.Bool, dispose = false };
                 case "BOOL":
-                    node = new BooleanNode(tree, content) {ActualType = ASTNode.Type.BOOL, dispose = false};
+                    node = new BooleanNode(tree, content) {ActualType = ASTNode.Type.Bool, Dispose = false};
                     return node;
 
                 case "'while'":
-                    node = new WhileNode(tree) {ActualType = ASTNode.Type.WHILE};
+                    node = new WhileNode(tree) {ActualType = ASTNode.Type.While};
                     return node;
 
                 case "'if'":
-                    node = new IfNode(tree, content) {ActualType = ASTNode.Type.IF};
+                    node = new IfNode(tree, content) {ActualType = ASTNode.Type.If};
                     return node;
                 case "'elsif'":
-                    node = new ElsifNode(tree) {ActualType = ASTNode.Type.ELIF};
+                    node = new ElsifNode(tree) {ActualType = ASTNode.Type.Elif};
                     return node;
                 case "'else'":
-                    node = new ElseNode(tree) {ActualType = ASTNode.Type.ELSE};
+                    node = new ElseNode(tree) {ActualType = ASTNode.Type.Else};
                     return node;
                 case "FUNC":
-                    node = new FunCallNode(tree) {ActualType = ASTNode.Type.FUNCALL};
+                    node = new FunCallNode(tree) {ActualType = ASTNode.Type.FunCall};
                     return node;
                 case "ARRAY":
-                    node = new ArrayNode(tree, content) {ActualType = ASTNode.Type.ARRAY};
+                    node = new ArrayNode(tree, content) {ActualType = ASTNode.Type.Array};
                     return node;
 
                 case "FIELD_ACCESS":
-                    node = new FieldAccessNode(tree, content) { ActualType =  ASTNode.Type.FIELDACCESS };
+                    node = new FieldAccessNode(tree, content) { ActualType =  ASTNode.Type.FieldAccess };
                     return node;
                 case "ACCESS":
                     node = new ArrAccessNode(tree, (tree.Children[0] as CommonTree).Text)
                         {
-                            ActualType = ASTNode.Type.ARRACC
+                            ActualType = ASTNode.Type.ArrAcc
                         };
                     return node;
 
@@ -80,17 +89,17 @@ namespace AEGIScript.Lang.Evaluation
                 case "'/'":
                 case "'%'":
                 case "'mod'":
-                    node = new ArithmeticNode(tree, tree.Text) {ActualType = ASTNode.Type.ARITH, dispose = false};
+                    node = new ArithmeticNode(tree, tree.Text) {ActualType = ASTNode.Type.Arith, Dispose = false};
                     return node;
 
                 case "'='":
-                    node = new AssignNode(tree) {ActualType = ASTNode.Type.ASSIGN, dispose = false};
+                    node = new AssignNode(tree) {ActualType = ASTNode.Type.Assign, Dispose = false};
                     return node;
 
                 case "IDENT":
                     // if the current node is the first child of its parent
                     var leftSide = tree.Parent.GetChild(0) as CommonTree == tree;
-                    node = new VarNode(tree, tree.Text, leftSide) {ActualType = ASTNode.Type.VAR, dispose = false};
+                    node = new VarNode(tree, tree.Text) {ActualType = ASTNode.Type.Var, Dispose = false};
                     return node;
                     // Uncomment not to drop certain nodes
                     //default:

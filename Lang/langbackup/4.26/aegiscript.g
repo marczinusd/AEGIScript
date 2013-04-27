@@ -89,14 +89,14 @@ statement
 	|	whileStatement
 	|	ifStatement
 	|	funCallStatement ';'
-//	|	accessorStatement ';'
+	|	accessorStatement ';'
 	;
 
 assignmentStatement
 	:	IDENT '='^ expression ';'
 //	|	IDENT '='^ funCallStatement ';'
 //	| 	IDENT '='^ accessor ';'
-//	|	IDENT '='^ accessorStatement ';'
+	|	IDENT '='^ accessorStatement ';'
 	| 	accessor '='^ expression ';'
 	;
 
@@ -138,7 +138,6 @@ term
 	|	array
 	|	accessor
 	|	funCallStatement
-	|	accessorStatement
 	;
 	
 negation

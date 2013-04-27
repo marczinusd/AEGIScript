@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AEGIScript.GUI.ViewModel
 {
     public class DelegateCommand : ICommand
     {
-        private readonly Action<Object> _Execute; // a tevékenységet végrehajtó lambda-kifejezés
-        private readonly Func<Object, Boolean> _CanExecute; // a tevékenység feltételét ellenőző lambda-kifejezés
+        private readonly Action<Object> _execute; // a tevékenységet végrehajtó lambda-kifejezés
+        private readonly Func<Object, Boolean> _canExecute; // a tevékenység feltételét ellenőző lambda-kifejezés
 
         /// <summary>
         /// Parancs létrehozása.
@@ -30,8 +26,8 @@ namespace AEGIScript.GUI.ViewModel
                 throw new ArgumentNullException("execute");
             }
 
-            _Execute = execute;
-            _CanExecute = canExecute;
+            _execute = execute;
+            _canExecute = canExecute;
         }
 
         /// <summary>
@@ -46,7 +42,7 @@ namespace AEGIScript.GUI.ViewModel
         /// <returns>Igaz, ha a tevékenység végrehajtható.</returns>
         public Boolean CanExecute(Object parameter)
         {
-            return _CanExecute == null ? true : _CanExecute(parameter);
+            return _canExecute == null ? true : _canExecute(parameter);
         }
 
         /// <summary>
@@ -55,7 +51,7 @@ namespace AEGIScript.GUI.ViewModel
         /// <param name="parameter">A tevékenység paramétere.</param>
         public void Execute(Object parameter)
         {
-            _Execute(parameter);
+            _execute(parameter);
         }
 
         /// <summary>

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using Antlr.Runtime.Tree;
+using System;
 
 namespace AEGIScript.Lang.Evaluation
 {
@@ -13,20 +10,20 @@ namespace AEGIScript.Lang.Evaluation
         {
             // check for overflow
             Value = Int32.Parse(content);
-            ActualType = Type.INT;
+            ActualType = Type.Int;
         }
 
         public IntNode(Int32 value)
         {
             Value = value;
-            ActualType = Type.INT;
+            ActualType = Type.Int;
         }
 
         public int Value { get; private set; }
 
         public override string ToString()
         {
-            return Value.ToString();
+            return Value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

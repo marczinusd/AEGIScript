@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5 D:\\Eclipse\\aegiscript_live\\aegiscript.g 2013-04-26 23:01:35
+// $ANTLR 3.5 D:\\Eclipse\\aegiscript_live\\aegiscript.g 2013-04-24 20:03:38
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -1686,7 +1686,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_statement();
 	partial void LeaveRule_statement();
 	// $ANTLR start "statement"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:87:1: statement : ( assignmentStatement | whileStatement | ifStatement | funCallStatement ';' );
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:87:1: statement : ( assignmentStatement | whileStatement | ifStatement | funCallStatement ';' | accessorStatement ';' );
 	[GrammarRule("statement")]
 	private AstParserRuleReturnScope<CommonTree, IToken> statement()
 	{
@@ -1699,39 +1699,52 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 		CommonTree root_0 = default(CommonTree);
 
 		IToken char_literal56 = default(IToken);
+		IToken char_literal58 = default(IToken);
 		AstParserRuleReturnScope<CommonTree, IToken> assignmentStatement52 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 		AstParserRuleReturnScope<CommonTree, IToken> whileStatement53 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 		AstParserRuleReturnScope<CommonTree, IToken> ifStatement54 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 		AstParserRuleReturnScope<CommonTree, IToken> funCallStatement55 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> accessorStatement57 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
 		CommonTree char_literal56_tree = default(CommonTree);
+		CommonTree char_literal58_tree = default(CommonTree);
 		try { DebugEnterRule(GrammarFileName, "statement");
 		DebugLocation(87, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:88:2: ( assignmentStatement | whileStatement | ifStatement | funCallStatement ';' )
-			int alt12=4;
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:88:2: ( assignmentStatement | whileStatement | ifStatement | funCallStatement ';' | accessorStatement ';' )
+			int alt12=5;
 			try { DebugEnterDecision(12, false);
 			switch (input.LA(1))
 			{
 			case IDENT:
 				{
-				int LA12_2 = input.LA(2);
-
-				if ((LA12_2==37||LA12_2==42))
+				switch (input.LA(2))
 				{
+				case 37:
+				case 42:
+					{
 					alt12 = 1;
-				}
-				else if ((LA12_2==25))
-				{
+					}
+					break;
+				case 25:
+					{
 					alt12 = 4;
+					}
+					break;
+				case 31:
+					{
+					alt12 = 5;
+					}
+					break;
+				default:
+					{
+						NoViableAltException nvae = new NoViableAltException("", 12, 1, input, 2);
+						DebugRecognitionException(nvae);
+						throw nvae;
+					}
 				}
-				else
-				{
-					NoViableAltException nvae = new NoViableAltException("", 12, 1, input, 2);
-					DebugRecognitionException(nvae);
-					throw nvae;
-				}
+
 				}
 				break;
 			case 54:
@@ -1819,6 +1832,25 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 				}
 				break;
+			case 5:
+				DebugEnterAlt(5);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:92:4: accessorStatement ';'
+				{
+				root_0 = (CommonTree)adaptor.Nil();
+
+				DebugLocation(92, 4);
+				PushFollow(Follow._accessorStatement_in_statement434);
+				accessorStatement57=accessorStatement();
+				PopFollow();
+
+				adaptor.AddChild(root_0, accessorStatement57.Tree);
+				DebugLocation(92, 22);
+				char_literal58=(IToken)Match(input,34,Follow._34_in_statement436); 
+				char_literal58_tree = (CommonTree)adaptor.Create(char_literal58);
+				adaptor.AddChild(root_0, char_literal58_tree);
+
+				}
+				break;
 
 			}
 			retval.Stop = (IToken)input.LT(-1);
@@ -1850,7 +1882,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_assignmentStatement();
 	partial void LeaveRule_assignmentStatement();
 	// $ANTLR start "assignmentStatement"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:95:1: assignmentStatement : ( IDENT '=' ^ expression ';' | accessor '=' ^ expression ';' );
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:95:1: assignmentStatement : ( IDENT '=' ^ expression ';' | IDENT '=' ^ accessorStatement ';' | accessor '=' ^ expression ';' );
 	[GrammarRule("assignmentStatement")]
 	private AstParserRuleReturnScope<CommonTree, IToken> assignmentStatement()
 	{
@@ -1862,26 +1894,33 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken IDENT57 = default(IToken);
-		IToken char_literal58 = default(IToken);
+		IToken IDENT59 = default(IToken);
 		IToken char_literal60 = default(IToken);
 		IToken char_literal62 = default(IToken);
+		IToken IDENT63 = default(IToken);
 		IToken char_literal64 = default(IToken);
-		AstParserRuleReturnScope<CommonTree, IToken> expression59 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> accessor61 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> expression63 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken char_literal66 = default(IToken);
+		IToken char_literal68 = default(IToken);
+		IToken char_literal70 = default(IToken);
+		AstParserRuleReturnScope<CommonTree, IToken> expression61 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> accessorStatement65 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> accessor67 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> expression69 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
-		CommonTree IDENT57_tree = default(CommonTree);
-		CommonTree char_literal58_tree = default(CommonTree);
+		CommonTree IDENT59_tree = default(CommonTree);
 		CommonTree char_literal60_tree = default(CommonTree);
 		CommonTree char_literal62_tree = default(CommonTree);
+		CommonTree IDENT63_tree = default(CommonTree);
 		CommonTree char_literal64_tree = default(CommonTree);
+		CommonTree char_literal66_tree = default(CommonTree);
+		CommonTree char_literal68_tree = default(CommonTree);
+		CommonTree char_literal70_tree = default(CommonTree);
 		try { DebugEnterRule(GrammarFileName, "assignmentStatement");
 		DebugLocation(95, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:96:2: ( IDENT '=' ^ expression ';' | accessor '=' ^ expression ';' )
-			int alt13=2;
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:96:2: ( IDENT '=' ^ expression ';' | IDENT '=' ^ accessorStatement ';' | accessor '=' ^ expression ';' )
+			int alt13=3;
 			try { DebugEnterDecision(13, false);
 			int LA13_1 = input.LA(1);
 
@@ -1891,11 +1930,41 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 				if ((LA13_2==37))
 				{
-					alt13 = 1;
+					int LA13_3 = input.LA(3);
+
+					if ((LA13_3==BOOL||LA13_3==FLOAT||LA13_3==INTEGER||LA13_3==STRING||LA13_3==25||LA13_3==28||LA13_3==30||LA13_3==42||LA13_3==52))
+					{
+						alt13 = 1;
+					}
+					else if ((LA13_3==IDENT))
+					{
+						int LA13_4 = input.LA(4);
+
+						if (((LA13_4>=23 && LA13_4<=25)||(LA13_4>=27 && LA13_4<=28)||LA13_4==30||LA13_4==32||(LA13_4>=34 && LA13_4<=36)||(LA13_4>=38 && LA13_4<=40)||LA13_4==42||LA13_4==51||LA13_4==55))
+						{
+							alt13 = 1;
+						}
+						else if ((LA13_4==31))
+						{
+							alt13 = 2;
+						}
+						else
+						{
+							NoViableAltException nvae = new NoViableAltException("", 13, 5, input, 4);
+							DebugRecognitionException(nvae);
+							throw nvae;
+						}
+					}
+					else
+					{
+						NoViableAltException nvae = new NoViableAltException("", 13, 2, input, 3);
+						DebugRecognitionException(nvae);
+						throw nvae;
+					}
 				}
 				else if ((LA13_2==42))
 				{
-					alt13 = 2;
+					alt13 = 3;
 				}
 				else
 				{
@@ -1920,52 +1989,79 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(96, 4);
-				IDENT57=(IToken)Match(input,IDENT,Follow._IDENT_in_assignmentStatement441); 
-				IDENT57_tree = (CommonTree)adaptor.Create(IDENT57);
-				adaptor.AddChild(root_0, IDENT57_tree);
+				IDENT59=(IToken)Match(input,IDENT,Follow._IDENT_in_assignmentStatement447); 
+				IDENT59_tree = (CommonTree)adaptor.Create(IDENT59);
+				adaptor.AddChild(root_0, IDENT59_tree);
 				DebugLocation(96, 13);
-				char_literal58=(IToken)Match(input,37,Follow._37_in_assignmentStatement443); 
-				char_literal58_tree = (CommonTree)adaptor.Create(char_literal58);
-				root_0 = (CommonTree)adaptor.BecomeRoot(char_literal58_tree, root_0);
+				char_literal60=(IToken)Match(input,37,Follow._37_in_assignmentStatement449); 
+				char_literal60_tree = (CommonTree)adaptor.Create(char_literal60);
+				root_0 = (CommonTree)adaptor.BecomeRoot(char_literal60_tree, root_0);
 				DebugLocation(96, 15);
-				PushFollow(Follow._expression_in_assignmentStatement446);
-				expression59=expression();
+				PushFollow(Follow._expression_in_assignmentStatement452);
+				expression61=expression();
 				PopFollow();
 
-				adaptor.AddChild(root_0, expression59.Tree);
+				adaptor.AddChild(root_0, expression61.Tree);
 				DebugLocation(96, 26);
-				char_literal60=(IToken)Match(input,34,Follow._34_in_assignmentStatement448); 
-				char_literal60_tree = (CommonTree)adaptor.Create(char_literal60);
-				adaptor.AddChild(root_0, char_literal60_tree);
+				char_literal62=(IToken)Match(input,34,Follow._34_in_assignmentStatement454); 
+				char_literal62_tree = (CommonTree)adaptor.Create(char_literal62);
+				adaptor.AddChild(root_0, char_literal62_tree);
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:99:4: IDENT '=' ^ accessorStatement ';'
+				{
+				root_0 = (CommonTree)adaptor.Nil();
+
+				DebugLocation(99, 4);
+				IDENT63=(IToken)Match(input,IDENT,Follow._IDENT_in_assignmentStatement461); 
+				IDENT63_tree = (CommonTree)adaptor.Create(IDENT63);
+				adaptor.AddChild(root_0, IDENT63_tree);
+				DebugLocation(99, 13);
+				char_literal64=(IToken)Match(input,37,Follow._37_in_assignmentStatement463); 
+				char_literal64_tree = (CommonTree)adaptor.Create(char_literal64);
+				root_0 = (CommonTree)adaptor.BecomeRoot(char_literal64_tree, root_0);
+				DebugLocation(99, 15);
+				PushFollow(Follow._accessorStatement_in_assignmentStatement466);
+				accessorStatement65=accessorStatement();
+				PopFollow();
+
+				adaptor.AddChild(root_0, accessorStatement65.Tree);
+				DebugLocation(99, 33);
+				char_literal66=(IToken)Match(input,34,Follow._34_in_assignmentStatement468); 
+				char_literal66_tree = (CommonTree)adaptor.Create(char_literal66);
+				adaptor.AddChild(root_0, char_literal66_tree);
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
 				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:100:5: accessor '=' ^ expression ';'
 				{
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(100, 5);
-				PushFollow(Follow._accessor_in_assignmentStatement457);
-				accessor61=accessor();
+				PushFollow(Follow._accessor_in_assignmentStatement474);
+				accessor67=accessor();
 				PopFollow();
 
-				adaptor.AddChild(root_0, accessor61.Tree);
+				adaptor.AddChild(root_0, accessor67.Tree);
 				DebugLocation(100, 17);
-				char_literal62=(IToken)Match(input,37,Follow._37_in_assignmentStatement459); 
-				char_literal62_tree = (CommonTree)adaptor.Create(char_literal62);
-				root_0 = (CommonTree)adaptor.BecomeRoot(char_literal62_tree, root_0);
+				char_literal68=(IToken)Match(input,37,Follow._37_in_assignmentStatement476); 
+				char_literal68_tree = (CommonTree)adaptor.Create(char_literal68);
+				root_0 = (CommonTree)adaptor.BecomeRoot(char_literal68_tree, root_0);
 				DebugLocation(100, 19);
-				PushFollow(Follow._expression_in_assignmentStatement462);
-				expression63=expression();
+				PushFollow(Follow._expression_in_assignmentStatement479);
+				expression69=expression();
 				PopFollow();
 
-				adaptor.AddChild(root_0, expression63.Tree);
+				adaptor.AddChild(root_0, expression69.Tree);
 				DebugLocation(100, 30);
-				char_literal64=(IToken)Match(input,34,Follow._34_in_assignmentStatement464); 
-				char_literal64_tree = (CommonTree)adaptor.Create(char_literal64);
-				adaptor.AddChild(root_0, char_literal64_tree);
+				char_literal70=(IToken)Match(input,34,Follow._34_in_assignmentStatement481); 
+				char_literal70_tree = (CommonTree)adaptor.Create(char_literal70);
+				adaptor.AddChild(root_0, char_literal70_tree);
 
 				}
 				break;
@@ -2013,13 +2109,13 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 		CommonTree root_0 = default(CommonTree);
 
 		IToken a = default(IToken);
-		IToken char_literal65 = default(IToken);
-		IToken char_literal66 = default(IToken);
+		IToken char_literal71 = default(IToken);
+		IToken char_literal72 = default(IToken);
 		List<CommonTree> list_b = null;
 		AstParserRuleReturnScope<CommonTree, IToken> b = default(AstParserRuleReturnScope<CommonTree, IToken>);
 		CommonTree a_tree = default(CommonTree);
-		CommonTree char_literal65_tree = default(CommonTree);
-		CommonTree char_literal66_tree = default(CommonTree);
+		CommonTree char_literal71_tree = default(CommonTree);
+		CommonTree char_literal72_tree = default(CommonTree);
 		RewriteRuleITokenStream stream_IDENT=new RewriteRuleITokenStream(adaptor,"token IDENT");
 		RewriteRuleITokenStream stream_43=new RewriteRuleITokenStream(adaptor,"token 43");
 		RewriteRuleITokenStream stream_42=new RewriteRuleITokenStream(adaptor,"token 42");
@@ -2033,7 +2129,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:4: a= IDENT ( '[' b+= expression ']' )+
 			{
 			DebugLocation(106, 6);
-			a=(IToken)Match(input,IDENT,Follow._IDENT_in_accessor481);  
+			a=(IToken)Match(input,IDENT,Follow._IDENT_in_accessor498);  
 			stream_IDENT.Add(a);
 
 			DebugLocation(106, 14);
@@ -2060,11 +2156,11 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:106:15: '[' b+= expression ']'
 					{
 					DebugLocation(106, 15);
-					char_literal65=(IToken)Match(input,42,Follow._42_in_accessor484);  
-					stream_42.Add(char_literal65);
+					char_literal71=(IToken)Match(input,42,Follow._42_in_accessor501);  
+					stream_42.Add(char_literal71);
 
 					DebugLocation(106, 21);
-					PushFollow(Follow._expression_in_accessor490);
+					PushFollow(Follow._expression_in_accessor507);
 					b=expression();
 					PopFollow();
 
@@ -2073,8 +2169,8 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					list_b.Add(b.Tree);
 
 					DebugLocation(106, 35);
-					char_literal66=(IToken)Match(input,43,Follow._43_in_accessor492);  
-					stream_43.Add(char_literal66);
+					char_literal72=(IToken)Match(input,43,Follow._43_in_accessor509);  
+					stream_43.Add(char_literal72);
 
 
 					}
@@ -2099,7 +2195,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 			{
 			// AST REWRITE
-			// elements: a, b
+			// elements: b, a
 			// token labels: a
 			// rule labels: retval
 			// token list labels: 
@@ -2186,11 +2282,11 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 		CommonTree root_0 = default(CommonTree);
 
 		IToken a = default(IToken);
-		IToken char_literal67 = default(IToken);
+		IToken char_literal73 = default(IToken);
 		List<CommonTree> list_b = null;
 		AstParserRuleReturnScope<CommonTree, IToken> b = default(AstParserRuleReturnScope<CommonTree, IToken>);
 		CommonTree a_tree = default(CommonTree);
-		CommonTree char_literal67_tree = default(CommonTree);
+		CommonTree char_literal73_tree = default(CommonTree);
 		RewriteRuleITokenStream stream_IDENT=new RewriteRuleITokenStream(adaptor,"token IDENT");
 		RewriteRuleITokenStream stream_31=new RewriteRuleITokenStream(adaptor,"token 31");
 		RewriteRuleSubtreeStream stream_funCallStatement=new RewriteRuleSubtreeStream(adaptor,"rule funCallStatement");
@@ -2203,7 +2299,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:114:4: a= IDENT ( '.' b+= funCallStatement )+
 			{
 			DebugLocation(114, 5);
-			a=(IToken)Match(input,IDENT,Follow._IDENT_in_accessorStatement532);  
+			a=(IToken)Match(input,IDENT,Follow._IDENT_in_accessorStatement549);  
 			stream_IDENT.Add(a);
 
 			DebugLocation(114, 12);
@@ -2230,11 +2326,11 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:114:13: '.' b+= funCallStatement
 					{
 					DebugLocation(114, 13);
-					char_literal67=(IToken)Match(input,31,Follow._31_in_accessorStatement535);  
-					stream_31.Add(char_literal67);
+					char_literal73=(IToken)Match(input,31,Follow._31_in_accessorStatement552);  
+					stream_31.Add(char_literal73);
 
 					DebugLocation(114, 18);
-					PushFollow(Follow._funCallStatement_in_accessorStatement539);
+					PushFollow(Follow._funCallStatement_in_accessorStatement556);
 					b=funCallStatement();
 					PopFollow();
 
@@ -2351,19 +2447,19 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken char_literal68 = default(IToken);
-		IToken char_literal69 = default(IToken);
-		IToken char_literal70 = default(IToken);
-		IToken char_literal71 = default(IToken);
-		IToken char_literal72 = default(IToken);
+		IToken char_literal74 = default(IToken);
+		IToken char_literal75 = default(IToken);
+		IToken char_literal76 = default(IToken);
+		IToken char_literal77 = default(IToken);
+		IToken char_literal78 = default(IToken);
 		List<CommonTree> list_b = null;
 		AstParserRuleReturnScope<CommonTree, IToken> a = default(AstParserRuleReturnScope<CommonTree, IToken>);
 		AstParserRuleReturnScope<CommonTree, IToken> b = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		CommonTree char_literal68_tree = default(CommonTree);
-		CommonTree char_literal69_tree = default(CommonTree);
-		CommonTree char_literal70_tree = default(CommonTree);
-		CommonTree char_literal71_tree = default(CommonTree);
-		CommonTree char_literal72_tree = default(CommonTree);
+		CommonTree char_literal74_tree = default(CommonTree);
+		CommonTree char_literal75_tree = default(CommonTree);
+		CommonTree char_literal76_tree = default(CommonTree);
+		CommonTree char_literal77_tree = default(CommonTree);
+		CommonTree char_literal78_tree = default(CommonTree);
 		RewriteRuleITokenStream stream_43=new RewriteRuleITokenStream(adaptor,"token 43");
 		RewriteRuleITokenStream stream_42=new RewriteRuleITokenStream(adaptor,"token 42");
 		RewriteRuleITokenStream stream_29=new RewriteRuleITokenStream(adaptor,"token 29");
@@ -2410,11 +2506,11 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:122:4: '[' a= expression ( ',' b+= expression )* ']'
 				{
 				DebugLocation(122, 4);
-				char_literal68=(IToken)Match(input,42,Follow._42_in_array578);  
-				stream_42.Add(char_literal68);
+				char_literal74=(IToken)Match(input,42,Follow._42_in_array595);  
+				stream_42.Add(char_literal74);
 
 				DebugLocation(122, 9);
-				PushFollow(Follow._expression_in_array583);
+				PushFollow(Follow._expression_in_array600);
 				a=expression();
 				PopFollow();
 
@@ -2442,11 +2538,11 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:123:3: ',' b+= expression
 						{
 						DebugLocation(123, 3);
-						char_literal69=(IToken)Match(input,29,Follow._29_in_array587);  
-						stream_29.Add(char_literal69);
+						char_literal75=(IToken)Match(input,29,Follow._29_in_array604);  
+						stream_29.Add(char_literal75);
 
 						DebugLocation(123, 9);
-						PushFollow(Follow._expression_in_array593);
+						PushFollow(Follow._expression_in_array610);
 						b=expression();
 						PopFollow();
 
@@ -2469,14 +2565,14 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				} finally { DebugExitSubRule(16); }
 
 				DebugLocation(123, 24);
-				char_literal70=(IToken)Match(input,43,Follow._43_in_array596);  
-				stream_43.Add(char_literal70);
+				char_literal76=(IToken)Match(input,43,Follow._43_in_array613);  
+				stream_43.Add(char_literal76);
 
 
 
 				{
 				// AST REWRITE
-				// elements: a, b
+				// elements: b, a
 				// token labels: 
 				// rule labels: retval, a
 				// token list labels: 
@@ -2523,12 +2619,12 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:124:4: '[' ']'
 				{
 				DebugLocation(124, 4);
-				char_literal71=(IToken)Match(input,42,Follow._42_in_array614);  
-				stream_42.Add(char_literal71);
+				char_literal77=(IToken)Match(input,42,Follow._42_in_array631);  
+				stream_42.Add(char_literal77);
 
 				DebugLocation(124, 7);
-				char_literal72=(IToken)Match(input,43,Follow._43_in_array615);  
-				stream_43.Add(char_literal72);
+				char_literal78=(IToken)Match(input,43,Follow._43_in_array632);  
+				stream_43.Add(char_literal78);
 
 
 
@@ -2594,7 +2690,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_term();
 	partial void LeaveRule_term();
 	// $ANTLR start "term"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:131:1: term : ( IDENT | '(' expression ')' -> expression | INTEGER | STRING | BOOL | FLOAT | array | accessor | funCallStatement | accessorStatement );
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:131:1: term : ( IDENT | '(' expression ')' -> expression | INTEGER | STRING | BOOL | FLOAT | array | accessor | funCallStatement );
 	[GrammarRule("term")]
 	private AstParserRuleReturnScope<CommonTree, IToken> term()
 	{
@@ -2606,26 +2702,25 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken IDENT73 = default(IToken);
-		IToken char_literal74 = default(IToken);
-		IToken char_literal76 = default(IToken);
-		IToken INTEGER77 = default(IToken);
-		IToken STRING78 = default(IToken);
-		IToken BOOL79 = default(IToken);
-		IToken FLOAT80 = default(IToken);
-		AstParserRuleReturnScope<CommonTree, IToken> expression75 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> array81 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> accessor82 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> funCallStatement83 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> accessorStatement84 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken IDENT79 = default(IToken);
+		IToken char_literal80 = default(IToken);
+		IToken char_literal82 = default(IToken);
+		IToken INTEGER83 = default(IToken);
+		IToken STRING84 = default(IToken);
+		IToken BOOL85 = default(IToken);
+		IToken FLOAT86 = default(IToken);
+		AstParserRuleReturnScope<CommonTree, IToken> expression81 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> array87 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> accessor88 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> funCallStatement89 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
-		CommonTree IDENT73_tree = default(CommonTree);
-		CommonTree char_literal74_tree = default(CommonTree);
-		CommonTree char_literal76_tree = default(CommonTree);
-		CommonTree INTEGER77_tree = default(CommonTree);
-		CommonTree STRING78_tree = default(CommonTree);
-		CommonTree BOOL79_tree = default(CommonTree);
-		CommonTree FLOAT80_tree = default(CommonTree);
+		CommonTree IDENT79_tree = default(CommonTree);
+		CommonTree char_literal80_tree = default(CommonTree);
+		CommonTree char_literal82_tree = default(CommonTree);
+		CommonTree INTEGER83_tree = default(CommonTree);
+		CommonTree STRING84_tree = default(CommonTree);
+		CommonTree BOOL85_tree = default(CommonTree);
+		CommonTree FLOAT86_tree = default(CommonTree);
 		RewriteRuleITokenStream stream_25=new RewriteRuleITokenStream(adaptor,"token 25");
 		RewriteRuleITokenStream stream_26=new RewriteRuleITokenStream(adaptor,"token 26");
 		RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
@@ -2633,8 +2728,8 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 		DebugLocation(131, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:132:2: ( IDENT | '(' expression ')' -> expression | INTEGER | STRING | BOOL | FLOAT | array | accessor | funCallStatement | accessorStatement )
-			int alt18=10;
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:132:2: ( IDENT | '(' expression ')' -> expression | INTEGER | STRING | BOOL | FLOAT | array | accessor | funCallStatement )
+			int alt18=9;
 			try { DebugEnterDecision(18, false);
 			switch (input.LA(1))
 			{
@@ -2672,11 +2767,6 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				case 42:
 					{
 					alt18 = 8;
-					}
-					break;
-				case 31:
-					{
-					alt18 = 10;
 					}
 					break;
 				default:
@@ -2737,9 +2827,9 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(132, 4);
-				IDENT73=(IToken)Match(input,IDENT,Follow._IDENT_in_term644); 
-				IDENT73_tree = (CommonTree)adaptor.Create(IDENT73);
-				adaptor.AddChild(root_0, IDENT73_tree);
+				IDENT79=(IToken)Match(input,IDENT,Follow._IDENT_in_term661); 
+				IDENT79_tree = (CommonTree)adaptor.Create(IDENT79);
+				adaptor.AddChild(root_0, IDENT79_tree);
 
 				}
 				break;
@@ -2748,18 +2838,18 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:133:4: '(' expression ')'
 				{
 				DebugLocation(133, 4);
-				char_literal74=(IToken)Match(input,25,Follow._25_in_term649);  
-				stream_25.Add(char_literal74);
+				char_literal80=(IToken)Match(input,25,Follow._25_in_term666);  
+				stream_25.Add(char_literal80);
 
 				DebugLocation(133, 8);
-				PushFollow(Follow._expression_in_term651);
-				expression75=expression();
+				PushFollow(Follow._expression_in_term668);
+				expression81=expression();
 				PopFollow();
 
-				stream_expression.Add(expression75.Tree);
+				stream_expression.Add(expression81.Tree);
 				DebugLocation(133, 19);
-				char_literal76=(IToken)Match(input,26,Follow._26_in_term653);  
-				stream_26.Add(char_literal76);
+				char_literal82=(IToken)Match(input,26,Follow._26_in_term670);  
+				stream_26.Add(char_literal82);
 
 
 
@@ -2794,9 +2884,9 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(134, 4);
-				INTEGER77=(IToken)Match(input,INTEGER,Follow._INTEGER_in_term662); 
-				INTEGER77_tree = (CommonTree)adaptor.Create(INTEGER77);
-				adaptor.AddChild(root_0, INTEGER77_tree);
+				INTEGER83=(IToken)Match(input,INTEGER,Follow._INTEGER_in_term679); 
+				INTEGER83_tree = (CommonTree)adaptor.Create(INTEGER83);
+				adaptor.AddChild(root_0, INTEGER83_tree);
 
 				}
 				break;
@@ -2807,9 +2897,9 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(135, 5);
-				STRING78=(IToken)Match(input,STRING,Follow._STRING_in_term668); 
-				STRING78_tree = (CommonTree)adaptor.Create(STRING78);
-				adaptor.AddChild(root_0, STRING78_tree);
+				STRING84=(IToken)Match(input,STRING,Follow._STRING_in_term685); 
+				STRING84_tree = (CommonTree)adaptor.Create(STRING84);
+				adaptor.AddChild(root_0, STRING84_tree);
 
 				}
 				break;
@@ -2820,9 +2910,9 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(136, 4);
-				BOOL79=(IToken)Match(input,BOOL,Follow._BOOL_in_term673); 
-				BOOL79_tree = (CommonTree)adaptor.Create(BOOL79);
-				adaptor.AddChild(root_0, BOOL79_tree);
+				BOOL85=(IToken)Match(input,BOOL,Follow._BOOL_in_term690); 
+				BOOL85_tree = (CommonTree)adaptor.Create(BOOL85);
+				adaptor.AddChild(root_0, BOOL85_tree);
 
 				}
 				break;
@@ -2833,9 +2923,9 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(137, 4);
-				FLOAT80=(IToken)Match(input,FLOAT,Follow._FLOAT_in_term678); 
-				FLOAT80_tree = (CommonTree)adaptor.Create(FLOAT80);
-				adaptor.AddChild(root_0, FLOAT80_tree);
+				FLOAT86=(IToken)Match(input,FLOAT,Follow._FLOAT_in_term695); 
+				FLOAT86_tree = (CommonTree)adaptor.Create(FLOAT86);
+				adaptor.AddChild(root_0, FLOAT86_tree);
 
 				}
 				break;
@@ -2846,11 +2936,11 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(138, 4);
-				PushFollow(Follow._array_in_term683);
-				array81=array();
+				PushFollow(Follow._array_in_term700);
+				array87=array();
 				PopFollow();
 
-				adaptor.AddChild(root_0, array81.Tree);
+				adaptor.AddChild(root_0, array87.Tree);
 
 				}
 				break;
@@ -2861,11 +2951,11 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(139, 4);
-				PushFollow(Follow._accessor_in_term688);
-				accessor82=accessor();
+				PushFollow(Follow._accessor_in_term705);
+				accessor88=accessor();
 				PopFollow();
 
-				adaptor.AddChild(root_0, accessor82.Tree);
+				adaptor.AddChild(root_0, accessor88.Tree);
 
 				}
 				break;
@@ -2876,26 +2966,11 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				root_0 = (CommonTree)adaptor.Nil();
 
 				DebugLocation(140, 4);
-				PushFollow(Follow._funCallStatement_in_term693);
-				funCallStatement83=funCallStatement();
+				PushFollow(Follow._funCallStatement_in_term710);
+				funCallStatement89=funCallStatement();
 				PopFollow();
 
-				adaptor.AddChild(root_0, funCallStatement83.Tree);
-
-				}
-				break;
-			case 10:
-				DebugEnterAlt(10);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:141:4: accessorStatement
-				{
-				root_0 = (CommonTree)adaptor.Nil();
-
-				DebugLocation(141, 4);
-				PushFollow(Follow._accessorStatement_in_term698);
-				accessorStatement84=accessorStatement();
-				PopFollow();
-
-				adaptor.AddChild(root_0, accessorStatement84.Tree);
+				adaptor.AddChild(root_0, funCallStatement89.Tree);
 
 				}
 				break;
@@ -2920,7 +2995,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			LeaveRule("term", 18);
 			LeaveRule_term();
 		}
-		DebugLocation(142, 1);
+		DebugLocation(141, 1);
 		} finally { DebugExitRule(GrammarFileName, "term"); }
 		return retval;
 
@@ -2930,7 +3005,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_negation();
 	partial void LeaveRule_negation();
 	// $ANTLR start "negation"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:144:1: negation : ( 'not' ^)* term ;
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:143:1: negation : ( 'not' ^)* term ;
 	[GrammarRule("negation")]
 	private AstParserRuleReturnScope<CommonTree, IToken> negation()
 	{
@@ -2942,22 +3017,22 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken string_literal85 = default(IToken);
-		AstParserRuleReturnScope<CommonTree, IToken> term86 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken string_literal90 = default(IToken);
+		AstParserRuleReturnScope<CommonTree, IToken> term91 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
-		CommonTree string_literal85_tree = default(CommonTree);
+		CommonTree string_literal90_tree = default(CommonTree);
 		try { DebugEnterRule(GrammarFileName, "negation");
-		DebugLocation(144, 1);
+		DebugLocation(143, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:145:2: ( ( 'not' ^)* term )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:144:2: ( ( 'not' ^)* term )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:145:4: ( 'not' ^)* term
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:144:4: ( 'not' ^)* term
 			{
 			root_0 = (CommonTree)adaptor.Nil();
 
-			DebugLocation(145, 9);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:145:9: ( 'not' ^)*
+			DebugLocation(144, 9);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:144:9: ( 'not' ^)*
 			try { DebugEnterSubRule(19);
 			while (true)
 			{
@@ -2976,12 +3051,12 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:145:9: 'not' ^
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:144:9: 'not' ^
 					{
-					DebugLocation(145, 9);
-					string_literal85=(IToken)Match(input,52,Follow._52_in_negation710); 
-					string_literal85_tree = (CommonTree)adaptor.Create(string_literal85);
-					root_0 = (CommonTree)adaptor.BecomeRoot(string_literal85_tree, root_0);
+					DebugLocation(144, 9);
+					string_literal90=(IToken)Match(input,52,Follow._52_in_negation722); 
+					string_literal90_tree = (CommonTree)adaptor.Create(string_literal90);
+					root_0 = (CommonTree)adaptor.BecomeRoot(string_literal90_tree, root_0);
 
 					}
 					break;
@@ -2996,12 +3071,12 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 			} finally { DebugExitSubRule(19); }
 
-			DebugLocation(145, 12);
-			PushFollow(Follow._term_in_negation714);
-			term86=term();
+			DebugLocation(144, 12);
+			PushFollow(Follow._term_in_negation726);
+			term91=term();
 			PopFollow();
 
-			adaptor.AddChild(root_0, term86.Tree);
+			adaptor.AddChild(root_0, term91.Tree);
 
 			}
 
@@ -3024,7 +3099,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			LeaveRule("negation", 19);
 			LeaveRule_negation();
 		}
-		DebugLocation(146, 1);
+		DebugLocation(145, 1);
 		} finally { DebugExitRule(GrammarFileName, "negation"); }
 		return retval;
 
@@ -3034,7 +3109,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_unary();
 	partial void LeaveRule_unary();
 	// $ANTLR start "unary"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:148:1: unary : ( '+' ^| '-' ^)* negation ;
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:147:1: unary : ( '+' ^| '-' ^)* negation ;
 	[GrammarRule("unary")]
 	private AstParserRuleReturnScope<CommonTree, IToken> unary()
 	{
@@ -3046,24 +3121,24 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken char_literal87 = default(IToken);
-		IToken char_literal88 = default(IToken);
-		AstParserRuleReturnScope<CommonTree, IToken> negation89 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken char_literal92 = default(IToken);
+		IToken char_literal93 = default(IToken);
+		AstParserRuleReturnScope<CommonTree, IToken> negation94 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
-		CommonTree char_literal87_tree = default(CommonTree);
-		CommonTree char_literal88_tree = default(CommonTree);
+		CommonTree char_literal92_tree = default(CommonTree);
+		CommonTree char_literal93_tree = default(CommonTree);
 		try { DebugEnterRule(GrammarFileName, "unary");
-		DebugLocation(148, 1);
+		DebugLocation(147, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:149:2: ( ( '+' ^| '-' ^)* negation )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:148:2: ( ( '+' ^| '-' ^)* negation )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:149:4: ( '+' ^| '-' ^)* negation
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:148:4: ( '+' ^| '-' ^)* negation
 			{
 			root_0 = (CommonTree)adaptor.Nil();
 
-			DebugLocation(149, 4);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:149:4: ( '+' ^| '-' ^)*
+			DebugLocation(148, 4);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:148:4: ( '+' ^| '-' ^)*
 			try { DebugEnterSubRule(20);
 			while (true)
 			{
@@ -3086,23 +3161,23 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:149:5: '+' ^
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:148:5: '+' ^
 					{
-					DebugLocation(149, 8);
-					char_literal87=(IToken)Match(input,28,Follow._28_in_unary728); 
-					char_literal87_tree = (CommonTree)adaptor.Create(char_literal87);
-					root_0 = (CommonTree)adaptor.BecomeRoot(char_literal87_tree, root_0);
+					DebugLocation(148, 8);
+					char_literal92=(IToken)Match(input,28,Follow._28_in_unary740); 
+					char_literal92_tree = (CommonTree)adaptor.Create(char_literal92);
+					root_0 = (CommonTree)adaptor.BecomeRoot(char_literal92_tree, root_0);
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:149:12: '-' ^
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:148:12: '-' ^
 					{
-					DebugLocation(149, 15);
-					char_literal88=(IToken)Match(input,30,Follow._30_in_unary733); 
-					char_literal88_tree = (CommonTree)adaptor.Create(char_literal88);
-					root_0 = (CommonTree)adaptor.BecomeRoot(char_literal88_tree, root_0);
+					DebugLocation(148, 15);
+					char_literal93=(IToken)Match(input,30,Follow._30_in_unary745); 
+					char_literal93_tree = (CommonTree)adaptor.Create(char_literal93);
+					root_0 = (CommonTree)adaptor.BecomeRoot(char_literal93_tree, root_0);
 
 					}
 					break;
@@ -3117,12 +3192,12 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 			} finally { DebugExitSubRule(20); }
 
-			DebugLocation(149, 19);
-			PushFollow(Follow._negation_in_unary738);
-			negation89=negation();
+			DebugLocation(148, 19);
+			PushFollow(Follow._negation_in_unary750);
+			negation94=negation();
 			PopFollow();
 
-			adaptor.AddChild(root_0, negation89.Tree);
+			adaptor.AddChild(root_0, negation94.Tree);
 
 			}
 
@@ -3145,7 +3220,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			LeaveRule("unary", 20);
 			LeaveRule_unary();
 		}
-		DebugLocation(150, 1);
+		DebugLocation(149, 1);
 		} finally { DebugExitRule(GrammarFileName, "unary"); }
 		return retval;
 
@@ -3155,7 +3230,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_mult();
 	partial void LeaveRule_mult();
 	// $ANTLR start "mult"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:1: mult : unary ( ( '*' ^| '/' ^| 'mod' ^) unary )* ;
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:151:1: mult : unary ( ( '*' ^| '/' ^| 'mod' ^) unary )* ;
 	[GrammarRule("mult")]
 	private AstParserRuleReturnScope<CommonTree, IToken> mult()
 	{
@@ -3167,33 +3242,33 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken char_literal91 = default(IToken);
-		IToken char_literal92 = default(IToken);
-		IToken string_literal93 = default(IToken);
-		AstParserRuleReturnScope<CommonTree, IToken> unary90 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> unary94 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken char_literal96 = default(IToken);
+		IToken char_literal97 = default(IToken);
+		IToken string_literal98 = default(IToken);
+		AstParserRuleReturnScope<CommonTree, IToken> unary95 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> unary99 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
-		CommonTree char_literal91_tree = default(CommonTree);
-		CommonTree char_literal92_tree = default(CommonTree);
-		CommonTree string_literal93_tree = default(CommonTree);
+		CommonTree char_literal96_tree = default(CommonTree);
+		CommonTree char_literal97_tree = default(CommonTree);
+		CommonTree string_literal98_tree = default(CommonTree);
 		try { DebugEnterRule(GrammarFileName, "mult");
-		DebugLocation(152, 1);
+		DebugLocation(151, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:153:2: ( unary ( ( '*' ^| '/' ^| 'mod' ^) unary )* )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:2: ( unary ( ( '*' ^| '/' ^| 'mod' ^) unary )* )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:153:4: unary ( ( '*' ^| '/' ^| 'mod' ^) unary )*
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:4: unary ( ( '*' ^| '/' ^| 'mod' ^) unary )*
 			{
 			root_0 = (CommonTree)adaptor.Nil();
 
-			DebugLocation(153, 4);
-			PushFollow(Follow._unary_in_mult749);
-			unary90=unary();
+			DebugLocation(152, 4);
+			PushFollow(Follow._unary_in_mult761);
+			unary95=unary();
 			PopFollow();
 
-			adaptor.AddChild(root_0, unary90.Tree);
-			DebugLocation(153, 10);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:153:10: ( ( '*' ^| '/' ^| 'mod' ^) unary )*
+			adaptor.AddChild(root_0, unary95.Tree);
+			DebugLocation(152, 10);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:10: ( ( '*' ^| '/' ^| 'mod' ^) unary )*
 			try { DebugEnterSubRule(22);
 			while (true)
 			{
@@ -3212,10 +3287,10 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:153:11: ( '*' ^| '/' ^| 'mod' ^) unary
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:11: ( '*' ^| '/' ^| 'mod' ^) unary
 					{
-					DebugLocation(153, 11);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:153:11: ( '*' ^| '/' ^| 'mod' ^)
+					DebugLocation(152, 11);
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:11: ( '*' ^| '/' ^| 'mod' ^)
 					int alt21=3;
 					try { DebugEnterSubRule(21);
 					try { DebugEnterDecision(21, false);
@@ -3249,34 +3324,34 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:153:12: '*' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:12: '*' ^
 						{
-						DebugLocation(153, 15);
-						char_literal91=(IToken)Match(input,27,Follow._27_in_mult753); 
-						char_literal91_tree = (CommonTree)adaptor.Create(char_literal91);
-						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal91_tree, root_0);
+						DebugLocation(152, 15);
+						char_literal96=(IToken)Match(input,27,Follow._27_in_mult765); 
+						char_literal96_tree = (CommonTree)adaptor.Create(char_literal96);
+						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal96_tree, root_0);
 
 						}
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:153:19: '/' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:19: '/' ^
 						{
-						DebugLocation(153, 22);
-						char_literal92=(IToken)Match(input,32,Follow._32_in_mult758); 
-						char_literal92_tree = (CommonTree)adaptor.Create(char_literal92);
-						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal92_tree, root_0);
+						DebugLocation(152, 22);
+						char_literal97=(IToken)Match(input,32,Follow._32_in_mult770); 
+						char_literal97_tree = (CommonTree)adaptor.Create(char_literal97);
+						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal97_tree, root_0);
 
 						}
 						break;
 					case 3:
 						DebugEnterAlt(3);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:153:26: 'mod' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:152:26: 'mod' ^
 						{
-						DebugLocation(153, 31);
-						string_literal93=(IToken)Match(input,51,Follow._51_in_mult763); 
-						string_literal93_tree = (CommonTree)adaptor.Create(string_literal93);
-						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal93_tree, root_0);
+						DebugLocation(152, 31);
+						string_literal98=(IToken)Match(input,51,Follow._51_in_mult775); 
+						string_literal98_tree = (CommonTree)adaptor.Create(string_literal98);
+						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal98_tree, root_0);
 
 						}
 						break;
@@ -3284,12 +3359,12 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					}
 					} finally { DebugExitSubRule(21); }
 
-					DebugLocation(153, 34);
-					PushFollow(Follow._unary_in_mult767);
-					unary94=unary();
+					DebugLocation(152, 34);
+					PushFollow(Follow._unary_in_mult779);
+					unary99=unary();
 					PopFollow();
 
-					adaptor.AddChild(root_0, unary94.Tree);
+					adaptor.AddChild(root_0, unary99.Tree);
 
 					}
 					break;
@@ -3326,7 +3401,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			LeaveRule("mult", 21);
 			LeaveRule_mult();
 		}
-		DebugLocation(154, 1);
+		DebugLocation(153, 1);
 		} finally { DebugExitRule(GrammarFileName, "mult"); }
 		return retval;
 
@@ -3336,7 +3411,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_add();
 	partial void LeaveRule_add();
 	// $ANTLR start "add"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:156:1: add : mult ( ( '+' ^| '-' ^) mult )* ;
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:155:1: add : mult ( ( '+' ^| '-' ^) mult )* ;
 	[GrammarRule("add")]
 	private AstParserRuleReturnScope<CommonTree, IToken> add()
 	{
@@ -3348,31 +3423,31 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken char_literal96 = default(IToken);
-		IToken char_literal97 = default(IToken);
-		AstParserRuleReturnScope<CommonTree, IToken> mult95 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> mult98 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken char_literal101 = default(IToken);
+		IToken char_literal102 = default(IToken);
+		AstParserRuleReturnScope<CommonTree, IToken> mult100 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> mult103 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
-		CommonTree char_literal96_tree = default(CommonTree);
-		CommonTree char_literal97_tree = default(CommonTree);
+		CommonTree char_literal101_tree = default(CommonTree);
+		CommonTree char_literal102_tree = default(CommonTree);
 		try { DebugEnterRule(GrammarFileName, "add");
-		DebugLocation(156, 1);
+		DebugLocation(155, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:157:2: ( mult ( ( '+' ^| '-' ^) mult )* )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:156:2: ( mult ( ( '+' ^| '-' ^) mult )* )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:157:4: mult ( ( '+' ^| '-' ^) mult )*
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:156:4: mult ( ( '+' ^| '-' ^) mult )*
 			{
 			root_0 = (CommonTree)adaptor.Nil();
 
-			DebugLocation(157, 4);
-			PushFollow(Follow._mult_in_add781);
-			mult95=mult();
+			DebugLocation(156, 4);
+			PushFollow(Follow._mult_in_add793);
+			mult100=mult();
 			PopFollow();
 
-			adaptor.AddChild(root_0, mult95.Tree);
-			DebugLocation(157, 9);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:157:9: ( ( '+' ^| '-' ^) mult )*
+			adaptor.AddChild(root_0, mult100.Tree);
+			DebugLocation(156, 9);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:156:9: ( ( '+' ^| '-' ^) mult )*
 			try { DebugEnterSubRule(24);
 			while (true)
 			{
@@ -3391,10 +3466,10 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:157:10: ( '+' ^| '-' ^) mult
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:156:10: ( '+' ^| '-' ^) mult
 					{
-					DebugLocation(157, 10);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:157:10: ( '+' ^| '-' ^)
+					DebugLocation(156, 10);
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:156:10: ( '+' ^| '-' ^)
 					int alt23=2;
 					try { DebugEnterSubRule(23);
 					try { DebugEnterDecision(23, false);
@@ -3419,23 +3494,23 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:157:11: '+' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:156:11: '+' ^
 						{
-						DebugLocation(157, 14);
-						char_literal96=(IToken)Match(input,28,Follow._28_in_add785); 
-						char_literal96_tree = (CommonTree)adaptor.Create(char_literal96);
-						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal96_tree, root_0);
+						DebugLocation(156, 14);
+						char_literal101=(IToken)Match(input,28,Follow._28_in_add797); 
+						char_literal101_tree = (CommonTree)adaptor.Create(char_literal101);
+						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal101_tree, root_0);
 
 						}
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:157:18: '-' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:156:18: '-' ^
 						{
-						DebugLocation(157, 21);
-						char_literal97=(IToken)Match(input,30,Follow._30_in_add790); 
-						char_literal97_tree = (CommonTree)adaptor.Create(char_literal97);
-						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal97_tree, root_0);
+						DebugLocation(156, 21);
+						char_literal102=(IToken)Match(input,30,Follow._30_in_add802); 
+						char_literal102_tree = (CommonTree)adaptor.Create(char_literal102);
+						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal102_tree, root_0);
 
 						}
 						break;
@@ -3443,12 +3518,12 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					}
 					} finally { DebugExitSubRule(23); }
 
-					DebugLocation(157, 24);
-					PushFollow(Follow._mult_in_add794);
-					mult98=mult();
+					DebugLocation(156, 24);
+					PushFollow(Follow._mult_in_add806);
+					mult103=mult();
 					PopFollow();
 
-					adaptor.AddChild(root_0, mult98.Tree);
+					adaptor.AddChild(root_0, mult103.Tree);
 
 					}
 					break;
@@ -3485,7 +3560,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			LeaveRule("add", 22);
 			LeaveRule_add();
 		}
-		DebugLocation(158, 1);
+		DebugLocation(157, 1);
 		} finally { DebugExitRule(GrammarFileName, "add"); }
 		return retval;
 
@@ -3495,7 +3570,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_relation();
 	partial void LeaveRule_relation();
 	// $ANTLR start "relation"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:1: relation : add ( ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add )* ;
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:159:1: relation : add ( ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add )* ;
 	[GrammarRule("relation")]
 	private AstParserRuleReturnScope<CommonTree, IToken> relation()
 	{
@@ -3507,39 +3582,39 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken string_literal100 = default(IToken);
-		IToken string_literal101 = default(IToken);
-		IToken char_literal102 = default(IToken);
-		IToken string_literal103 = default(IToken);
-		IToken string_literal104 = default(IToken);
-		IToken char_literal105 = default(IToken);
-		AstParserRuleReturnScope<CommonTree, IToken> add99 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> add106 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken string_literal105 = default(IToken);
+		IToken string_literal106 = default(IToken);
+		IToken char_literal107 = default(IToken);
+		IToken string_literal108 = default(IToken);
+		IToken string_literal109 = default(IToken);
+		IToken char_literal110 = default(IToken);
+		AstParserRuleReturnScope<CommonTree, IToken> add104 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> add111 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
-		CommonTree string_literal100_tree = default(CommonTree);
-		CommonTree string_literal101_tree = default(CommonTree);
-		CommonTree char_literal102_tree = default(CommonTree);
-		CommonTree string_literal103_tree = default(CommonTree);
-		CommonTree string_literal104_tree = default(CommonTree);
-		CommonTree char_literal105_tree = default(CommonTree);
+		CommonTree string_literal105_tree = default(CommonTree);
+		CommonTree string_literal106_tree = default(CommonTree);
+		CommonTree char_literal107_tree = default(CommonTree);
+		CommonTree string_literal108_tree = default(CommonTree);
+		CommonTree string_literal109_tree = default(CommonTree);
+		CommonTree char_literal110_tree = default(CommonTree);
 		try { DebugEnterRule(GrammarFileName, "relation");
-		DebugLocation(160, 1);
+		DebugLocation(159, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:2: ( add ( ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add )* )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:2: ( add ( ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add )* )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:4: add ( ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add )*
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:4: add ( ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add )*
 			{
 			root_0 = (CommonTree)adaptor.Nil();
 
-			DebugLocation(161, 4);
-			PushFollow(Follow._add_in_relation807);
-			add99=add();
+			DebugLocation(160, 4);
+			PushFollow(Follow._add_in_relation819);
+			add104=add();
 			PopFollow();
 
-			adaptor.AddChild(root_0, add99.Tree);
-			DebugLocation(161, 8);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:8: ( ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add )*
+			adaptor.AddChild(root_0, add104.Tree);
+			DebugLocation(160, 8);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:8: ( ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add )*
 			try { DebugEnterSubRule(26);
 			while (true)
 			{
@@ -3558,10 +3633,10 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:9: ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:9: ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^) add
 					{
-					DebugLocation(161, 9);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:9: ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^)
+					DebugLocation(160, 9);
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:9: ( '==' ^| '!=' ^| '<' ^| '<=' ^| '>=' ^| '>' ^)
 					int alt25=6;
 					try { DebugEnterSubRule(25);
 					try { DebugEnterDecision(25, false);
@@ -3610,67 +3685,67 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:10: '==' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:10: '==' ^
 						{
-						DebugLocation(161, 14);
-						string_literal100=(IToken)Match(input,38,Follow._38_in_relation811); 
-						string_literal100_tree = (CommonTree)adaptor.Create(string_literal100);
-						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal100_tree, root_0);
+						DebugLocation(160, 14);
+						string_literal105=(IToken)Match(input,38,Follow._38_in_relation823); 
+						string_literal105_tree = (CommonTree)adaptor.Create(string_literal105);
+						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal105_tree, root_0);
 
 						}
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:18: '!=' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:18: '!=' ^
 						{
-						DebugLocation(161, 22);
-						string_literal101=(IToken)Match(input,23,Follow._23_in_relation816); 
-						string_literal101_tree = (CommonTree)adaptor.Create(string_literal101);
-						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal101_tree, root_0);
+						DebugLocation(160, 22);
+						string_literal106=(IToken)Match(input,23,Follow._23_in_relation828); 
+						string_literal106_tree = (CommonTree)adaptor.Create(string_literal106);
+						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal106_tree, root_0);
 
 						}
 						break;
 					case 3:
 						DebugEnterAlt(3);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:26: '<' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:26: '<' ^
 						{
-						DebugLocation(161, 29);
-						char_literal102=(IToken)Match(input,35,Follow._35_in_relation821); 
-						char_literal102_tree = (CommonTree)adaptor.Create(char_literal102);
-						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal102_tree, root_0);
+						DebugLocation(160, 29);
+						char_literal107=(IToken)Match(input,35,Follow._35_in_relation833); 
+						char_literal107_tree = (CommonTree)adaptor.Create(char_literal107);
+						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal107_tree, root_0);
 
 						}
 						break;
 					case 4:
 						DebugEnterAlt(4);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:33: '<=' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:33: '<=' ^
 						{
-						DebugLocation(161, 37);
-						string_literal103=(IToken)Match(input,36,Follow._36_in_relation826); 
-						string_literal103_tree = (CommonTree)adaptor.Create(string_literal103);
-						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal103_tree, root_0);
+						DebugLocation(160, 37);
+						string_literal108=(IToken)Match(input,36,Follow._36_in_relation838); 
+						string_literal108_tree = (CommonTree)adaptor.Create(string_literal108);
+						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal108_tree, root_0);
 
 						}
 						break;
 					case 5:
 						DebugEnterAlt(5);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:41: '>=' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:41: '>=' ^
 						{
-						DebugLocation(161, 45);
-						string_literal104=(IToken)Match(input,40,Follow._40_in_relation831); 
-						string_literal104_tree = (CommonTree)adaptor.Create(string_literal104);
-						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal104_tree, root_0);
+						DebugLocation(160, 45);
+						string_literal109=(IToken)Match(input,40,Follow._40_in_relation843); 
+						string_literal109_tree = (CommonTree)adaptor.Create(string_literal109);
+						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal109_tree, root_0);
 
 						}
 						break;
 					case 6:
 						DebugEnterAlt(6);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:161:49: '>' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:160:49: '>' ^
 						{
-						DebugLocation(161, 52);
-						char_literal105=(IToken)Match(input,39,Follow._39_in_relation836); 
-						char_literal105_tree = (CommonTree)adaptor.Create(char_literal105);
-						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal105_tree, root_0);
+						DebugLocation(160, 52);
+						char_literal110=(IToken)Match(input,39,Follow._39_in_relation848); 
+						char_literal110_tree = (CommonTree)adaptor.Create(char_literal110);
+						root_0 = (CommonTree)adaptor.BecomeRoot(char_literal110_tree, root_0);
 
 						}
 						break;
@@ -3678,12 +3753,12 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					}
 					} finally { DebugExitSubRule(25); }
 
-					DebugLocation(161, 55);
-					PushFollow(Follow._add_in_relation840);
-					add106=add();
+					DebugLocation(160, 55);
+					PushFollow(Follow._add_in_relation852);
+					add111=add();
 					PopFollow();
 
-					adaptor.AddChild(root_0, add106.Tree);
+					adaptor.AddChild(root_0, add111.Tree);
 
 					}
 					break;
@@ -3720,7 +3795,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			LeaveRule("relation", 23);
 			LeaveRule_relation();
 		}
-		DebugLocation(162, 1);
+		DebugLocation(161, 1);
 		} finally { DebugExitRule(GrammarFileName, "relation"); }
 		return retval;
 
@@ -3730,7 +3805,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	partial void EnterRule_expression();
 	partial void LeaveRule_expression();
 	// $ANTLR start "expression"
-	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:164:1: expression : relation ( ( '&&' ^| '||' ^) relation )* ;
+	// D:\\Eclipse\\aegiscript_live\\aegiscript.g:163:1: expression : relation ( ( '&&' ^| '||' ^) relation )* ;
 	[GrammarRule("expression")]
 	private AstParserRuleReturnScope<CommonTree, IToken> expression()
 	{
@@ -3742,31 +3817,31 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 
 		CommonTree root_0 = default(CommonTree);
 
-		IToken string_literal108 = default(IToken);
-		IToken string_literal109 = default(IToken);
-		AstParserRuleReturnScope<CommonTree, IToken> relation107 = default(AstParserRuleReturnScope<CommonTree, IToken>);
-		AstParserRuleReturnScope<CommonTree, IToken> relation110 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		IToken string_literal113 = default(IToken);
+		IToken string_literal114 = default(IToken);
+		AstParserRuleReturnScope<CommonTree, IToken> relation112 = default(AstParserRuleReturnScope<CommonTree, IToken>);
+		AstParserRuleReturnScope<CommonTree, IToken> relation115 = default(AstParserRuleReturnScope<CommonTree, IToken>);
 
-		CommonTree string_literal108_tree = default(CommonTree);
-		CommonTree string_literal109_tree = default(CommonTree);
+		CommonTree string_literal113_tree = default(CommonTree);
+		CommonTree string_literal114_tree = default(CommonTree);
 		try { DebugEnterRule(GrammarFileName, "expression");
-		DebugLocation(164, 1);
+		DebugLocation(163, 1);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:165:2: ( relation ( ( '&&' ^| '||' ^) relation )* )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:164:2: ( relation ( ( '&&' ^| '||' ^) relation )* )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:165:4: relation ( ( '&&' ^| '||' ^) relation )*
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:164:4: relation ( ( '&&' ^| '||' ^) relation )*
 			{
 			root_0 = (CommonTree)adaptor.Nil();
 
-			DebugLocation(165, 4);
-			PushFollow(Follow._relation_in_expression854);
-			relation107=relation();
+			DebugLocation(164, 4);
+			PushFollow(Follow._relation_in_expression866);
+			relation112=relation();
 			PopFollow();
 
-			adaptor.AddChild(root_0, relation107.Tree);
-			DebugLocation(165, 13);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:165:13: ( ( '&&' ^| '||' ^) relation )*
+			adaptor.AddChild(root_0, relation112.Tree);
+			DebugLocation(164, 13);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:164:13: ( ( '&&' ^| '||' ^) relation )*
 			try { DebugEnterSubRule(28);
 			while (true)
 			{
@@ -3785,10 +3860,10 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:165:14: ( '&&' ^| '||' ^) relation
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:164:14: ( '&&' ^| '||' ^) relation
 					{
-					DebugLocation(165, 14);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:165:14: ( '&&' ^| '||' ^)
+					DebugLocation(164, 14);
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:164:14: ( '&&' ^| '||' ^)
 					int alt27=2;
 					try { DebugEnterSubRule(27);
 					try { DebugEnterDecision(27, false);
@@ -3813,23 +3888,23 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:165:15: '&&' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:164:15: '&&' ^
 						{
-						DebugLocation(165, 19);
-						string_literal108=(IToken)Match(input,24,Follow._24_in_expression858); 
-						string_literal108_tree = (CommonTree)adaptor.Create(string_literal108);
-						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal108_tree, root_0);
+						DebugLocation(164, 19);
+						string_literal113=(IToken)Match(input,24,Follow._24_in_expression870); 
+						string_literal113_tree = (CommonTree)adaptor.Create(string_literal113);
+						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal113_tree, root_0);
 
 						}
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:165:23: '||' ^
+						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:164:23: '||' ^
 						{
-						DebugLocation(165, 27);
-						string_literal109=(IToken)Match(input,55,Follow._55_in_expression863); 
-						string_literal109_tree = (CommonTree)adaptor.Create(string_literal109);
-						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal109_tree, root_0);
+						DebugLocation(164, 27);
+						string_literal114=(IToken)Match(input,55,Follow._55_in_expression875); 
+						string_literal114_tree = (CommonTree)adaptor.Create(string_literal114);
+						root_0 = (CommonTree)adaptor.BecomeRoot(string_literal114_tree, root_0);
 
 						}
 						break;
@@ -3837,12 +3912,12 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 					}
 					} finally { DebugExitSubRule(27); }
 
-					DebugLocation(165, 30);
-					PushFollow(Follow._relation_in_expression867);
-					relation110=relation();
+					DebugLocation(164, 30);
+					PushFollow(Follow._relation_in_expression879);
+					relation115=relation();
 					PopFollow();
 
-					adaptor.AddChild(root_0, relation110.Tree);
+					adaptor.AddChild(root_0, relation115.Tree);
 
 					}
 					break;
@@ -3879,7 +3954,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 			LeaveRule("expression", 24);
 			LeaveRule_expression();
 		}
-		DebugLocation(166, 1);
+		DebugLocation(165, 1);
 		} finally { DebugExitRule(GrammarFileName, "expression"); }
 		return retval;
 
@@ -3951,69 +4026,73 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 		public static readonly BitSet _ifStatement_in_statement422 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _funCallStatement_in_statement427 = new BitSet(new ulong[]{0x400000000UL});
 		public static readonly BitSet _34_in_statement429 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _IDENT_in_assignmentStatement441 = new BitSet(new ulong[]{0x2000000000UL});
-		public static readonly BitSet _37_in_assignmentStatement443 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _expression_in_assignmentStatement446 = new BitSet(new ulong[]{0x400000000UL});
-		public static readonly BitSet _34_in_assignmentStatement448 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _accessor_in_assignmentStatement457 = new BitSet(new ulong[]{0x2000000000UL});
-		public static readonly BitSet _37_in_assignmentStatement459 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _expression_in_assignmentStatement462 = new BitSet(new ulong[]{0x400000000UL});
-		public static readonly BitSet _34_in_assignmentStatement464 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _IDENT_in_accessor481 = new BitSet(new ulong[]{0x40000000000UL});
-		public static readonly BitSet _42_in_accessor484 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _expression_in_accessor490 = new BitSet(new ulong[]{0x80000000000UL});
-		public static readonly BitSet _43_in_accessor492 = new BitSet(new ulong[]{0x40000000002UL});
-		public static readonly BitSet _IDENT_in_accessorStatement532 = new BitSet(new ulong[]{0x80000000UL});
-		public static readonly BitSet _31_in_accessorStatement535 = new BitSet(new ulong[]{0x8000UL});
-		public static readonly BitSet _funCallStatement_in_accessorStatement539 = new BitSet(new ulong[]{0x80000002UL});
-		public static readonly BitSet _42_in_array578 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _expression_in_array583 = new BitSet(new ulong[]{0x80020000000UL});
-		public static readonly BitSet _29_in_array587 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _expression_in_array593 = new BitSet(new ulong[]{0x80020000000UL});
-		public static readonly BitSet _43_in_array596 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _42_in_array614 = new BitSet(new ulong[]{0x80000000000UL});
-		public static readonly BitSet _43_in_array615 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _IDENT_in_term644 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _25_in_term649 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _expression_in_term651 = new BitSet(new ulong[]{0x4000000UL});
-		public static readonly BitSet _26_in_term653 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _INTEGER_in_term662 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _STRING_in_term668 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _BOOL_in_term673 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FLOAT_in_term678 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _array_in_term683 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _accessor_in_term688 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _funCallStatement_in_term693 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _accessorStatement_in_term698 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _52_in_negation710 = new BitSet(new ulong[]{0x10040002119040UL});
-		public static readonly BitSet _term_in_negation714 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _28_in_unary728 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _30_in_unary733 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _negation_in_unary738 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _unary_in_mult749 = new BitSet(new ulong[]{0x8000108000002UL});
-		public static readonly BitSet _27_in_mult753 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _32_in_mult758 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _51_in_mult763 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _unary_in_mult767 = new BitSet(new ulong[]{0x8000108000002UL});
-		public static readonly BitSet _mult_in_add781 = new BitSet(new ulong[]{0x50000002UL});
-		public static readonly BitSet _28_in_add785 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _30_in_add790 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _mult_in_add794 = new BitSet(new ulong[]{0x50000002UL});
-		public static readonly BitSet _add_in_relation807 = new BitSet(new ulong[]{0x1D800800002UL});
-		public static readonly BitSet _38_in_relation811 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _23_in_relation816 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _35_in_relation821 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _36_in_relation826 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _40_in_relation831 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _39_in_relation836 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _add_in_relation840 = new BitSet(new ulong[]{0x1D800800002UL});
-		public static readonly BitSet _relation_in_expression854 = new BitSet(new ulong[]{0x80000001000002UL});
-		public static readonly BitSet _24_in_expression858 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _55_in_expression863 = new BitSet(new ulong[]{0x10040052119040UL});
-		public static readonly BitSet _relation_in_expression867 = new BitSet(new ulong[]{0x80000001000002UL});
+		public static readonly BitSet _accessorStatement_in_statement434 = new BitSet(new ulong[]{0x400000000UL});
+		public static readonly BitSet _34_in_statement436 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _IDENT_in_assignmentStatement447 = new BitSet(new ulong[]{0x2000000000UL});
+		public static readonly BitSet _37_in_assignmentStatement449 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _expression_in_assignmentStatement452 = new BitSet(new ulong[]{0x400000000UL});
+		public static readonly BitSet _34_in_assignmentStatement454 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _IDENT_in_assignmentStatement461 = new BitSet(new ulong[]{0x2000000000UL});
+		public static readonly BitSet _37_in_assignmentStatement463 = new BitSet(new ulong[]{0x8000UL});
+		public static readonly BitSet _accessorStatement_in_assignmentStatement466 = new BitSet(new ulong[]{0x400000000UL});
+		public static readonly BitSet _34_in_assignmentStatement468 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _accessor_in_assignmentStatement474 = new BitSet(new ulong[]{0x2000000000UL});
+		public static readonly BitSet _37_in_assignmentStatement476 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _expression_in_assignmentStatement479 = new BitSet(new ulong[]{0x400000000UL});
+		public static readonly BitSet _34_in_assignmentStatement481 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _IDENT_in_accessor498 = new BitSet(new ulong[]{0x40000000000UL});
+		public static readonly BitSet _42_in_accessor501 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _expression_in_accessor507 = new BitSet(new ulong[]{0x80000000000UL});
+		public static readonly BitSet _43_in_accessor509 = new BitSet(new ulong[]{0x40000000002UL});
+		public static readonly BitSet _IDENT_in_accessorStatement549 = new BitSet(new ulong[]{0x80000000UL});
+		public static readonly BitSet _31_in_accessorStatement552 = new BitSet(new ulong[]{0x8000UL});
+		public static readonly BitSet _funCallStatement_in_accessorStatement556 = new BitSet(new ulong[]{0x80000002UL});
+		public static readonly BitSet _42_in_array595 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _expression_in_array600 = new BitSet(new ulong[]{0x80020000000UL});
+		public static readonly BitSet _29_in_array604 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _expression_in_array610 = new BitSet(new ulong[]{0x80020000000UL});
+		public static readonly BitSet _43_in_array613 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _42_in_array631 = new BitSet(new ulong[]{0x80000000000UL});
+		public static readonly BitSet _43_in_array632 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _IDENT_in_term661 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _25_in_term666 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _expression_in_term668 = new BitSet(new ulong[]{0x4000000UL});
+		public static readonly BitSet _26_in_term670 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _INTEGER_in_term679 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _STRING_in_term685 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _BOOL_in_term690 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FLOAT_in_term695 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _array_in_term700 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _accessor_in_term705 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _funCallStatement_in_term710 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _52_in_negation722 = new BitSet(new ulong[]{0x10040002119040UL});
+		public static readonly BitSet _term_in_negation726 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _28_in_unary740 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _30_in_unary745 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _negation_in_unary750 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _unary_in_mult761 = new BitSet(new ulong[]{0x8000108000002UL});
+		public static readonly BitSet _27_in_mult765 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _32_in_mult770 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _51_in_mult775 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _unary_in_mult779 = new BitSet(new ulong[]{0x8000108000002UL});
+		public static readonly BitSet _mult_in_add793 = new BitSet(new ulong[]{0x50000002UL});
+		public static readonly BitSet _28_in_add797 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _30_in_add802 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _mult_in_add806 = new BitSet(new ulong[]{0x50000002UL});
+		public static readonly BitSet _add_in_relation819 = new BitSet(new ulong[]{0x1D800800002UL});
+		public static readonly BitSet _38_in_relation823 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _23_in_relation828 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _35_in_relation833 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _36_in_relation838 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _40_in_relation843 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _39_in_relation848 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _add_in_relation852 = new BitSet(new ulong[]{0x1D800800002UL});
+		public static readonly BitSet _relation_in_expression866 = new BitSet(new ulong[]{0x80000001000002UL});
+		public static readonly BitSet _24_in_expression870 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _55_in_expression875 = new BitSet(new ulong[]{0x10040052119040UL});
+		public static readonly BitSet _relation_in_expression879 = new BitSet(new ulong[]{0x80000001000002UL});
 	}
 	#endregion Follow sets
 }
 
 } // namespace 
-

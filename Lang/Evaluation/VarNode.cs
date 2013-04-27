@@ -6,7 +6,7 @@ namespace AEGIScript.Lang.Evaluation
 {
     class VarNode : TermNode
     {
-        public VarNode(CommonTree tree, String sym, bool left = false) : base(tree, sym)
+        public VarNode(CommonTree tree, String sym) : base(tree, sym)
         {
             Symbol = sym;
         }
@@ -14,7 +14,7 @@ namespace AEGIScript.Lang.Evaluation
         public Type Interpret(AEGIScript.Lang.Scoping.Scope symbols)
         {
             //TODO
-            return Type.VAR;
+            return Type.Var;
         }
 
         public string Symbol;
@@ -22,7 +22,7 @@ namespace AEGIScript.Lang.Evaluation
 
     class IntVarNode : VarNode
     {
-        public IntVarNode(CommonTree tree, String sym, bool left = false) : base(tree, sym, left)
+        public IntVarNode(CommonTree tree, String sym) : base(tree, sym)
         {
 
         }
@@ -35,8 +35,8 @@ namespace AEGIScript.Lang.Evaluation
 
     class DoubleVarNode : VarNode
     {
-        public DoubleVarNode(CommonTree tree, String sym, bool left = false) 
-            : base(tree, sym, left)
+        public DoubleVarNode(CommonTree tree, String sym) 
+            : base(tree, sym)
         {
 
         }
@@ -49,8 +49,8 @@ namespace AEGIScript.Lang.Evaluation
 
     class StringVarNode : VarNode
     {
-        public StringVarNode(CommonTree tree, String sym, bool left = false)
-            : base(tree, sym, left)
+        public StringVarNode(CommonTree tree, String sym)
+            : base(tree, sym)
         {
 
         }
@@ -63,8 +63,8 @@ namespace AEGIScript.Lang.Evaluation
 
     class BoolVarNode : VarNode
     {
-        public BoolVarNode(CommonTree tree, String sym, bool left = false)
-            : base(tree, sym, left)
+        public BoolVarNode(CommonTree tree, String sym)
+            : base(tree, sym)
         {
 
         }

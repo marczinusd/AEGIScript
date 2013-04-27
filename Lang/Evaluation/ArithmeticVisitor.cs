@@ -16,7 +16,7 @@ namespace AEGIScript.Lang.Evaluation
 
         public int Visit(ArithmeticNode node)
         {
-            switch (node.op)
+            switch (node.Op)
             {
                 case ArithmeticNode.Operator.ADD:
                     //return Visit(node.Children[0].ActualNode) + Visit(node.Children[1].ActualNode));

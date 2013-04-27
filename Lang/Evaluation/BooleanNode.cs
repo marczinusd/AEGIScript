@@ -1,9 +1,5 @@
 ﻿using Antlr.Runtime.Tree;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AEGIScript.Lang.Evaluation
 {
@@ -13,13 +9,13 @@ namespace AEGIScript.Lang.Evaluation
             : base(tree, content)
         {
             Value = Boolean.Parse(content);
-            ActualType = Type.BOOL;
+            ActualType = Type.Bool;
         }
 
         public BooleanNode(Boolean value)
         {
             Value = value;
-            ActualType = Type.BOOL;
+            ActualType = Type.Bool;
         }
 
 

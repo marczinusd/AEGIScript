@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Pipes;
 using System.Linq;
 using Antlr.Runtime.Tree;
-using ELTE.AEGIS.IO;
-using ELTE.AEGIS.IO.GeoTiff;
-using ELTE.AEGIS.IO.Shapefile;
 
 
 namespace AEGIScript.Lang.Evaluation
@@ -18,8 +13,8 @@ namespace AEGIScript.Lang.Evaluation
     {
         public FunCallNode(CommonTree tree) : base(tree)
         {
-            ActualType = Type.FUNCALL;
-            FunName = (tree.Children[0] as CommonTree).Text;
+            ActualType = Type.FunCall;
+            FunName = ((CommonTree) tree.Children[0]).Text;
         }
 
 

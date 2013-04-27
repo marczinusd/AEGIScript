@@ -13,13 +13,13 @@ namespace AEGIScript.Lang.Evaluation
         public StringNode(CommonTree tree, String content) : base(tree, content)
         {
             Value = content.Trim(new char[]{'"'});
-            ActualType = Type.STRING;
+            ActualType = Type.String;
         }
 
         public StringNode(String value)
         {
             Value = value;
-            ActualType = Type.STRING;
+            ActualType = Type.String;
         }
 
         public String Interpret(SymbolTables.SymbolTable symbols)

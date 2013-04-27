@@ -1,18 +1,14 @@
 ﻿using ICSharpCode.AvalonEdit.Document;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AEGIScript.GUI.ViewModel
 {
     class SaveFileEventArgs : EventArgs
     {
-        public SaveFileEventArgs(TextDocument _doc, string _path)
+        public SaveFileEventArgs(TextDocument doc, string path)
         {
-            Doc = _doc;
-            Path = _path;
+            Doc = doc;
+            Path = path;
         }
 
         public TextDocument Doc { get; private set; }

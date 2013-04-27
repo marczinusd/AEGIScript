@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5 D:\\Eclipse\\aegiscript_live\\aegiscript.g 2013-04-26 23:01:51
+// $ANTLR 3.5 D:\\Eclipse\\aegiscript_live\\aegiscript.g 2013-04-24 20:03:54
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -1447,7 +1447,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		{
 			int _type = BOOL;
 			int _channel = DefaultTokenChannel;
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:170:2: ( 'true' | 'false' )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:169:2: ( 'true' | 'false' )
 			int alt1=2;
 			try { DebugEnterDecision(1, false);
 			int LA1_1 = input.LA(1);
@@ -1471,9 +1471,9 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:170:4: 'true'
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:169:4: 'true'
 				{
-				DebugLocation(170, 4);
+				DebugLocation(169, 4);
 				Match("true"); 
 
 
@@ -1481,9 +1481,9 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:171:4: 'false'
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:170:4: 'false'
 				{
-				DebugLocation(171, 4);
+				DebugLocation(170, 4);
 				Match("false"); 
 
 
@@ -1517,7 +1517,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		{
 			int _type = FLOAT;
 			int _channel = DefaultTokenChannel;
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:5: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( EXPONENT )? | '.' ( '0' .. '9' )+ ( EXPONENT )? | ( '0' .. '9' )+ EXPONENT )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:174:5: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( EXPONENT )? | '.' ( '0' .. '9' )+ ( EXPONENT )? | ( '0' .. '9' )+ EXPONENT )
 			int alt8=3;
 			try { DebugEnterDecision(8, false);
 			try
@@ -1534,10 +1534,10 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:9: ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( EXPONENT )?
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:174:9: ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( EXPONENT )?
 				{
-				DebugLocation(175, 9);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:9: ( '0' .. '9' )+
+				DebugLocation(174, 9);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:174:9: ( '0' .. '9' )+
 				int cnt2=0;
 				try { DebugEnterSubRule(2);
 				while (true)
@@ -1559,7 +1559,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 						DebugEnterAlt(1);
 						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 						{
-						DebugLocation(175, 9);
+						DebugLocation(174, 9);
 						input.Consume();
 
 
@@ -1581,10 +1581,10 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 				} finally { DebugExitSubRule(2); }
 
-				DebugLocation(175, 21);
+				DebugLocation(174, 21);
 				Match('.'); 
-				DebugLocation(175, 25);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:25: ( '0' .. '9' )*
+				DebugLocation(174, 25);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:174:25: ( '0' .. '9' )*
 				try { DebugEnterSubRule(3);
 				while (true)
 				{
@@ -1605,7 +1605,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 						DebugEnterAlt(1);
 						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 						{
-						DebugLocation(175, 25);
+						DebugLocation(174, 25);
 						input.Consume();
 
 
@@ -1622,8 +1622,8 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 				} finally { DebugExitSubRule(3); }
 
-				DebugLocation(175, 37);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:37: ( EXPONENT )?
+				DebugLocation(174, 37);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:174:37: ( EXPONENT )?
 				int alt4=2;
 				try { DebugEnterSubRule(4);
 				try { DebugEnterDecision(4, false);
@@ -1638,9 +1638,9 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:37: EXPONENT
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:174:37: EXPONENT
 					{
-					DebugLocation(175, 37);
+					DebugLocation(174, 37);
 					mEXPONENT(); 
 
 					}
@@ -1654,12 +1654,12 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:176:9: '.' ( '0' .. '9' )+ ( EXPONENT )?
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:9: '.' ( '0' .. '9' )+ ( EXPONENT )?
 				{
-				DebugLocation(176, 9);
+				DebugLocation(175, 9);
 				Match('.'); 
-				DebugLocation(176, 13);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:176:13: ( '0' .. '9' )+
+				DebugLocation(175, 13);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:13: ( '0' .. '9' )+
 				int cnt5=0;
 				try { DebugEnterSubRule(5);
 				while (true)
@@ -1681,7 +1681,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 						DebugEnterAlt(1);
 						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 						{
-						DebugLocation(176, 13);
+						DebugLocation(175, 13);
 						input.Consume();
 
 
@@ -1703,8 +1703,8 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 				} finally { DebugExitSubRule(5); }
 
-				DebugLocation(176, 25);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:176:25: ( EXPONENT )?
+				DebugLocation(175, 25);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:25: ( EXPONENT )?
 				int alt6=2;
 				try { DebugEnterSubRule(6);
 				try { DebugEnterDecision(6, false);
@@ -1719,9 +1719,9 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:176:25: EXPONENT
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:175:25: EXPONENT
 					{
-					DebugLocation(176, 25);
+					DebugLocation(175, 25);
 					mEXPONENT(); 
 
 					}
@@ -1735,10 +1735,10 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:177:9: ( '0' .. '9' )+ EXPONENT
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:176:9: ( '0' .. '9' )+ EXPONENT
 				{
-				DebugLocation(177, 9);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:177:9: ( '0' .. '9' )+
+				DebugLocation(176, 9);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:176:9: ( '0' .. '9' )+
 				int cnt7=0;
 				try { DebugEnterSubRule(7);
 				while (true)
@@ -1760,7 +1760,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 						DebugEnterAlt(1);
 						// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 						{
-						DebugLocation(177, 9);
+						DebugLocation(176, 9);
 						input.Consume();
 
 
@@ -1782,7 +1782,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 				} finally { DebugExitSubRule(7); }
 
-				DebugLocation(177, 21);
+				DebugLocation(176, 21);
 				mEXPONENT(); 
 
 				}
@@ -1815,15 +1815,15 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		{
 			int _type = MULTILINE_COMMENT;
 			int _channel = DefaultTokenChannel;
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:180:19: ( '/*' ( . )* '*/' )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:179:19: ( '/*' ( . )* '*/' )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:180:21: '/*' ( . )* '*/'
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:179:21: '/*' ( . )* '*/'
 			{
-			DebugLocation(180, 21);
+			DebugLocation(179, 21);
 			Match("/*"); 
 
-			DebugLocation(180, 26);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:180:26: ( . )*
+			DebugLocation(179, 26);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:179:26: ( . )*
 			try { DebugEnterSubRule(9);
 			while (true)
 			{
@@ -1857,9 +1857,9 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:180:26: .
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:179:26: .
 					{
-					DebugLocation(180, 26);
+					DebugLocation(179, 26);
 					MatchAny(); 
 
 					}
@@ -1875,10 +1875,10 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(9); }
 
-			DebugLocation(180, 29);
+			DebugLocation(179, 29);
 			Match("*/"); 
 
-			DebugLocation(180, 34);
+			DebugLocation(179, 34);
 			_channel = HIDDEN;
 
 			}
@@ -1907,11 +1907,11 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		TraceIn("EXPONENT", 41);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:184:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:183:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:184:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:183:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
 			{
-			DebugLocation(184, 12);
+			DebugLocation(183, 12);
 			if (input.LA(1)=='E'||input.LA(1)=='e')
 			{
 				input.Consume();
@@ -1924,8 +1924,8 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				throw mse;
 			}
 
-			DebugLocation(184, 22);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:184:22: ( '+' | '-' )?
+			DebugLocation(183, 22);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:183:22: ( '+' | '-' )?
 			int alt10=2;
 			try { DebugEnterSubRule(10);
 			try { DebugEnterDecision(10, false);
@@ -1942,7 +1942,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				DebugEnterAlt(1);
 				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 				{
-				DebugLocation(184, 22);
+				DebugLocation(183, 22);
 				input.Consume();
 
 
@@ -1952,8 +1952,8 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 			}
 			} finally { DebugExitSubRule(10); }
 
-			DebugLocation(184, 33);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:184:33: ( '0' .. '9' )+
+			DebugLocation(183, 33);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:183:33: ( '0' .. '9' )+
 			int cnt11=0;
 			try { DebugEnterSubRule(11);
 			while (true)
@@ -1975,7 +1975,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 					{
-					DebugLocation(184, 33);
+					DebugLocation(183, 33);
 					input.Consume();
 
 
@@ -2022,11 +2022,11 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		TraceIn("HEX_DIGIT", 42);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:187:11: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:186:11: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
 			DebugEnterAlt(1);
 			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 			{
-			DebugLocation(187, 11);
+			DebugLocation(186, 11);
 			if ((input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f'))
 			{
 				input.Consume();
@@ -2064,7 +2064,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		TraceIn("ESC_SEQ", 43);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:191:5: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' ) | UNICODE_ESC | OCTAL_ESC )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:190:5: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' ) | UNICODE_ESC | OCTAL_ESC )
 			int alt12=3;
 			try { DebugEnterDecision(12, false);
 			int LA12_1 = input.LA(1);
@@ -2122,11 +2122,11 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:191:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' )
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:190:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' )
 				{
-				DebugLocation(191, 9);
+				DebugLocation(190, 9);
 				Match('\\'); 
-				DebugLocation(191, 14);
+				DebugLocation(190, 14);
 				input.Consume();
 
 
@@ -2134,18 +2134,18 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:192:9: UNICODE_ESC
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:191:9: UNICODE_ESC
 				{
-				DebugLocation(192, 9);
+				DebugLocation(191, 9);
 				mUNICODE_ESC(); 
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:193:9: OCTAL_ESC
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:192:9: OCTAL_ESC
 				{
-				DebugLocation(193, 9);
+				DebugLocation(192, 9);
 				mOCTAL_ESC(); 
 
 				}
@@ -2174,7 +2174,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		TraceIn("OCTAL_ESC", 44);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:198:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:197:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
 			int alt13=3;
 			try { DebugEnterDecision(13, false);
 			int LA13_1 = input.LA(1);
@@ -2236,7 +2236,25 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:198:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:197:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
+				{
+				DebugLocation(197, 9);
+				Match('\\'); 
+				DebugLocation(197, 14);
+				input.Consume();
+
+				DebugLocation(197, 25);
+				input.Consume();
+
+				DebugLocation(197, 36);
+				input.Consume();
+
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:198:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
 				{
 				DebugLocation(198, 9);
 				Match('\\'); 
@@ -2246,34 +2264,16 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				DebugLocation(198, 25);
 				input.Consume();
 
-				DebugLocation(198, 36);
-				input.Consume();
-
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:199:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
-				{
-				DebugLocation(199, 9);
-				Match('\\'); 
-				DebugLocation(199, 14);
-				input.Consume();
-
-				DebugLocation(199, 25);
-				input.Consume();
-
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:200:9: '\\\\' ( '0' .. '7' )
+				// D:\\Eclipse\\aegiscript_live\\aegiscript.g:199:9: '\\\\' ( '0' .. '7' )
 				{
-				DebugLocation(200, 9);
+				DebugLocation(199, 9);
 				Match('\\'); 
-				DebugLocation(200, 14);
+				DebugLocation(199, 14);
 				input.Consume();
 
 
@@ -2303,21 +2303,21 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		TraceIn("UNICODE_ESC", 45);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:205:5: ( '\\\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:204:5: ( '\\\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:205:9: '\\\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:204:9: '\\\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
 			{
-			DebugLocation(205, 9);
+			DebugLocation(204, 9);
 			Match('\\'); 
-			DebugLocation(205, 14);
+			DebugLocation(204, 14);
 			Match('u'); 
-			DebugLocation(205, 18);
+			DebugLocation(204, 18);
 			mHEX_DIGIT(); 
-			DebugLocation(205, 28);
+			DebugLocation(204, 28);
 			mHEX_DIGIT(); 
-			DebugLocation(205, 38);
+			DebugLocation(204, 38);
 			mHEX_DIGIT(); 
-			DebugLocation(205, 48);
+			DebugLocation(204, 48);
 			mHEX_DIGIT(); 
 
 			}
@@ -2344,11 +2344,11 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		TraceIn("LETTER", 46);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:206:17: ( ( 'a' .. 'z' | 'A' .. 'Z' ) )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:205:17: ( ( 'a' .. 'z' | 'A' .. 'Z' ) )
 			DebugEnterAlt(1);
 			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 			{
-			DebugLocation(206, 17);
+			DebugLocation(205, 17);
 			if ((input.LA(1)>='A' && input.LA(1)<='Z')||(input.LA(1)>='a' && input.LA(1)<='z'))
 			{
 				input.Consume();
@@ -2386,11 +2386,11 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		TraceIn("DIGIT", 47);
 		try
 		{
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:207:16: ( '0' .. '9' )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:206:16: ( '0' .. '9' )
 			DebugEnterAlt(1);
 			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 			{
-			DebugLocation(207, 16);
+			DebugLocation(206, 16);
 			if ((input.LA(1)>='0' && input.LA(1)<='9'))
 			{
 				input.Consume();
@@ -2430,12 +2430,12 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		{
 			int _type = INTEGER;
 			int _channel = DefaultTokenChannel;
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:208:9: ( ( DIGIT )+ )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:207:9: ( ( DIGIT )+ )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:208:11: ( DIGIT )+
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:207:11: ( DIGIT )+
 			{
-			DebugLocation(208, 11);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:208:11: ( DIGIT )+
+			DebugLocation(207, 11);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:207:11: ( DIGIT )+
 			int cnt14=0;
 			try { DebugEnterSubRule(14);
 			while (true)
@@ -2457,7 +2457,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 					{
-					DebugLocation(208, 11);
+					DebugLocation(207, 11);
 					input.Consume();
 
 
@@ -2508,14 +2508,14 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		{
 			int _type = STRING;
 			int _channel = DefaultTokenChannel;
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:210:5: ( '\"' ( ESC_SEQ |~ ( '\\\\' | '\"' ) )* '\"' )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:209:5: ( '\"' ( ESC_SEQ |~ ( '\\\\' | '\"' ) )* '\"' )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:210:8: '\"' ( ESC_SEQ |~ ( '\\\\' | '\"' ) )* '\"'
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:209:8: '\"' ( ESC_SEQ |~ ( '\\\\' | '\"' ) )* '\"'
 			{
-			DebugLocation(210, 8);
+			DebugLocation(209, 8);
 			Match('\"'); 
-			DebugLocation(210, 12);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:210:12: ( ESC_SEQ |~ ( '\\\\' | '\"' ) )*
+			DebugLocation(209, 12);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:209:12: ( ESC_SEQ |~ ( '\\\\' | '\"' ) )*
 			try { DebugEnterSubRule(15);
 			while (true)
 			{
@@ -2538,18 +2538,18 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:210:14: ESC_SEQ
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:209:14: ESC_SEQ
 					{
-					DebugLocation(210, 14);
+					DebugLocation(209, 14);
 					mESC_SEQ(); 
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:210:24: ~ ( '\\\\' | '\"' )
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:209:24: ~ ( '\\\\' | '\"' )
 					{
-					DebugLocation(210, 24);
+					DebugLocation(209, 24);
 					input.Consume();
 
 
@@ -2566,7 +2566,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(15); }
 
-			DebugLocation(210, 39);
+			DebugLocation(209, 39);
 			Match('\"'); 
 
 			}
@@ -2597,14 +2597,14 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		{
 			int _type = IDENT;
 			int _channel = DefaultTokenChannel;
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:212:7: ( LETTER ( LETTER | DIGIT )* )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:211:7: ( LETTER ( LETTER | DIGIT )* )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:212:9: LETTER ( LETTER | DIGIT )*
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:211:9: LETTER ( LETTER | DIGIT )*
 			{
-			DebugLocation(212, 9);
+			DebugLocation(211, 9);
 			mLETTER(); 
-			DebugLocation(212, 16);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:212:16: ( LETTER | DIGIT )*
+			DebugLocation(211, 16);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:211:16: ( LETTER | DIGIT )*
 			try { DebugEnterSubRule(16);
 			while (true)
 			{
@@ -2625,7 +2625,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 					{
-					DebugLocation(212, 16);
+					DebugLocation(211, 16);
 					input.Consume();
 
 
@@ -2671,12 +2671,12 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		{
 			int _type = WS;
 			int _channel = DefaultTokenChannel;
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:213:4: ( ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+ )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:212:4: ( ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+ )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:213:6: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:212:6: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
 			{
-			DebugLocation(213, 6);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:213:6: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
+			DebugLocation(212, 6);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:212:6: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
 			int cnt17=0;
 			try { DebugEnterSubRule(17);
 			while (true)
@@ -2698,7 +2698,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:
 					{
-					DebugLocation(213, 6);
+					DebugLocation(212, 6);
 					input.Consume();
 
 
@@ -2720,7 +2720,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(17); }
 
-			DebugLocation(213, 41);
+			DebugLocation(212, 41);
 			_channel = HIDDEN;
 
 			}
@@ -2751,15 +2751,15 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 		{
 			int _type = COMMENT;
 			int _channel = DefaultTokenChannel;
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:214:9: ( '//' ( . )* ( '\\n' | '\\r' ) )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:213:9: ( '//' ( . )* ( '\\n' | '\\r' ) )
 			DebugEnterAlt(1);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:214:11: '//' ( . )* ( '\\n' | '\\r' )
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:213:11: '//' ( . )* ( '\\n' | '\\r' )
 			{
-			DebugLocation(214, 11);
+			DebugLocation(213, 11);
 			Match("//"); 
 
-			DebugLocation(214, 16);
-			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:214:16: ( . )*
+			DebugLocation(213, 16);
+			// D:\\Eclipse\\aegiscript_live\\aegiscript.g:213:16: ( . )*
 			try { DebugEnterSubRule(18);
 			while (true)
 			{
@@ -2782,9 +2782,9 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:214:16: .
+					// D:\\Eclipse\\aegiscript_live\\aegiscript.g:213:16: .
 					{
-					DebugLocation(214, 16);
+					DebugLocation(213, 16);
 					MatchAny(); 
 
 					}
@@ -2800,7 +2800,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(18); }
 
-			DebugLocation(214, 19);
+			DebugLocation(213, 19);
 			if (input.LA(1)=='\n'||input.LA(1)=='\r')
 			{
 				input.Consume();
@@ -2813,7 +2813,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 				throw mse;
 			}
 
-			DebugLocation(214, 31);
+			DebugLocation(213, 31);
 			_channel = HIDDEN;
 
 			}
@@ -3323,7 +3323,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 			this.transition = DFA8_transition;
 		}
 
-		public override string Description { get { return "174:1: FLOAT : ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( EXPONENT )? | '.' ( '0' .. '9' )+ ( EXPONENT )? | ( '0' .. '9' )+ EXPONENT );"; } }
+		public override string Description { get { return "173:1: FLOAT : ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* ( EXPONENT )? | '.' ( '0' .. '9' )+ ( EXPONENT )? | ( '0' .. '9' )+ EXPONENT );"; } }
 
 		public override void Error(NoViableAltException nvae)
 		{
@@ -3548,4 +3548,3 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 }
 
 } // namespace 
-

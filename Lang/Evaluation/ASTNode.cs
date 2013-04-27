@@ -6,58 +6,57 @@ namespace AEGIScript.Lang.Evaluation
 {
     public class ASTNode
     {
+        private readonly string[] _tokenTypes;
+
         public enum Type
         {
-            ARITH,
-            WHILE,
-            IF,
-            ELIF,
-            ELSE,
-            FUNCALL,
-            ASSIGN,
-            VAR,
-            INTVAR,
-            BOOLVAR,
-            DOUBLEVAR,
-            STRINGVAR,
-            ARRAY,
-            ARRACC,
-            INTARRAY,
-            DOUBLEARRAY,
-            BOOLARRAY,
-            STRINGARRAY,
-            TERM,
-            INT,
-            STRING,
-            BOOL,
+            Arith,
+            While,
+            If,
+            Elif,
+            Else,
+            FunCall,
+            Assign,
+            Var,
+            Intvar,
+            Boolvar,
+            Doublevar,
+            Stringvar,
+            Array,
+            ArrAcc,
+            Term,
 
-            GEOMETRY,
-            GEOMREADER,
-            TIFFREADER,
-            GEOTIFFREADER,
-            SHAPEFREADER,
+            Int,
+            String,
+            Bool,
+            Double,
 
-            ENVELOPE,
-            COORDINATE,
-            GEOMETRYDIM,
-            METADATA,
-            REFERENCESYS,
+            Geometry,
+            Geomreader,
+            Tiffreader,
+            Geotiffreader,
+            Shapefreader,
 
-            DOUBLE,
-            PRINT,
-            FIELDACCESS,
+            Envelope,
+            Coordinate,
+            Geometrydim,
+            Metadata,
+            ReferenceSys,
+
+            Print,
+            FieldAccess,
         }
 
 
         // do not use!
         public ASTNode()
         {
-            dispose = true;
+            Dispose = true;
         }
 
-        public ASTNode(bool _dispose)
+        public ASTNode(bool dispose)
         {
-            dispose = _dispose;
+            Dispose = dispose;
         }
 
         /// <summary>
@@ -66,7 +65,7 @@ namespace AEGIScript.Lang.Evaluation
         /// <param name="tree"></param>
         public ASTNode(CommonTree tree)
         {
-            dispose = false;
+            Dispose = false;
             Tree = tree;
             Line = tree.Line;
             SetTypedChildren();
@@ -74,13 +73,14 @@ namespace AEGIScript.Lang.Evaluation
 
         public ASTNode(CommonTree tree, String[] tokenTypes)
         {
-            dispose = false;
+            _tokenTypes = tokenTypes;
+            Dispose = false;
             Line = tree.Line;
             Tree = tree;
             SetTypedChildren();
         }
 
-        public Boolean dispose { get; set; }
+        public Boolean Dispose { get; set; }
 
         public ASTNode Parent { get; set; }
 
@@ -89,8 +89,6 @@ namespace AEGIScript.Lang.Evaluation
         public Boolean Visited { get; set; }
 
         public List<ASTNode> Children { get; private set; }
-
-        private IVisitor visitor { get; set; }
 
         public CommonTree Tree { get; private set; }
 
@@ -110,7 +108,7 @@ namespace AEGIScript.Lang.Evaluation
                 ASTNode node = ASTNodeFactory.CreateNode(tree, TokenTypeMediator.GetTokenType(tree.Token.Type),
                                                          tree.Text);
                 node.Parent = this;
-                if (!node.dispose)
+                if (!node.Dispose)
                 {
                     //MessageBox.Show(node.ActualType.ToString() + "\n" + TokenTypeMediator.GetTokenType(tree.Token.Type) + "\n" + tree.Text);
                     Children.Add(node);
@@ -122,19 +120,19 @@ namespace AEGIScript.Lang.Evaluation
         ///     Converts ANTLR's commontree to AST nodes -- warning: sets up the whole subtree!
         ///     Use the constructor with 1 param to set up the single node!
         /// </summary>
-        /// <param name="TokenTypes">Node children's types as string</param>
+        /// <param name="tokenTypes">Node children's types as string</param>
         /// should reimplement for ASTNode with enum containing actual type information
-        public void SetTypedChildren(String[] TokenTypes)
+        public void SetTypedChildren(String[] tokenTypes)
         {
             Children = new List<ASTNode>();
             for (int i = 0; i < Tree.ChildCount; i++)
             {
-                int TokenIndex = (Tree.GetChild(i) as CommonTree).Type;
-                if (TokenIndex > 0)
+                int tokenIndex = ((CommonTree) Tree.GetChild(i)).Type;
+                if (tokenIndex > 0)
                 {
-                    String TokenType = TokenTypes[TokenIndex];
+                    var tokenType = tokenTypes[tokenIndex];
                     var tree = Tree.GetChild(i) as CommonTree;
-                    ASTNode node = ASTNodeFactory.CreateNode(tree, TokenType, tree.Text);
+                    var node = ASTNodeFactory.CreateNode(tree, tokenType, tree.Text);
                     node.Parent = this;
                     Children.Add(node);
                 }

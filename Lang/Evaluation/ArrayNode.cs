@@ -13,7 +13,7 @@ namespace AEGIScript.Lang.Evaluation
 
         public ArrayNode() : base()
         {
-            this.ActualType = Type.ARRAY;
+            ActualType = Type.Array;
         }
 
         public List<TermNode> Elements = new List<TermNode>();
@@ -40,16 +40,32 @@ namespace AEGIScript.Lang.Evaluation
                     {
                         return Append(func.ResolvedArgs[0]);
                     }
-                    else throw new Exception(func.BadCallMessage());
+                    throw new Exception(func.BadCallMessage());
                 case "Count":
                     if (func.ResolvedArgs.Count == 0)
                     {
                         return Count();
                     }
-                    else throw new Exception(func.BadCallMessage());
+                    throw new Exception(func.BadCallMessage());
+                case "At":
+                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Int)
+                    {
+                        return At(func.ResolvedArgs[0] as IntNode);
+                    }
+                    throw new Exception(func.BadCallMessage());
                 default:
                     throw new Exception(func.BadCallMessage());
             }
+        }
+
+        private TermNode At(IntNode ind)
+        {
+            int index = ind.Value;
+            if (index >= 0 && index < Elements.Count)
+            {
+                return Elements[index];
+            }
+            throw new Exception("RUNTIME ERROR!\n Index out of range!");
         }
 
         private TermNode Append(TermNode term)

@@ -28,7 +28,7 @@ namespace AEGIScript.IO.Unit_tests
         [TestCase("TestFiles/test2.aes")]
         public void IsValidPath_Valid_Test(String Path)
         {
-            Assert.IsTrue(SourceIO.isValidPath(Path));
+            Assert.IsTrue(SourceIO.IsValidPath(Path));
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace AEGIScript.IO.Unit_tests
         [TestCase(".aes")]
         public void IsValidPath_Invalid_Test(String Path)
         {
-            Assert.IsFalse(SourceIO.isValidPath(Path));
+            Assert.IsFalse(SourceIO.IsValidPath(Path));
         }
 
     }

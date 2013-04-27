@@ -7,61 +7,54 @@ namespace AEGIScript.Lang.Evaluation
     {
         public enum Operator { ADD, MULT, DIV, MOD, MIN, EQ, NEQ, GEQ, LEQ, GT, LT, OR, AND };
 
-        public Operator op { get; private set; }
+        public Operator Op { get; private set; }
 
         public ArithmeticNode(CommonTree tree, String ops) : base(tree) 
         {
             switch (ops)
             {
                 case "+":
-                    op = Operator.ADD;
+                    Op = Operator.ADD;
                     break;
                 case "-":
-                    op = Operator.MIN;
+                    Op = Operator.MIN;
                     break;
                 case "/":
-                    op = Operator.DIV;
+                    Op = Operator.DIV;
                     break;
                 case "*":
-                    op = Operator.MULT;
+                    Op = Operator.MULT;
                     break;
                 case "mod": case "%":
-                    op = Operator.MOD;
+                    Op = Operator.MOD;
                     break;
                 case "!=":
-                    op = Operator.NEQ;
+                    Op = Operator.NEQ;
                     break;
                 case "==":
-                    op = Operator.EQ;
+                    Op = Operator.EQ;
                     break;
                 case ">=":
-                    op = Operator.GEQ;
+                    Op = Operator.GEQ;
                     break;
                 case "<=":
-                    op = Operator.LEQ;
+                    Op = Operator.LEQ;
                     break;
                 case ">":
-                    op = Operator.GT;
+                    Op = Operator.GT;
                     break;
                 case "<":
-                    op = Operator.LT;
+                    Op = Operator.LT;
                     break;
                 case "||":
-                    op = Operator.OR;
+                    Op = Operator.OR;
                     break;
                 case "&&":
-                    op = Operator.AND;
-                    break;
-                default:
+                    Op = Operator.AND;
                     break;
             }
-            ActualType = Type.ARITH;
-            dispose = false;
-        }
-
-        public override void Accept(IVisitor visitor)
-        {
-            base.Accept(visitor);
+            ActualType = Type.Arith;
+            Dispose = false;
         }
 
         #region Integer operations

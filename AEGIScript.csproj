@@ -112,6 +112,7 @@
     <Compile Include="GUI\ViewModel\SaveFileEventArgs.cs" />
     <Compile Include="GUI\ViewModel\ViewModelBase.cs" />
     <Compile Include="IO\ResourceLoader.cs" />
+    <Compile Include="IO\ScriptIOException.cs" />
     <Compile Include="IO\SourceIO.cs" />
     <Compile Include="IO\Unit tests\SourceIO_tests.cs" />
     <Compile Include="Lang\aegiscriptLexer.cs" />
@@ -168,12 +169,19 @@
     <AntlrTokens Include="Lang\aegiscript2.tokens">
       <Generator>MSBuild:Compile</Generator>
     </AntlrTokens>
+    <None Include="Lang\Test Code\arraytest.aes" />
+    <None Include="Lang\Test Code\asd.aes" />
     <None Include="Lang\Test Code\euclidean.aes" />
+    <None Include="Lang\Test Code\infinite.aes" />
+    <None Include="Lang\Test Code\mu.aes" />
+    <None Include="Lang\Test Code\multdim.aes" />
     <None Include="Lang\Test Code\newton_method.aes" />
+    <None Include="Lang\Test Code\speedtest.aes" />
     <None Include="Lang\Test Code\test.aes" />
     <None Include="Lang\Test Code\test1.aes" />
     <None Include="Lang\Test Code\test_2.aes" />
     <None Include="Lang\Test Code\test_3.aes" />
+    <None Include="Lang\Test Code\valami.aes" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

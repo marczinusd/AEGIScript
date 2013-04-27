@@ -89,21 +89,29 @@ statement
 	|	whileStatement
 	|	ifStatement
 	|	funCallStatement ';'
-//	|	accessorStatement ';'
+	|	accessorStatement ';'
 	;
 
 assignmentStatement
 	:	IDENT '='^ expression ';'
-//	|	IDENT '='^ funCallStatement ';'
-//	| 	IDENT '='^ accessor ';'
-//	|	IDENT '='^ accessorStatement ';'
-	| 	accessor '='^ expression ';'
+	|	IDENT '='^ funCallStatement ';'
+	| 	IDENT '='^ accessor ';'
+	| 	IDENT '='^ array ';'
+	|	IDENT '='^ accessorStatement ';'
 	;
 
+array
+	: '['a = ( expression | | '[' expression (',' b += expression)* ']' ) 
+	(',' b += expression)*']' -> ^(ARRAY $a $b*)
+	| '['']'
+	;
 
+array_expression
+	:	'[' a
+	;
 
 accessor
-	: a = IDENT ('[' b += expression ']')+ -> ^(ACCESS $a $b+)
+	: a = IDENT ('[' b += INTEGER ']')+ -> ^(ACCESS $a $b+)
 	;
 
 ACCESS
@@ -118,12 +126,6 @@ FIELD_ACCESS
 	: 'F_ACCESS'
 	;
 
-array
-	: '['a = expression
-	(',' b += expression)*']' -> ^(ARRAY $a $b*)
-	| '['']' -> ^(ARRAY)
-	;
-
 ARRAY
 	: 'ARRAY'
 	;
@@ -135,10 +137,7 @@ term
 	| 	STRING
 	|	BOOL
 	|	FLOAT
-	|	array
-	|	accessor
-	|	funCallStatement
-	|	accessorStatement
+//	|	array
 	;
 	
 negation

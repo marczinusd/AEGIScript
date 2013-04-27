@@ -9,13 +9,13 @@ namespace AEGIScript.Lang.Evaluation
         public DoubleNode(CommonTree tree, String content) : base(tree, content)
         {
             Value = Double.Parse(content, CultureInfo.InvariantCulture);
-            ActualType = Type.DOUBLE;
+            ActualType = Type.Double;
         }
 
         public DoubleNode(Double value)
         {
             Value = value;
-            ActualType = Type.DOUBLE;
+            ActualType = Type.Double;
         }
 
         public Double Interpret(SymbolTables.SymbolTable symbols)
