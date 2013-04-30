@@ -1,4 +1,5 @@
-﻿using Antlr.Runtime.Tree;
+﻿using System.Linq;
+using Antlr.Runtime.Tree;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +14,12 @@ namespace AEGIScript.Lang.Evaluation
 
         public ArrayNode() : base()
         {
+            ActualType = Type.Array;
+        }
+
+        public ArrayNode(List<TermNode> terms) : base()
+        {
+            Elements = terms;
             ActualType = Type.Array;
         }
 
@@ -33,28 +40,20 @@ namespace AEGIScript.Lang.Evaluation
 
         public override TermNode CallFun(FunCallNode func)
         {
+            Type[] actualTypes = func.ResolvedArgs.Select(x => x.ActualType).ToArray();
+
             switch (func.FunName)
             {
                 case "Append":
-                    if (func.ResolvedArgs.Count == 1)
-                    {
-                        return Append(func.ResolvedArgs[0]);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<TermNode>(new[] {Type.Any}, actualTypes, func, Append);
                 case "Count":
-                    if (func.ResolvedArgs.Count == 0)
-                    {
-                        return Count();
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call(func, Count);
                 case "At":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Int)
-                    {
-                        return At(func.ResolvedArgs[0] as IntNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<IntNode>(new[] {Type.Int}, actualTypes, func, At);
+                case "RemoveAt":
+                    return Call<IntNode>(new[] { Type.Int }, actualTypes, func, RemoveAt);
                 default:
-                    throw new Exception(func.BadCallMessage());
+                    return base.CallFun(func);
             }
         }
 
@@ -66,6 +65,23 @@ namespace AEGIScript.Lang.Evaluation
                 return Elements[index];
             }
             throw new Exception("RUNTIME ERROR!\n Index out of range!");
+        }
+
+        private BooleanNode Contains(TermNode term)
+        {
+            return new BooleanNode(Elements.Contains(term));
+        }
+
+        private TermNode Remove(TermNode term)
+        {
+            Elements.Remove(term);
+            return this;
+        }
+
+        private TermNode RemoveAt(IntNode ind)
+        {
+            Elements.RemoveAt(ind.Value);
+            return this;
         }
 
         private TermNode Append(TermNode term)

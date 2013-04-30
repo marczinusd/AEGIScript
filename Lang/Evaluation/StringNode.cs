@@ -32,13 +32,9 @@ namespace AEGIScript.Lang.Evaluation
             switch (func.FunName)
             {
                 case "Count":
-                    if (func.ResolvedArgs.Count == 0)
-                    {
-                        return Count();
-                    }
-                    else throw new Exception(func.BadCallMessage());
+                    return Call(func, Count);
                 default:
-                    throw new Exception(func.BadCallMessage());
+                    return base.CallFun(func);
             }
         }
 

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
+using AEGIScript.Lang.Exceptions;
 using Antlr.Runtime.Tree;
 using ELTE.AEGIS.Core;
+using ELTE.AEGIS.Core.Geometry;
+using ELTE.AEGIS.Core.Geometry.Raster;
 using ELTE.AEGIS.IO;
 using ELTE.AEGIS.IO.GeoTiff;
 
@@ -12,46 +15,102 @@ namespace AEGIScript.Lang.Evaluation
     {
         public TermNode(CommonTree tree, String content) : base(tree)
         {
-            Funs = new Dictionary<string, FunCallNode.FunCallAttributes>();
-            SupportedFuns = new HashSet<string>();
         }
 
         public TermNode(CommonTree tree)
         {
-            Funs = new Dictionary<string, FunCallNode.FunCallAttributes>();
-            SupportedFuns = new HashSet<string>();
         }
 
         public TermNode()
         {
-            Funs = new Dictionary<string, FunCallNode.FunCallAttributes>();
-            SupportedFuns = new HashSet<string>();
         }
 
-        public Dictionary<String, FunCallNode.FunCallAttributes> Funs { get; set; }
-        public HashSet<String> SupportedFuns { get; set; }
 
+        /// <summary>
+        ///     Provides an interface for the interpreter to call functions defined by the nodes
+        /// </summary>
+        /// <param name="func">Function node</param>
+        /// <returns>Result of the function call</returns>
         public virtual TermNode CallFun(FunCallNode func)
         {
             switch (func.FunName)
             {
                 default:
-                    throw new Exception(func.BadCallMessage());
+                    throw ExceptionGenerator.UndefinedFunction(func, ActualType);
             }
+        }
+
+        protected TermNode Call(FunCallNode func, Func<TermNode> funToCall)
+        {
+            if (func.ResolvedArgs.Count == 0)
+            {
+                return funToCall.Invoke();
+            }
+            throw ExceptionGenerator.UndefinedFunction(func, ActualType);
+        }
+
+        protected TermNode Call<T>(Type[] funSig, Type[] actualSig, FunCallNode fnode, Func<T, TermNode> func)
+            where T : class
+        {
+            if (funSig.Length != actualSig.Length)
+                throw ExceptionGenerator.BadArity(fnode);
+
+            if (!MatchesSignature(funSig, actualSig))
+                throw ExceptionGenerator.BadArguments(fnode, funSig);
+
+            var arg = fnode.ResolvedArgs[0] as T;
+            return func.Invoke(arg);
+        }
+
+        protected TermNode Call<T1, T2>(Type[] funSig, Type[] actualSig, FunCallNode fnode,
+                                        Func<T1, T2, TermNode> func)
+            where T1 : class
+            where T2 : class
+        {
+            if (funSig.Length != actualSig.Length)
+                throw ExceptionGenerator.BadArity(fnode);
+
+            if (!MatchesSignature(funSig, actualSig))
+                throw ExceptionGenerator.BadArguments(fnode, funSig);
+
+            var arg1 = fnode.ResolvedArgs[0] as T1;
+            var arg2 = fnode.ResolvedArgs[1] as T2;
+            return func.Invoke(arg1, arg2);
+        }
+
+        protected TermNode Call<T1, T2, T3>(Type[] funSig, Type[] actualSig, FunCallNode fnode,
+                                            Func<T1, T2, T3, TermNode> func)
+            where T1 : class
+            where T2 : class
+            where T3 : class
+        {
+            if (funSig.Length != actualSig.Length)
+                throw ExceptionGenerator.BadArity(fnode);
+
+            if (!MatchesSignature(funSig, actualSig))
+                throw ExceptionGenerator.BadArguments(fnode, funSig);
+
+            var arg1 = fnode.ResolvedArgs[0] as T1;
+            var arg2 = fnode.ResolvedArgs[0] as T2;
+            var arg3 = fnode.ResolvedArgs[0] as T3;
+            return func.Invoke(arg1, arg2, arg3);
+        }
+
+        protected bool MatchesSignature(Type[] funSig, Type[] argSig)
+        {
+            return !argSig.Where((t, i) => funSig[i] != t && funSig[i] != Type.Any).Any();
         }
     }
 
-    // ReSharper disable InconsistentNaming
-    internal class IGeometryNode : TermNode
-        // ReSharper restore InconsistentNaming
+    internal class GeometryNode : TermNode
     {
-        public IGeometryNode(CommonTree tree)
+        public GeometryNode(CommonTree tree)
             : base(tree)
         {
             ActualType = Type.Geometry;
         }
 
-        public IGeometryNode(IGeometry geom)
+        public GeometryNode(IGeometry geom)
         {
             Value = geom;
             Value.GeometryChanged += Value_GeometryChanged;
@@ -70,42 +129,42 @@ namespace AEGIScript.Lang.Evaluation
             switch (func.FunName)
             {
                 case "Boundary":
-                    return Boundary();
+                    return Call(func, Boundary);
                 case "ConvexHull":
-                    return ConvexHull();
+                    return Call(func, ConvexHull);
                 case "Envelope":
-                    return Envelope();
+                    return Call(func, Envelope);
                 case "Centroid":
-                    return Centroid();
+                    return Call(func, Centroid);
                 case "Clone":
-                    return Clone();
+                    return Call(func, Clone);
                 case "Dimension":
-                    return Dimension();
+                    return Call(func, Dimension);
                 case "DimensionType":
-                    return DimensionType();
+                    return Call(func, DimensionType);
                 case "Name":
-                    return Name();
+                    return Call(func, Name);
                 case "ReferenceSystem":
-                    return ReferenceSystem();
+                    return Call(func, ReferenceSystem);
                 case "IsValid":
-                    return IsValid();
+                    return Call(func, IsValid);
                 case "IsSimple":
-                    return IsSimple();
+                    return Call(func, IsSimple);
                 case "IsEmpty":
-                    return IsEmpty();
+                    return Call(func, IsEmpty);
                 default:
-                    throw new Exception(func.BadCallMessage());
+                    return base.CallFun(func);
             }
         }
 
-        private IGeometryNode Boundary()
+        private GeometryNode Boundary()
         {
-            return new IGeometryNode(Value.Boundary);
+            return new GeometryNode(Value.Boundary);
         }
 
-        private IGeometryNode ConvexHull()
+        private GeometryNode ConvexHull()
         {
-            return new IGeometryNode(Value.ConvexHull);
+            return new GeometryNode(Value.ConvexHull);
         }
 
         private EnvelopeNode Envelope()
@@ -118,9 +177,9 @@ namespace AEGIScript.Lang.Evaluation
             return new CoordinateNode(Value.Centroid);
         }
 
-        private IGeometryNode Clone()
+        private GeometryNode Clone()
         {
-            return new IGeometryNode(Value.Clone());
+            return new GeometryNode(Value.Clone());
         }
 
         private IntNode Dimension()
@@ -165,6 +224,362 @@ namespace AEGIScript.Lang.Evaluation
         }
     }
 
+    internal class HistogramNode : TermNode
+    {
+        public HistogramNode(Histogram value)
+        {
+            ActualType = Type.Histogram;
+            Value = value;
+        }
+
+        public UInt32Node MinimalIntensity()
+        {
+            return new UInt32Node(Value.MinimalIntensity);
+        }
+
+        public UInt32Node MaximalIntensity()
+        {
+            return new UInt32Node(Value.MaximalIntensity);
+        }
+
+        public UInt32Node MaximalOccurence()
+        {
+            return new UInt32Node(Value.MaximalOccurrance);
+        }
+
+        public IntNode PixelCount()
+        {
+            return new IntNode(Value.PixelCount);
+        }
+
+        public DoubleNode MeanValue()
+        {
+            return new DoubleNode(Value.MeanValue);
+        }
+
+        public DoubleNode DeviationValue()
+        {
+            return new DoubleNode(Value.DeviationValue);
+        }
+
+        public IntNode RadiometricResolution()
+        {
+            return new IntNode(Value.RadiometricResolution);
+        }
+
+        public ArrayNode Values()
+        {
+            var nodeVals = Value.Values
+                                .Select(val => new UInt32Node(val)).Cast<TermNode>().ToList();
+            return new ArrayNode(nodeVals);
+        }
+
+        public ArrayNode CulcumativeDistributionValues()
+        {
+            var nodeVals = Value.CulcumativeDistibutionValues
+                                .Select(val => new UInt32Node(val)).Cast<TermNode>().ToList();
+            return new ArrayNode(nodeVals);
+        }
+
+        public DoubleNode OtsuThreshold()
+        {
+            return new DoubleNode(Value.OtsuThreshold);
+        }
+
+        public Histogram Value { get; private set; }
+    }
+
+    internal class RectangleNode : PolygonNode
+    {
+        public RectangleNode(Rectangle rect) : base(rect)
+        {
+            ActualType = Type.Rectangle;
+        }
+
+        public override TermNode CallFun(FunCallNode func)
+        {
+            switch (func.FunName)
+            {
+                default:
+                    return base.CallFun(func);
+            }
+        }
+    }
+
+    internal class RasterBandNode : SurfaceNode
+    {
+        public RasterBandNode(RasterBand rband)
+            : base(rband)
+        {
+            ActualType = Type.RasterBand;
+        }
+    }     
+
+    internal class RasterNode : RectangleNode
+    {
+        public RasterNode(Raster raster) : base(raster)
+        {
+            ActualType = Type.Raster;
+        }
+
+        public override TermNode CallFun(FunCallNode func)
+        {
+            switch (func.FunName)
+            {
+                default:
+                    return base.CallFun(func);
+            }
+        }
+
+        protected IntNode PixelWidth()
+        {
+            return new IntNode(((Raster) Value).PixelWidth);
+        }
+
+        protected IntNode PixelHeight()
+        {
+            return new IntNode(((Raster) Value).PixelWidth);
+        }
+
+        protected IntNode SpectralResolution()
+        {
+            return new IntNode(((Raster)Value).SpectralResolution);
+        }
+
+        protected ArrayNode Bands()
+        {/*
+            var rasterBands = ((Raster) Value).Bands;
+            List<RasterNode> rasterNodes = new List<RasterNode>();
+            foreach (var raster in rasterBands)
+            {
+                rasterNodes.Add(new RasterNode(raster));
+            }*/
+            return new ArrayNode();
+        }
+
+    }
+
+    internal class LineStringNode : CurveNode
+    {
+        public LineStringNode(LineString ls) : base(ls)
+        {
+            ActualType = Type.LineString;
+        }
+
+        public override TermNode CallFun(FunCallNode func)
+        {
+            Type[] actualTypes = func.ResolvedArgs.Select(x => x.ActualType).ToArray();
+            switch (func.FunName)
+            {
+                case "GetCoordinate":
+                    return Call<IntNode>(new[] {Type.Int}, actualTypes, func, GetCoordinate);
+                case "SetCoordinate":
+                    return Call<IntNode, CoordinateNode>(new[] {Type.Int, Type.Coordinate}, actualTypes,
+                                                         func, SetCoordinate);
+                case "Includes":
+                    return Call<CoordinateNode>(new[] {Type.Coordinate}, actualTypes, func, Includes);
+                case "Add":
+                    return Call<CoordinateNode>(new[] {Type.Coordinate}, actualTypes, func, Add);
+                case "Insert":
+                    return Call<IntNode, CoordinateNode>(new[] {Type.Int, Type.Coordinate}, actualTypes,
+                                                         func, Insert);
+                case "Remove":
+                    return Call<CoordinateNode>(new[] {Type.Coordinate}, actualTypes, func, Remove);
+                case "RemoveAt":
+                    return Call<IntNode>(new[] {Type.Int}, actualTypes, func, RemoveAt);
+                case "Clear":
+                    return Call(func, Clear);
+
+                default:
+                    return base.CallFun(func);
+            }
+        }
+
+        private LineStringNode SetCoordinate(IntNode ind, CoordinateNode coord)
+        {
+            ((LineString) Value).SetCoordinate(ind.Value, coord.Value);
+            return this;
+        }
+
+        private BooleanNode Includes(CoordinateNode coord)
+        {
+            return new BooleanNode(((LineString) Value).Includes(coord.Value));
+        }
+
+        private LineStringNode Add(CoordinateNode coord)
+        {
+            ((LineString) Value).Add(coord.Value);
+            return this;
+        }
+
+        private LineStringNode Insert(IntNode ind, CoordinateNode coord)
+        {
+            ((LineString) Value).Insert(ind.Value, coord.Value);
+            return this;
+        }
+
+        private LineStringNode Remove(CoordinateNode node)
+        {
+            ((LineString) Value).Remove(node.Value);
+            return this;
+        }
+
+        private LineStringNode RemoveAt(IntNode ind)
+        {
+            ((LineString) Value).RemoveAt(ind.Value);
+            return this;
+        }
+
+        private LineStringNode Clear()
+        {
+            ((LineString) Value).Clear();
+            return this;
+        }
+
+        private CoordinateNode GetCoordinate(IntNode ind)
+        {
+            return new CoordinateNode(((LineString) Value).GetCoordinate(ind.Value));
+        }
+    }
+
+    internal class CurveNode : GeometryNode
+    {
+        public CurveNode(Curve curve) : base(curve)
+        {
+            ActualType = Type.Curve;
+        }
+
+        public override TermNode CallFun(FunCallNode func)
+        {
+            switch (func.FunName)
+            {
+                case "IsClosed":
+                    return Call(func, IsClosed);
+                case "IsRing":
+                    return Call(func, IsRing);
+                case "Count":
+                    return Call(func, Count);
+                case "Length":
+                    return Call(func, Length);
+                case "Coordinates":
+                    return Call(func, Coordinates);
+                case "StartCoordinate":
+                    return Call(func, StartCoordinate);
+                case "EndCoordinate":
+                    return Call(func, EndCoordinate);
+
+                default:
+                    return base.CallFun(func);
+            }
+        }
+
+        private BooleanNode IsClosed()
+        {
+            return new BooleanNode(((Curve) Value).IsClosed);
+        }
+
+        private BooleanNode IsRing()
+        {
+            return new BooleanNode(((Curve) Value).IsRing);
+        }
+
+        private IntNode Count()
+        {
+            return new IntNode(((Curve) Value).Count);
+        }
+
+        private DoubleNode Length()
+        {
+            return new DoubleNode(((Curve) Value).Length);
+        }
+
+        private ArrayNode Coordinates()
+        {
+            var curve = Value as Curve;
+            var coords = curve.Coordinates.Select(t => new CoordinateNode(t)).Cast<TermNode>().ToList();
+            return new ArrayNode(coords);
+        }
+
+        private CoordinateNode StartCoordinate()
+        {
+            return new CoordinateNode(((Curve) Value).StartCoordinate);
+        }
+
+        private CoordinateNode EndCoordinate()
+        {
+            return new CoordinateNode(((Curve) Value).EndCoordinate);
+        }
+    }
+
+    internal class PolygonNode : SurfaceNode
+    {
+        public PolygonNode(Polygon poly) : base(poly)
+        {
+            ActualType = Type.Polygon;
+        }
+
+        public override TermNode CallFun(FunCallNode func)
+        {
+            switch (func.FunName)
+            {
+                default:
+                    return base.CallFun(func);
+            }
+        }
+    }
+
+    internal class SurfaceNode : GeometryNode
+    {
+        public SurfaceNode(Surface surf) : base(surf)
+        {
+            ActualType = Type.Surface;
+        }
+
+        public override TermNode CallFun(FunCallNode func)
+        {
+            switch (func.FunName)
+            {
+                case "IsConvex":
+                    return Call(func, IsConvex);
+                case "IsDivided":
+                    return Call(func, IsDivided);
+                case "IsWhole":
+                    return Call(func, IsWhole);
+                case "Area":
+                    return Call(func, Area);
+                case "Perimeter":
+                    return Call(func, Perimeter);
+                default:
+                    return base.CallFun(func);
+            }
+        }
+
+        public BooleanNode IsConvex()
+        {
+            return new BooleanNode(((Surface) Value).IsConvex);
+        }
+
+        public BooleanNode IsDivided()
+        {
+            return new BooleanNode(((Surface) Value).IsDivided);
+        }
+
+        public BooleanNode IsWhole()
+        {
+            return new BooleanNode(((Surface) Value).IsWhole);
+        }
+
+        public DoubleNode Area()
+        {
+            return new DoubleNode(((Surface) Value).Area);
+        }
+
+        public DoubleNode Perimeter()
+        {
+            return new DoubleNode(((Surface) Value).Perimeter);
+        }
+    }
+
     internal class EnvelopeNode : TermNode
     {
         public EnvelopeNode(Envelope envelope)
@@ -177,10 +592,11 @@ namespace AEGIScript.Lang.Evaluation
 
         public override TermNode CallFun(FunCallNode func)
         {
+            Type[] actualTypes = func.ResolvedArgs.Select(x => x.ActualType).ToArray();
             switch (func.FunName)
             {
                 case "Center":
-                    return Center();
+                    return Call(func, Center);
                 case "Contains":
                     if (func.ResolvedArgs.Count == 1)
                     {
@@ -195,75 +611,43 @@ namespace AEGIScript.Lang.Evaluation
                     }
                     throw new Exception();
                 case "Crosses":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Envelope)
-                    {
-                        return Crosses(func.ResolvedArgs[0] as EnvelopeNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<EnvelopeNode>(new[] {Type.Envelope}, actualTypes, func, Crosses);
                 case "Disjoint":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Envelope)
-                    {
-                        return Disjoint(func.ResolvedArgs[0] as EnvelopeNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<EnvelopeNode>(new[] {Type.Envelope}, actualTypes, func, Disjoint);
                 case "Expand":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Coordinate)
-                    {
-                        return Expand(func.ResolvedArgs[0] as CoordinateNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<CoordinateNode>(new[] {Type.Coordinate}, actualTypes, func, Expand);
                 case "Distance":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Envelope)
-                    {
-                        return Distance(func.ResolvedArgs[0] as EnvelopeNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<EnvelopeNode>(new[] {Type.Envelope}, actualTypes, func, Distance);
                 case "Overlaps":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Envelope)
-                    {
-                        return Overlaps(func.ResolvedArgs[0] as EnvelopeNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<EnvelopeNode>(new[] {Type.Envelope}, actualTypes, func, Overlaps);
                 case "Touches":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Envelope)
-                    {
-                        return Touches(func.ResolvedArgs[0] as EnvelopeNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<EnvelopeNode>(new[] {Type.Envelope}, actualTypes, func, Touches);
                 case "Within":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Envelope)
-                    {
-                        return Within(func.ResolvedArgs[0] as EnvelopeNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<EnvelopeNode>(new[] {Type.Envelope}, actualTypes, func, Within);
                 case "Intersects":
-                    if (func.ResolvedArgs.Count == 1 && func.ResolvedArgs[0].ActualType == Type.Envelope)
-                    {
-                        return Intersects(func.ResolvedArgs[0] as EnvelopeNode);
-                    }
-                    throw new Exception(func.BadCallMessage());
+                    return Call<EnvelopeNode>(new[] {Type.Envelope}, actualTypes, func, Intersects);
                 case "Maximum":
-                    return Maximum();
+                    return Call(func, Maximum);
                 case "MaxZ":
-                    return MaxZ();
+                    return Call(func, MaxZ);
                 case "MaxX":
-                    return MaxX();
+                    return Call(func, MaxX);
                 case "MaxY":
-                    return MaxY();
+                    return Call(func, MaxY);
                 case "Minimum":
-                    return Minimum();
+                    return Call(func, Minimum);
                 case "MinX":
-                    return MinX();
+                    return Call(func, MinX);
                 case "MinY":
-                    return MinY();
+                    return Call(func, MinY);
                 case "MinZ":
-                    return MinZ();
+                    return Call(func, MinZ);
                 case "IsValid":
-                    return IsValid();
+                    return Call(func, IsValid);
                 case "IsPlanar":
-                    return IsPlanar();
+                    return Call(func, IsPlanar);
                 case "IsEmpty":
-                    return IsEmpty();
+                    return Call(func, IsEmpty);
                 default:
                     throw new Exception(func.BadCallMessage());
             }
@@ -402,15 +786,15 @@ namespace AEGIScript.Lang.Evaluation
             switch (func.FunName)
             {
                 case "IsValid":
-                    return IsValid();
+                    return Call(func, IsValid);
                 case "IsEmpty":
-                    return IsEmpty();
+                    return Call(func, IsEmpty);
                 case "X":
-                    return X();
+                    return Call(func, X);
                 case "Y":
-                    return Y();
+                    return Call(func, Y);
                 case "Z":
-                    return Z();
+                    return Call(func, Z);
                 default:
                     throw new Exception(func.BadCallMessage());
             }
@@ -487,6 +871,11 @@ namespace AEGIScript.Lang.Evaluation
             ActualType = Type.ReferenceSys;
         }
 
+        public ReferenceSystemNode()
+        {
+            Value = GeometryFactory.ReferenceSystem;
+        }
+
         public IReferenceSystem Value { get; set; }
 
         public override TermNode CallFun(FunCallNode func)
@@ -494,11 +883,11 @@ namespace AEGIScript.Lang.Evaluation
             switch (func.FunName)
             {
                 case "Dimension":
-                    return Dimension();
+                    return Call(func, Dimension);
                 case "Name":
-                    return Name();
+                    return Call(func, Dimension);
                 case "Identifier":
-                    return Identifier();
+                    return Call(func, Identifier);
                 default:
                     throw new Exception(func.BadCallMessage());
             }
@@ -551,7 +940,7 @@ namespace AEGIScript.Lang.Evaluation
                         var resArr = new ArrayNode();
                         foreach (IGeometry geometry in geoms)
                         {
-                            resArr.Elements.Add(new IGeometryNode(geometry));
+                            resArr.Elements.Add(new GeometryNode(geometry));
                         }
 
                         return resArr;
@@ -598,33 +987,23 @@ namespace AEGIScript.Lang.Evaluation
         }
     }
 
-    /*
-    class GeoTiffReaderNode : TiffReaderNode
+    internal class GeoTiffReaderNode : TiffReaderNode
     {
-        public GeoTiffReaderNode()
+        /// <summary>
+        ///     todo
+        /// </summary>
+        public GeoTiffReaderNode() : base("")
         {
-            
         }
-    }*/
+    }
 
     internal class AEGISReaderNode : FunCallNode
     {
-        public AEGISReaderNode(CommonTree tree, String path)
+        public AEGISReaderNode(CommonTree tree)
             : base(tree)
         {
             Attributes = new FunCallAttributes(Type.Geometry);
             ReadAttribs = new FunCallAttributes(Type.Geometry, new List<Type> {Type.String});
-        }
-
-        public AEGISReaderNode(CommonTree tree, Stream stream)
-            : base(tree)
-        {
-            Attributes = new FunCallAttributes(Type.Geometry);
-        }
-
-        public AEGISReaderNode(CommonTree tree)
-            : base(tree)
-        {
         }
 
         public FunCallAttributes ReadAttribs { get; set; }
@@ -649,7 +1028,7 @@ namespace AEGIScript.Lang.Evaluation
                     default:
                         throw new ArgumentOutOfRangeException("caller");
                 }
-                ReturnValue = new IGeometryNode(Reader.Read());
+                ReturnValue = new GeometryNode(Reader.Read());
             }
         }
     }

@@ -87,11 +87,5 @@ namespace AEGIScript.Lang.Scoping
 
         public SymbolTable fields { get; private set; }
         protected Scope PrecedingScope;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        /// <exception>VariableAlreadyDefinedException</exception>
     }
 }

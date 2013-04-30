@@ -1,0 +1,5 @@
+Walk(ArithmeticNode) ->
+	Left  := Resolve(ArithmeticNode.Children[1])
+	Right := Resolve(ArithmeticNode.Children[2])
+	return NodeArithmetics.Op(Left, Right, ArithmeticNode.Operator)
+end

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using AEGIScript.Lang.Exceptions;
 
 namespace AEGIScript.Lang.Evaluation
 {
@@ -27,7 +28,7 @@ namespace AEGIScript.Lang.Evaluation
                         case ASTNode.Type.Double:
                             return Op(left as IntNode, right as DoubleNode, op);
                         default:
-                            throw new Exception(BuildExMessage(left, right, op.ToString()));
+                            throw ExceptionGenerator.UndefinedOperation(left, right, op);
                     }
                 case ASTNode.Type.String:
                     switch (right.ActualType)
@@ -41,7 +42,7 @@ namespace AEGIScript.Lang.Evaluation
                         case ASTNode.Type.Double:
                             return Op(left as StringNode, right as DoubleNode, op);
                         default:
-                            throw new Exception(BuildExMessage(left, right, op.ToString()));
+                            throw ExceptionGenerator.UndefinedOperation(left, right, op);
                     }
                 case ASTNode.Type.Bool:
                     switch (right.ActualType)
@@ -49,7 +50,7 @@ namespace AEGIScript.Lang.Evaluation
                         case ASTNode.Type.Bool:
                             return Op(left as BooleanNode, right as BooleanNode, op);
                         default:
-                            throw new Exception(BuildExMessage(left, right, op.ToString()));
+                            throw ExceptionGenerator.UndefinedOperation(left, right, op);
                     }
                 case ASTNode.Type.Double:
                     switch (right.ActualType)
@@ -63,7 +64,7 @@ namespace AEGIScript.Lang.Evaluation
                         case ASTNode.Type.Double:
                             return Op(left as DoubleNode, right as DoubleNode, op);
                         default:
-                            throw new Exception(BuildExMessage(left, right, op.ToString()));
+                            throw ExceptionGenerator.UndefinedOperation(left, right, op);
                     }
                 case ASTNode.Type.Array:
                     return Op(left as ArrayNode, right, op);
@@ -72,7 +73,7 @@ namespace AEGIScript.Lang.Evaluation
                     {
                         return new BooleanNode(!(((BooleanNode) right).Value));
                     }
-                    else throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
                 case ASTNode.Type.Negative:
                     switch (right.ActualType)
                     {
@@ -81,43 +82,43 @@ namespace AEGIScript.Lang.Evaluation
                         case ASTNode.Type.Double:
                             return new DoubleNode(-(((DoubleNode) right).Value));
                         default:
-                            throw new Exception(BuildExMessage(left, right, op.ToString()));
+                            throw ExceptionGenerator.UndefinedOperation(left, right, op);
                     }
                 default:
-                    throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
         #endregion
         #endregion
 
-        public static TermNode Op(DoubleNode dNode, IntNode iNode, ArithmeticNode.Operator op)
+        public static TermNode Op(DoubleNode left, IntNode right, ArithmeticNode.Operator op)
         {
             switch (op)
             {
                 case ArithmeticNode.Operator.ADD:
-                    return new DoubleNode(dNode.Value + iNode.Value);
+                    return new DoubleNode(left.Value + right.Value);
                 case ArithmeticNode.Operator.MULT:
-                    return new DoubleNode(dNode.Value * iNode.Value);
+                    return new DoubleNode(left.Value * right.Value);
                 case ArithmeticNode.Operator.DIV:
-                    return new DoubleNode(dNode.Value / iNode.Value);
+                    return new DoubleNode(left.Value / right.Value);
                 case ArithmeticNode.Operator.MOD:
-                    return new DoubleNode(dNode.Value % iNode.Value);
+                    return new DoubleNode(left.Value % right.Value);
                 case ArithmeticNode.Operator.MIN:
-                    return new DoubleNode(dNode.Value - iNode.Value);
+                    return new DoubleNode(left.Value - right.Value);
                 case ArithmeticNode.Operator.EQ:
-                    return new BooleanNode(dNode.Value == iNode.Value);
+                    return new BooleanNode(left.Value == right.Value);
                 case ArithmeticNode.Operator.NEQ:
-                    return new BooleanNode(dNode.Value != iNode.Value);
+                    return new BooleanNode(left.Value != right.Value);
                 case ArithmeticNode.Operator.GEQ:
-                    return new BooleanNode(dNode.Value >= iNode.Value);
+                    return new BooleanNode(left.Value >= right.Value);
                 case ArithmeticNode.Operator.LEQ:
-                    return new BooleanNode(dNode.Value <= iNode.Value);
+                    return new BooleanNode(left.Value <= right.Value);
                 case ArithmeticNode.Operator.LT:
-                    return new BooleanNode(dNode.Value < iNode.Value);
+                    return new BooleanNode(left.Value < right.Value);
                 case ArithmeticNode.Operator.GT:
-                    return new BooleanNode(dNode.Value > iNode.Value);
+                    return new BooleanNode(left.Value > right.Value);
                 default:
-                    throw new Exception(BuildExMessage(dNode, iNode, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
@@ -148,7 +149,7 @@ namespace AEGIScript.Lang.Evaluation
                 case ArithmeticNode.Operator.GT:
                     return new BooleanNode(left.Value > right.Value);
                 default:
-                    throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
@@ -179,7 +180,7 @@ namespace AEGIScript.Lang.Evaluation
                 case ArithmeticNode.Operator.GT:
                     return new BooleanNode(left.Value > right.Value);
                 default:
-                    throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
@@ -202,7 +203,7 @@ namespace AEGIScript.Lang.Evaluation
                 case ArithmeticNode.Operator.AND:
                     return new BooleanNode(left.Value && right.Value);
                 default:
-                    throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
@@ -233,7 +234,7 @@ namespace AEGIScript.Lang.Evaluation
                 case ArithmeticNode.Operator.GT:
                     return new BooleanNode(left.Value > right.Value);
                 default:
-                    throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
@@ -244,7 +245,7 @@ namespace AEGIScript.Lang.Evaluation
                 case ArithmeticNode.Operator.ADD:
                     return left.Add(right);
                 default:
-                    throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
@@ -259,86 +260,85 @@ namespace AEGIScript.Lang.Evaluation
                 case ArithmeticNode.Operator.NEQ:
                     return new BooleanNode(left.Value != right.Value);
                 default:
-                    throw new Exception(BuildExMessage(left, right, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
-        public static StringNode Op(StringNode sNode, IntNode iNode, ArithmeticNode.Operator op)
+        public static StringNode Op(StringNode left, IntNode right, ArithmeticNode.Operator op)
         {
             switch (op)
             {
                 case ArithmeticNode.Operator.ADD:
-                    return new StringNode(sNode.Value + iNode.Value);
+                    return new StringNode(left.Value + right.Value);
                 default:
-                    throw new Exception(BuildExMessage(sNode, iNode, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
-        public static StringNode Op(IntNode iNode, StringNode sNode, ArithmeticNode.Operator op)
+        public static StringNode Op(IntNode left, StringNode right, ArithmeticNode.Operator op)
         {
             switch (op)
             {
                 case ArithmeticNode.Operator.ADD:
-                    return new StringNode(iNode.Value + sNode.Value);
+                    return new StringNode(left.Value + right.Value);
                 default:
-                    throw new Exception(BuildExMessage(iNode, sNode, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
-        public static StringNode Op(StringNode sNode, DoubleNode dNode, ArithmeticNode.Operator op)
+        public static StringNode Op(StringNode left, DoubleNode right, ArithmeticNode.Operator op)
         {
             switch (op)
             {
                 case ArithmeticNode.Operator.ADD:
-                    return new StringNode(sNode.Value + dNode.Value);
+                    return new StringNode(left.Value + right.Value);
                 default:
-                    throw new Exception(BuildExMessage(sNode, dNode, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
-        public static StringNode Op(DoubleNode dNode, StringNode sNode, ArithmeticNode.Operator op)
+        public static StringNode Op(DoubleNode left, StringNode right, ArithmeticNode.Operator op)
         {
             switch (op)
             {
                 case ArithmeticNode.Operator.ADD:
-                    //return new StringNode(d_node.Value + s_node.Value);
-                    return new StringNode(dNode.Value + sNode.Value);
+                    return new StringNode(left.Value + right.Value);
                 default:
-                    throw new Exception(BuildExMessage(dNode, sNode, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
-        public static StringNode Op(StringNode sNode, BooleanNode bNode, ArithmeticNode.Operator op)
+        public static StringNode Op(StringNode left, BooleanNode right, ArithmeticNode.Operator op)
         {
             switch (op)
             {
                 case ArithmeticNode.Operator.ADD:
-                    return new StringNode(sNode.Value + bNode.Value);
+                    return new StringNode(left.Value + right.Value);
 
                 default:
-                    throw new Exception(BuildExMessage(sNode, bNode, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
-        public static StringNode Op(BooleanNode bNode, StringNode sNode, ArithmeticNode.Operator op)
+        public static StringNode Op(BooleanNode left, StringNode right, ArithmeticNode.Operator op)
         {
             switch (op)
             {
                 case ArithmeticNode.Operator.ADD:
-                    return new StringNode(bNode.Value + sNode.Value);
+                    return new StringNode(left.Value + right.Value);
 
                 default:
-                    throw new Exception(BuildExMessage(bNode, sNode, op.ToString()));
+                    throw ExceptionGenerator.UndefinedOperation(left, right, op);
             }
         }
 
-        public static string BuildExMessage(TermNode leftType, TermNode rightType, string operation)
-        {
-            var builder = new StringBuilder();
-            builder.Append("RUNTIME ERROR: \n Invalid operation performed! ");
-            builder.Append("Types: " + leftType.ActualType.ToString() + " and " + rightType.ActualType.ToString() + " do not define operation: " + operation + "\n");
-            builder.AppendLine("Error occured at line: " + leftType.Line);
-            return builder.ToString();
-        }
+        //public static string BuildExMessage(TermNode leftType, TermNode rightType, string operation)
+        //{
+        //    var builder = new StringBuilder();
+        //    builder.Append("RUNTIME ERROR: \n Invalid operation performed! ");
+        //    builder.Append("Types: " + leftType.ActualType.ToString() + " and " + rightType.ActualType.ToString() + " do not define operation: " + operation + "\n");
+        //    builder.AppendLine("Error occured at line: " + leftType.Line);
+        //    return builder.ToString();
+        //}
     }
 }

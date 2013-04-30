@@ -1,0 +1,9 @@
+Walk(WhileNode) ->
+	NodeLength := WhileNode.Children.Length
+	while WhileNode.Condition == true:
+		for i in [1..NodeLength]:
+			Walk(WhileNode.Children[i])
+		end for
+		WhileNode.Condition = Resolve(WhileNode.Condition)
+	end while
+end

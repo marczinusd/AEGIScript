@@ -1,0 +1,6 @@
+Walk(BeginNode) ->
+	NodeLength := BeginNode.Children.Length
+	for i in [1..BeginNode.Children.Length]:
+		Walk(BeginNode.Children[i])
+	end for
+end

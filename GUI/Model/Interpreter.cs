@@ -5,29 +5,28 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
+using AEGIScript.IO;
 using AEGIScript.Lang;
 using AEGIScript.Lang.Evaluation;
+using AEGIScript.Lang.Exceptions;
 using AEGIScript.Lang.Scoping;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using ELTE.AEGIS.Core;
 using ELTE.AEGIS.Core.Geometry;
+using ELTE.AEGIS.IO;
 
-
-/*  TODO:
- *      - Fix negation operator and negative numbers
- *      - Add nested function calls as expressions
- *      - Implement all AEGIS classes
- */
 namespace AEGIScript.GUI.Model
 {
     internal class Interpreter
     {
+        private readonly HashSet<String> _constructors;
         private readonly Random _rand = new Random();
         private readonly Scope _scope = new Scope();
         private readonly Dictionary<CommonTree, DfsHelper> _visitHelper = new Dictionary<CommonTree, DfsHelper>();
         private AsyncOperation _async;
         private DateTime _beginTime;
+        private bool _errorsIgnored;
         private Boolean _hasAsync;
         private int _treeDepth;
 
@@ -46,11 +45,9 @@ namespace AEGIScript.GUI.Model
         private CommonTokenStream Tokens { get; set; }
         private aegiscriptParser Parser { get; set; }
 
-        private HashSet<String> _constructors; 
         private CancellationToken Token { get; set; }
         private int CurrentNode { get; set; }
         private int AllNodes { get; set; }
-        private bool _errorsIgnored;
         public StringBuilder Output { get; private set; }
         public event ProgressChangedEventHandler ProgressChanged;
 
@@ -134,7 +131,8 @@ namespace AEGIScript.GUI.Model
             Walk(ret.Tree);
         }
 
-        public void WalkParallel(String source, CancellationToken token, AsyncOperation async, bool errorsIgnored = false)
+        public void WalkParallel(String source, CancellationToken token, AsyncOperation async,
+                                 bool errorsIgnored = false)
         {
             _hasAsync = true;
             _async = async;
@@ -149,10 +147,11 @@ namespace AEGIScript.GUI.Model
             Walk(ret.Tree);
             _hasAsync = false;
         }
+
+        //      ANTLR suppresses errors during parsing and lexing
         /// <summary>
         ///     Trivial checks to ANTLR's output --
         ///     can't really determine where the problem came from
-        //      ANTLR suppresses errors during parsing and lexing
         /// </summary>
         private void CheckANTLRErrors()
         {
@@ -194,6 +193,7 @@ namespace AEGIScript.GUI.Model
                 output = "RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message + ", TargetSite: " +
                          ex.TargetSite + ", Source: " + ex.Source;
             }
+
             catch (Exception ex)
             {
                 output = ex.Message;
@@ -225,7 +225,8 @@ namespace AEGIScript.GUI.Model
                 }
                 catch (InvalidOperationException ex)
                 {
-                    PrintLineFun("RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message + ", TargetSite: " + ex.TargetSite + ", Source: " + ex.Source);
+                    PrintLineFun("RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message +
+                                 ", TargetSite: " + ex.TargetSite + ", Source: " + ex.Source);
 
                     if (!_errorsIgnored)
                         return;
@@ -240,7 +241,6 @@ namespace AEGIScript.GUI.Model
             }
             ReportCompletionTime();
         }
-
 
 
         private void ReportCompletionTime()
@@ -261,13 +261,13 @@ namespace AEGIScript.GUI.Model
             {
                 int progress = (100*(CurrentNode + 1)/AllNodes);
                 _async.Post
-                (o =>
-                    {
-                        var e = o as ProgressChangedEventArgs;
-                        OnProgressChanged(e);
-                    },
-                    new InterpreterProgressChangedArgs(progress, _async.UserSuppliedState, Output.ToString())
-                );
+                    (o =>
+                        {
+                            var e = o as ProgressChangedEventArgs;
+                            OnProgressChanged(e);
+                        },
+                     new InterpreterProgressChangedArgs(progress, _async.UserSuppliedState, Output.ToString())
+                    );
             }
         }
 
@@ -291,7 +291,8 @@ namespace AEGIScript.GUI.Model
             }
             catch (InvalidOperationException ex)
             {
-                PrintLineFun("RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message+ ", TargetSite: " + ex.TargetSite + ", Source: " + ex.Source);
+                PrintLineFun("RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message +
+                             ", TargetSite: " + ex.TargetSite + ", Source: " + ex.Source);
             }
             catch (Exception ex)
             {
@@ -300,7 +301,7 @@ namespace AEGIScript.GUI.Model
         }
 
         /// <summary>
-        ///     Performs basic assignment -- right now for globalscope only
+        ///     Performs basic assignment
         /// </summary>
         /// <param name="node">An AssignNode</param>
         /// <returns>Assigned variable as string</returns>
@@ -480,7 +481,6 @@ namespace AEGIScript.GUI.Model
         }
 
 
-
         private void PrintFun(TermNode node)
         {
             Output.Append(node);
@@ -496,12 +496,6 @@ namespace AEGIScript.GUI.Model
         private void PrintLineFun(String message)
         {
             Output.Append(message + "\n");
-            ReportProgress();
-        }
-
-        private void PrintFun(String message)
-        {
-            Output.Append(message);
             ReportProgress();
         }
 
@@ -522,7 +516,7 @@ namespace AEGIScript.GUI.Model
         }
 
         /// <summary>
-        ///     Function to resolve FunCall expressions -- experimental
+        ///     Function to resolve FunCall expressions
         /// </summary>
         /// <param name="fun"></param>
         /// <returns></returns>
@@ -535,7 +529,8 @@ namespace AEGIScript.GUI.Model
             }
             if (_constructors.Contains(fun.FunName))
             {
-                return Construct(resolvedArgs, fun);
+                fun.ResolvedArgs = resolvedArgs;
+                return Constructor.Construct(fun);
             }
             switch (fun.FunName)
             {
@@ -565,81 +560,27 @@ namespace AEGIScript.GUI.Model
                                         "\n");
                 case "ReadWKT":
                     IReferenceSystem referenceSystem = GeometryFactory.ReferenceSystem;
-                    if (resolvedArgs[0].ActualType == ASTNode.Type.String && File.Exists((resolvedArgs[0] as StringNode).Value) && resolvedArgs.Count == 1)
+                    if (resolvedArgs[0].ActualType == ASTNode.Type.String &&
+                        File.Exists((resolvedArgs[0] as StringNode).Value) && resolvedArgs.Count == 1)
                     {
                         try
                         {
-                            String read = IO.SourceIO.ReadWKT((resolvedArgs[0] as StringNode).Value);
-                            var res = ELTE.AEGIS.IO.GeometryConverter.ToGeometry(read, referenceSystem);
-                            return new IGeometryNode(res);
+                            String read = SourceIO.ReadWKT((resolvedArgs[0] as StringNode).Value);
+                            IGeometry res = GeometryConverter.ToGeometry(read, referenceSystem);
+                            return new GeometryNode(res);
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception("RUNTIME ERROR!\nWell-known text read failed with message: " + ex.Message + "\n at line: " + fun.Line);
+                            throw new Exception("RUNTIME ERROR!\nWell-known text read failed with message: " +
+                                                ex.Message + "\n at line: " + fun.Line);
                         }
-                        
                     }
-                    throw new Exception(fun.BadCallMessage());
+                    throw ExceptionGenerator.BadArguments(fun, new[] {ASTNode.Type.String});
 
                 default:
                     throw new Exception(
                         "RUNTIME ERROR!\n You are either calling a non-existing function, or trying to " +
                         "use a void functions return value.");
-            }
-        }
-
-        private TermNode Construct(List<TermNode> args, FunCallNode fun)
-        {
-            switch (args.Count)
-            {
-                case 0:
-                    switch (fun.FunName)
-                    {
-                        case "Array":
-                            return new ArrayNode();
-                        default:
-                            throw new Exception("RUNTIME ERROR! \n Array has no constructors that take " + args.Count +
-                                                " arguments. Line " + fun.Line);
-                    }
-                case 1:
-                    switch (fun.FunName)
-                    {
-                        case "TiffReader":
-                            if (args[0].ActualType == ASTNode.Type.String)
-                            {
-                                try
-                                {
-                                    return new TiffReaderNode((args[0] as StringNode).Value);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new Exception("RUNTIME ERROR! \nTiffReader error: " + ex.Message + " on line " + fun.Line);
-                                }
-                                
-                            }
-                            throw new Exception("RUNTIME ERROR! \n TiffReader has no constructor that takes type: "
-                                                     + args[0].ActualType + " as a parameter. Line " + fun.Line);
-                        case "ShapeFileReader":
-                            if (args[0].ActualType == ASTNode.Type.String)
-                            {
-                                try
-                                {
-                                    return new ShapeFileReaderNode((args[0] as StringNode).Value);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new Exception("RUNTIME ERROR! \nShapeFileReader error: " + ex.Message + " on line " + fun.Line);
-                                }
-                            }
-                            throw new Exception("RUNTIME ERROR! \n ShapeFileReader has no constructor that takes type: " 
-                                                     + args[0].ActualType + " as a parameter. Line "  + fun.Line);
-                        default:
-                            throw new Exception("RUNTIME ERROR! \n Unknown error in construct");
-
-                    }
-                default:
-                    throw new Exception("RUNTIME ERROR! \n" + fun.FunName + " has no constructor that takes " + args.Count + " arguments!" );
-
             }
         }
 
@@ -651,7 +592,7 @@ namespace AEGIScript.GUI.Model
             }
 
             var first = node.Children[0] as VarNode;
-            var resolved = Resolve(first);
+            TermNode resolved = Resolve(first);
             for (int i = 1; i < node.Children.Count; i++)
             {
                 resolved = ResolveGenFun(resolved, node.Children[i] as FunCallNode);
@@ -683,10 +624,6 @@ namespace AEGIScript.GUI.Model
             {
                 case ASTNode.Type.Arith:
                     return Resolve(toRes as ArithmeticNode);
-                case ASTNode.Type.Intvar:
-                case ASTNode.Type.Boolvar:
-                case ASTNode.Type.Doublevar:
-                case ASTNode.Type.Stringvar:
                 case ASTNode.Type.Var:
                     return Resolve(toRes as VarNode);
                 case ASTNode.Type.Int:
@@ -786,16 +723,6 @@ namespace AEGIScript.GUI.Model
             return toRes;
         }
 
-        /// <summary>
-        ///     Functional sugar -- hides the fact that we only need to resolve the right-hand size
-        /// </summary>
-        /// <param name="toRes"></param>
-        /// <returns></returns>
-        private TermNode Resolve(AssignNode toRes)
-        {
-            return Resolve(toRes.Children[1]);
-        }
-
         private TermNode Resolve(TermNode toRes)
         {
             return toRes;
@@ -809,23 +736,9 @@ namespace AEGIScript.GUI.Model
         /// <returns>Variable's actual value</returns>
         private TermNode Resolve(VarNode toRes)
         {
-            TermNode node;
             switch (toRes.ActualType)
             {
-                case ASTNode.Type.Intvar:
-                    node = ((IntVarNode) toRes).Interpret(_scope);
-                    return node;
-                case ASTNode.Type.Boolvar:
-                    node = ((BoolVarNode) toRes).Interpret(_scope);
-                    return node;
-                case ASTNode.Type.Doublevar:
-                    node = ((DoubleVarNode) toRes).Interpret(_scope);
-                    return node;
-                case ASTNode.Type.Stringvar:
-                    node = ((StringVarNode) toRes).Interpret(_scope);
-                    return node;
                 case ASTNode.Type.Var:
-                    return _scope.GetVar(toRes.Symbol);
                 case ASTNode.Type.Array:
                     return _scope.GetVar(toRes.Symbol);
                 default:
@@ -1004,7 +917,6 @@ namespace AEGIScript.GUI.Model
             DepthFirstDescent(Parser.program().Tree, 0, ref builder, ref depth, ref end);
             return builder.ToString();
         }
-
 
 
         private class DfsHelper

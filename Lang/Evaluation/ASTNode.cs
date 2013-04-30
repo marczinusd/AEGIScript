@@ -18,35 +18,45 @@ namespace AEGIScript.Lang.Evaluation
             FunCall,
             Assign,
             Var,
-            Intvar,
             Boolvar,
-            Doublevar,
-            Stringvar,
             Array,
             ArrAcc,
             Term,
+            FieldAccess,
+            Negation,
+            Negative,
 
+
+            // primitive types
             Int,
             String,
             Bool,
             Double,
 
+            // joker type for function calls
+            Any,
+
+            // AEGIS types
             Geometry,
             Geomreader,
             Tiffreader,
             Geotiffreader,
             Shapefreader,
-
             Envelope,
             Coordinate,
             Geometrydim,
             Metadata,
             ReferenceSys,
-
-            Print,
-            FieldAccess,
-            Negation,
-            Negative
+            LineString,
+            Curve,
+            Polygon,
+            Surface,
+            Rectangle,
+            Raster,
+            RasterBand,
+            UInt16,
+            UInt32,
+            Histogram
         }
 
 
