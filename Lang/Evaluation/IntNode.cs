@@ -6,7 +6,7 @@ namespace AEGIScript.Lang.Evaluation
 {
     class IntNode : TermNode 
     {
-        public IntNode(CommonTree tree, String content) : base(tree, content)
+        public IntNode(CommonTree tree, String content) : base(tree)
         {
             // check for overflow
             Value = Int32.Parse(content);
@@ -54,7 +54,7 @@ namespace AEGIScript.Lang.Evaluation
     class NegativeNode : TermNode
     {
         public NegativeNode(CommonTree tree, String content)
-            : base(tree, content)
+            : base(tree)
         {
             ActualType = Type.Negative;
         }

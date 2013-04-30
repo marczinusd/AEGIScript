@@ -1,7 +1,5 @@
 ﻿using System;
 using ELTE.AEGIS.IO;
-using ELTE.AEGIS.IO.GeoTiff;
-using ELTE.AEGIS.IO.Shapefile;
 
 namespace AEGIScript.Lang.FunCalls
 {
@@ -12,19 +10,19 @@ namespace AEGIScript.Lang.FunCalls
     {
 
 
-        public bool Contains(String FunSym)
+        public bool Contains(String funSym)
         {
             return false;
         }
 
         public void ReadGeoTiff()
         {
-            reader = new ShapefileReader("be.sf");
-            reader.Read();
-            TiffReader treader = new TiffReader("be.tiff");
+            Reader = new ShapefileReader("be.sf");
+            Reader.Read();
+            var treader = new TiffReader("be.tiff");
             treader.Read();
         }
 
-        public ShapefileReader reader { get; set; }
+        public ShapefileReader Reader { get; set; }
     }
 }

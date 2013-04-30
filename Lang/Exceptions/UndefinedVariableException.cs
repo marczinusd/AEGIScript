@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AEGIScript.Lang.Exceptions;
 
 namespace AEGIScript.Lang.Exceptions
 {
     class UndefinedVariableException : LangException
     {
-        public UndefinedVariableException(String Message) : base(Message)
+        public UndefinedVariableException(String message) : base(message)
         {
 
         }
@@ -18,7 +13,7 @@ namespace AEGIScript.Lang.Exceptions
         {
             get
             {
-                return "Undefined variable: " + Message;
+                return "Undefined variable: " + base.Message;
             }
         }
     }

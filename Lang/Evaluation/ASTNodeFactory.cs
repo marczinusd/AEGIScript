@@ -29,15 +29,6 @@ namespace AEGIScript.Lang.Evaluation
                     node = new StringNode(tree, content) {ActualType = ASTNode.Type.String, Dispose = false};
                     return node;
 
-
-                //case "'NOT'":
-                //    bool negated = true;
-                //    while (tree.Children != null)
-                //    {
-                //        tree = tree.Children[0] as CommonTree;
-                //        negated = negated ^ true;
-                //    }
-                //    node = new BooleanNode(tree, content) { ActualType = ASTNode.Type.Bool, dispose = false };
                 case "BOOL":
                     node = new BooleanNode(tree, content) {ActualType = ASTNode.Type.Bool, Dispose = false};
                     return node;
@@ -47,7 +38,7 @@ namespace AEGIScript.Lang.Evaluation
                     return node;
 
                 case "'if'":
-                    node = new IfNode(tree, content) {ActualType = ASTNode.Type.If};
+                    node = new IfNode(tree) {ActualType = ASTNode.Type.If};
                     return node;
                 case "'elsif'":
                     node = new ElsifNode(tree) {ActualType = ASTNode.Type.Elif};
@@ -66,7 +57,7 @@ namespace AEGIScript.Lang.Evaluation
                     node = new FieldAccessNode(tree, content) { ActualType =  ASTNode.Type.FieldAccess };
                     return node;
                 case "ACCESS":
-                    node = new ArrAccessNode(tree, (tree.Children[0] as CommonTree).Text)
+                    node = new ArrAccessNode(tree, ((CommonTree) tree.Children[0]).Text)
                         {
                             ActualType = ASTNode.Type.ArrAcc
                         };
@@ -98,7 +89,7 @@ namespace AEGIScript.Lang.Evaluation
                     return node;
 
                 case "'not'":
-                    node = new NegationNode(tree, tree.Text) {ActualType = ASTNode.Type.Negation, Dispose = false};
+                    node = new NegationNode(tree) {ActualType = ASTNode.Type.Negation, Dispose = false};
                     return node;
 
                 case "'='":
@@ -107,7 +98,6 @@ namespace AEGIScript.Lang.Evaluation
 
                 case "IDENT":
                     // if the current node is the first child of its parent
-                    var leftSide = tree.Parent.GetChild(0) as CommonTree == tree;
                     node = new VarNode(tree, tree.Text) {ActualType = ASTNode.Type.Var, Dispose = false};
                     return node;
                     // Uncomment not to drop certain nodes

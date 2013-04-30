@@ -5,7 +5,7 @@ namespace AEGIScript.Lang.Evaluation
 {
     class FieldAccessNode : TermNode
     {
-        public FieldAccessNode(CommonTree tree, String content) :base(tree, content)
+        public FieldAccessNode(CommonTree tree, String content) :base(tree)
         {
             
         }

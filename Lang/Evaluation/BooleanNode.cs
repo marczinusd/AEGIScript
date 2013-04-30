@@ -6,7 +6,7 @@ namespace AEGIScript.Lang.Evaluation
     class BooleanNode : TermNode
     {
         public BooleanNode(CommonTree tree, string content)
-            : base(tree, content)
+            : base(tree)
         {
             Value = Boolean.Parse(content);
             ActualType = Type.Bool;
@@ -18,7 +18,7 @@ namespace AEGIScript.Lang.Evaluation
             ActualType = Type.Bool;
         }
 
-
+        // todo: FIX ME
         public Boolean Interpret(SymbolTables.SymbolTable symbols)
         {
             return true;
@@ -34,8 +34,8 @@ namespace AEGIScript.Lang.Evaluation
 
     class NegationNode : TermNode
     {
-        public NegationNode(CommonTree tree, string content)
-            : base(tree, content)
+        public NegationNode(CommonTree tree)
+            : base(tree)
         {
             ActualType = Type.Negation;
         }

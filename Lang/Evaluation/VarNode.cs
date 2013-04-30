@@ -6,12 +6,12 @@ namespace AEGIScript.Lang.Evaluation
 {
     class VarNode : TermNode
     {
-        public VarNode(CommonTree tree, String sym) : base(tree, sym)
+        public VarNode(CommonTree tree, String sym) : base(tree)
         {
             Symbol = sym;
         }
 
-        public Type Interpret(AEGIScript.Lang.Scoping.Scope symbols)
+        public Type Interpret(Scoping.Scope symbols)
         {
             //TODO
             return Type.Var;

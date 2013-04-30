@@ -1,9 +1,4 @@
 ﻿using System;
-using AEGIScript.Lang.Evaluation;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AEGIScript.Lang.Evaluation
 {
@@ -28,8 +23,6 @@ namespace AEGIScript.Lang.Evaluation
                 case ArithmeticNode.Operator.MOD:
                     break;
                 case ArithmeticNode.Operator.MIN:
-                    break;
-                default:
                     break;
             }
             return 0;
@@ -56,12 +49,12 @@ namespace AEGIScript.Lang.Evaluation
 
         public string Visit(StringNode str, IntNode i)
         {
-            return str.Value + i.ToString();
+            return str.Value + i;
         }
 
         public string Visit(StringNode str, DoubleNode d)
         {
-            return str.Value + d.ToString();
+            return str.Value + d;
         }
 
         public string Visit(StringNode left, StringNode right)

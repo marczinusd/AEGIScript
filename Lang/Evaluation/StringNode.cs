@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Antlr.Runtime.Tree;
 
 
@@ -10,9 +6,9 @@ namespace AEGIScript.Lang.Evaluation
 {
     class StringNode : TermNode
     {
-        public StringNode(CommonTree tree, String content) : base(tree, content)
+        public StringNode(CommonTree tree, String content) : base(tree)
         {
-            Value = content.Trim(new char[]{'"'});
+            Value = content.Trim(new[]{'"'});
             ActualType = Type.String;
         }
 
@@ -48,7 +44,6 @@ namespace AEGIScript.Lang.Evaluation
 
         public override string ToString()
         {
-            //return '"' + Value + '"';
             return Value;
         }
     }

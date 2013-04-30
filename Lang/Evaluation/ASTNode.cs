@@ -6,8 +6,6 @@ namespace AEGIScript.Lang.Evaluation
 {
     public class ASTNode
     {
-        private readonly string[] _tokenTypes;
-
         public enum Type
         {
             Arith,
@@ -80,15 +78,6 @@ namespace AEGIScript.Lang.Evaluation
             Dispose = false;
             Tree = tree;
             Line = tree.Line;
-            SetTypedChildren();
-        }
-
-        public ASTNode(CommonTree tree, String[] tokenTypes)
-        {
-            _tokenTypes = tokenTypes;
-            Dispose = false;
-            Line = tree.Line;
-            Tree = tree;
             SetTypedChildren();
         }
 

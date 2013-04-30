@@ -8,7 +8,7 @@ namespace AEGIScript.Lang.Evaluation
 {
     class ArrayNode : TermNode
     {
-        public ArrayNode(CommonTree tree, String content) : base(tree, content)
+        public ArrayNode(CommonTree tree, String content) : base(tree)
         {
         }
 
@@ -122,6 +122,11 @@ namespace AEGIScript.Lang.Evaluation
 
             builder.Append("]");
             return builder.ToString();
+        }
+
+        public override int GetHashCode()
+        {
+            return Elements.GetHashCode();
         }
 
     }

@@ -6,7 +6,7 @@ namespace AEGIScript.Lang.Evaluation
 {
     class DoubleNode : TermNode
     {
-        public DoubleNode(CommonTree tree, String content) : base(tree, content)
+        public DoubleNode(CommonTree tree, String content) : base(tree)
         {
             Value = Double.Parse(content, CultureInfo.InvariantCulture);
             ActualType = Type.Double;

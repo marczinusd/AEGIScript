@@ -5,7 +5,7 @@ namespace AEGIScript.Lang.Evaluation
 {
     class IfNode : ASTNode
     {
-        public IfNode(CommonTree tree, string content) : base(tree)
+        public IfNode(CommonTree tree) : base(tree)
         {
             ActualType = Type.If;
 

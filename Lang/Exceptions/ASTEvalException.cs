@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AEGIScript.Lang.Evaluation;
+﻿using AEGIScript.Lang.Evaluation;
+using System;
 
 namespace AEGIScript.Lang.Exceptions
 {

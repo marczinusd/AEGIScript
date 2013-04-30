@@ -6,11 +6,11 @@ namespace AEGIScript.Lang.Evaluation
     {
         public static String[] TokenTypes { get; private set; }
 
-        public static String GetTokenType(int TokenType)
+        public static String GetTokenType(int tokenType)
         {
-            if (TokenType >= 0 && TokenType < TokenTypes.Length)
+            if (tokenType >= 0 && tokenType < TokenTypes.Length)
             {
-                return TokenTypes[TokenType];
+                return TokenTypes[tokenType];
             }
             return "";
         }

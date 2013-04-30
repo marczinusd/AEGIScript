@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AEGIScript.Lang.Evaluation;
+using System;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Threading.Tasks;
-using AEGIScript.Lang.Evaluation;
 
 namespace AEGIScript.Lang.Exceptions
 {
+    /// <summary>
+    ///     Static class to generate verbose error messages for semantic and runtime errors.
+    /// </summary>
     static class ExceptionGenerator
     {
         public static IndexOutOfRangeException IndexOutOfRange()

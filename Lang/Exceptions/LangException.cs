@@ -16,7 +16,7 @@ namespace AEGIScript.Lang.Exceptions
         {
             get
             {
-                return "Runtime error! " + Message;
+                return "Runtime error! " + base.Message;
             }
         }
 

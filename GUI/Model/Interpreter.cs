@@ -71,41 +71,6 @@ namespace AEGIScript.GUI.Model
             return output;
         }
 
-
-        /// <summary>
-        ///     Provides a layer of abstraction for walking ASTNodes -- handles double dispatching gracefully
-        ///     From a grammatical point of view, walk handle actual statements
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns>String representation for debug purposes</returns>
-        private void Walk(ASTNode node)
-        {
-            switch (node.ActualType)
-            {
-                case ASTNode.Type.Assign:
-                    Walk(node as AssignNode);
-                    break;
-                case ASTNode.Type.While:
-                    Walk(node as WhileNode);
-                    break;
-                case ASTNode.Type.If:
-                    Walk(node as IfNode);
-                    break;
-                case ASTNode.Type.Elif:
-                    Walk(node as ElsifNode);
-                    break;
-                case ASTNode.Type.Else:
-                    Walk(node as ElseNode);
-                    break;
-                case ASTNode.Type.FunCall:
-                    Walk(node as FunCallNode);
-                    break;
-                default:
-                    throw new Exception("RUNTIME ERROR! \n Invalid statement on line: " + node.Line);
-            }
-        }
-
-
         /// <summary>
         ///     Interface provided for the ViewModel for UI actions
         /// </summary>
@@ -199,6 +164,41 @@ namespace AEGIScript.GUI.Model
                 output = ex.Message;
             }
             return output;
+        }
+
+        #region Walks
+
+        /// <summary>
+        ///     Provides a layer of abstraction for walking ASTNodes -- handles double dispatching gracefully
+        ///     From a grammatical point of view, walk handles actual statements
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>String representation for debug purposes</returns>
+        private void Walk(ASTNode node)
+        {
+            switch (node.ActualType)
+            {
+                case ASTNode.Type.Assign:
+                    Walk(node as AssignNode);
+                    break;
+                case ASTNode.Type.While:
+                    Walk(node as WhileNode);
+                    break;
+                case ASTNode.Type.If:
+                    Walk(node as IfNode);
+                    break;
+                case ASTNode.Type.Elif:
+                    Walk(node as ElsifNode);
+                    break;
+                case ASTNode.Type.Else:
+                    Walk(node as ElseNode);
+                    break;
+                case ASTNode.Type.FunCall:
+                    Walk(node as FunCallNode);
+                    break;
+                default:
+                    throw new Exception("RUNTIME ERROR! \n Invalid statement on line: " + node.Line);
+            }
         }
 
         /// <summary>
@@ -480,6 +480,9 @@ namespace AEGIScript.GUI.Model
             }
         }
 
+        #endregion
+
+        #region Printing functions
 
         private void PrintFun(TermNode node)
         {
@@ -499,6 +502,51 @@ namespace AEGIScript.GUI.Model
             ReportProgress();
         }
 
+        #endregion
+
+        #region Resolves
+
+        /// <summary>
+        ///     Provides an abstraction layer for resolves -- handles double dispatching to the proper functions
+        ///     From a grammatical point of view, resolve deals with all expressions, but not statements.
+        ///     For statement handlng, see the Walk functions
+        /// </summary>
+        /// <param name="toRes"></param>
+        /// <returns></returns>
+        private TermNode Resolve(ASTNode toRes)
+        {
+            switch (toRes.ActualType)
+            {
+                case ASTNode.Type.Arith:
+                    return Resolve(toRes as ArithmeticNode);
+                case ASTNode.Type.Var:
+                    return Resolve(toRes as VarNode);
+                case ASTNode.Type.Int:
+                case ASTNode.Type.String:
+                case ASTNode.Type.Bool:
+                case ASTNode.Type.Double:
+                    return Resolve(toRes as TermNode);
+                case ASTNode.Type.Array:
+                    return Resolve(toRes as ArrayNode);
+                case ASTNode.Type.Assign:
+                    TermNode resolved = Resolve(toRes.Children[1]);
+                    _scope.AddVar((toRes.Children[0] as VarNode).Symbol, resolved);
+                    return resolved;
+                case ASTNode.Type.ArrAcc:
+                    return Resolve(toRes as ArrAccessNode);
+                case ASTNode.Type.FunCall:
+                    return Resolve(toRes as FunCallNode);
+                case ASTNode.Type.FieldAccess:
+                    return Resolve(toRes as FieldAccessNode);
+                case ASTNode.Type.Negation:
+                    return Resolve(toRes as NegationNode);
+                case ASTNode.Type.Negative:
+                    return Resolve(toRes as NegativeNode);
+                default:
+                    throw new Exception("Unable to resolve ASTNode " + toRes.ActualType.ToString() + " " +
+                                        toRes.Parent.ActualType.ToString());
+            }
+        }
 
         /// <summary>
         ///     Resolves an arithmetic node recursively
@@ -532,6 +580,11 @@ namespace AEGIScript.GUI.Model
                 fun.ResolvedArgs = resolvedArgs;
                 return Constructor.Construct(fun);
             }
+            return RunBuiltinFuns(fun, resolvedArgs);
+        }
+
+        private TermNode RunBuiltinFuns(FunCallNode fun, List<TermNode> resolvedArgs)
+        {
             switch (fun.FunName)
             {
                 case "rand":
@@ -609,48 +662,6 @@ namespace AEGIScript.GUI.Model
             }
             node.ResolvedArgs = args;
             return caller.CallFun(node);
-        }
-
-        /// <summary>
-        ///     Provides an abstraction layer for resolves -- handles double dispatching to the proper functions
-        ///     From a grammatical point of view, resolve deals with all expressions, but not statements.
-        ///     For statement handlng, see the Walk functions
-        /// </summary>
-        /// <param name="toRes"></param>
-        /// <returns></returns>
-        private TermNode Resolve(ASTNode toRes)
-        {
-            switch (toRes.ActualType)
-            {
-                case ASTNode.Type.Arith:
-                    return Resolve(toRes as ArithmeticNode);
-                case ASTNode.Type.Var:
-                    return Resolve(toRes as VarNode);
-                case ASTNode.Type.Int:
-                case ASTNode.Type.String:
-                case ASTNode.Type.Bool:
-                case ASTNode.Type.Double:
-                    return Resolve(toRes as TermNode);
-                case ASTNode.Type.Array:
-                    return Resolve(toRes as ArrayNode);
-                case ASTNode.Type.Assign:
-                    TermNode resolved = Resolve(toRes.Children[1]);
-                    _scope.AddVar((toRes.Children[0] as VarNode).Symbol, resolved);
-                    return resolved;
-                case ASTNode.Type.ArrAcc:
-                    return Resolve(toRes as ArrAccessNode);
-                case ASTNode.Type.FunCall:
-                    return Resolve(toRes as FunCallNode);
-                case ASTNode.Type.FieldAccess:
-                    return Resolve(toRes as FieldAccessNode);
-                case ASTNode.Type.Negation:
-                    return Resolve(toRes as NegationNode);
-                case ASTNode.Type.Negative:
-                    return Resolve(toRes as NegativeNode);
-                default:
-                    throw new Exception("Unable to resolve ASTNode " + toRes.ActualType.ToString() + " " +
-                                        toRes.Parent.ActualType.ToString());
-            }
         }
 
         private TermNode Resolve(NegationNode node)
@@ -746,6 +757,10 @@ namespace AEGIScript.GUI.Model
             }
         }
 
+        #endregion
+
+        #region Pretty printing functions to debug AST
+
         /// <summary>
         ///     Calculates the depth of the current AST.
         /// </summary>
@@ -834,7 +849,7 @@ namespace AEGIScript.GUI.Model
                 {
                     AddIndentation(ref builder, (_treeDepth + offsetFromMax - tokenLengthFactor - depth));
                     builder.Append(Parser.TokenNames[node.Type]);
-                    var Node = new ASTNode(node, Parser.TokenNames);
+                    var Node = new ASTNode(node);
                 }
                 builder.Append('\n');
             }
@@ -932,5 +947,7 @@ namespace AEGIScript.GUI.Model
             public int End { get; set; }
             private bool Visited { get; set; }
         }
+
+        #endregion
     }
 }
