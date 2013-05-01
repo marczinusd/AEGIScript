@@ -1,0 +1,6 @@
+Resolve(ArrayNode) ->
+	for i in [1..ArrayNode.Children.Count]:
+		ArrayNode.Elements[i] := Resolve(ArrayNode.Children[i])
+	end for
+	return ArrayNode
+end

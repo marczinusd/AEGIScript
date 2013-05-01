@@ -90,7 +90,45 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="GUI\MainWindow.xaml">
+    <Compile Include="Lang\Evaluation\AEGISNodes\AEGISReaderNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\CoordinateNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\CurveNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\EnvelopeNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\GeometryDimNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\GeometryFactoryNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\GeometryNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\GeometryStreamReaderNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\GeoTiffReaderNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\HistogramNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\LinearRingNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\LineNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\LineStringNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\MetadataNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\PointNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\PolygonNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\RasterBandNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\RasterNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\RectangleNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\ReferenceSystemNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\ShapeFileReaderNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\SurfaceNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\TiffReaderNode.cs" />
+    <Compile Include="Lang\Evaluation\AEGISNodes\TypeNode.cs" />
+    <Compile Include="Lang\Exceptions\InvalidCallException.cs" />
+    <Compile Include="Lang\Exceptions\InvalidNodeOperationException.cs" />
+    <Compile Include="Lang\Scoping\SymbolTable.cs" />
+    <Compile Include="Themes\generic.xaml.cs">
+      <DependentUpon>generic.xaml</DependentUpon>
+    </Compile>
+    <Page Include="GUI\View\CompletionListItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUI\View\DescriptionBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUI\View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -98,54 +136,62 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GUI\MainWindow.xaml.cs">
+    <Compile Include="GUI\View\CompletionListItem.xaml.cs">
+      <DependentUpon>CompletionListItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\View\DescriptionBox.xaml.cs">
+      <DependentUpon>DescriptionBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Themes\generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUI\Model\Interpreter.cs" />
     <Compile Include="GUI\Model\InterpreterProgressChangedArgs.cs" />
     <Compile Include="GUI\Model\PrintEventArgs.cs" />
     <Compile Include="GUI\ViewModel\DelegateCommand.cs" />
+    <Compile Include="GUI\ViewModel\DescriptionBoxViewModel.cs" />
     <Compile Include="GUI\ViewModel\EditorViewModel.cs" />
+    <Compile Include="GUI\ViewModel\FunctionDescription.cs" />
     <Compile Include="GUI\ViewModel\SaveFileEventArgs.cs" />
     <Compile Include="GUI\ViewModel\ViewModelBase.cs" />
     <Compile Include="IO\ResourceLoader.cs" />
     <Compile Include="IO\ScriptIOException.cs" />
     <Compile Include="IO\SourceIO.cs" />
     <Compile Include="IO\Unit tests\SourceIO_tests.cs" />
-    <Compile Include="Lang\aegiscriptLexer.cs" />
-    <Compile Include="Lang\aegiscriptParser.cs" />
-    <Compile Include="Lang\Evaluation\ArithmeticNode.cs" />
-    <Compile Include="Lang\Evaluation\ArithmeticVisitor.cs" />
-    <Compile Include="Lang\Evaluation\ArrAccessNode.cs" />
-    <Compile Include="Lang\Evaluation\ArrayNode.cs" />
-    <Compile Include="Lang\Evaluation\AssignNode.cs" />
-    <Compile Include="Lang\Evaluation\ASTNode.cs" />
-    <Compile Include="Lang\Evaluation\ASTNodeFactory.cs" />
-    <Compile Include="Lang\Evaluation\BeginNode.cs" />
-    <Compile Include="Lang\Evaluation\BooleanNode.cs" />
-    <Compile Include="Lang\Evaluation\FieldAccessNode.cs" />
-    <Compile Include="Lang\Exceptions\InvalidOperationException.cs" />
-    <Compile Include="Lang\Exceptions\LangException.cs" />
-    <Compile Include="Lang\Evaluation\DoubleNode.cs" />
-    <Compile Include="Lang\Evaluation\IfNode.cs" />
-    <Compile Include="Lang\Evaluation\IntArray.cs" />
-    <Compile Include="Lang\Evaluation\IntNode.cs" />
-    <Compile Include="Lang\Evaluation\IVisitor.cs" />
-    <Compile Include="Lang\Evaluation\NodeArithmetics.cs" />
-    <Compile Include="Lang\Evaluation\StringNode.cs" />
-    <Compile Include="Lang\Evaluation\TermNode.cs" />
-    <Compile Include="Lang\Evaluation\TokenTypeMediator.cs" />
-    <Compile Include="Lang\Evaluation\VarNode.cs" />
-    <Compile Include="Lang\Evaluation\WhileNode.cs" />
-    <Compile Include="Lang\Evaluation\FunCallNode.cs" />
-    <Compile Include="Lang\Exceptions\UndefinedVariableException.cs" />
-    <Compile Include="Lang\FunCalls\FunCallHelper.cs" />
+    <Compile Include="Lang\ANTLR\aegiscriptLexer.cs" />
+    <Compile Include="Lang\ANTLR\aegiscriptParser.cs" />
+    <Compile Include="Lang\Evaluation\ExpressionNodes\ArithmeticNode.cs" />
+    <Compile Include="Lang\Evaluation\Helpers\ArithmeticVisitor.cs" />
+    <Compile Include="Lang\Evaluation\ExpressionNodes\ArrAccessNode.cs" />
+    <Compile Include="Lang\Evaluation\PrimitiveNodes\ArrayNode.cs" />
+    <Compile Include="Lang\Evaluation\StatementNodes\AssignNode.cs" />
+    <Compile Include="Lang\Evaluation\PrimitiveNodes\ASTNode.cs" />
+    <Compile Include="Lang\Evaluation\Helpers\ASTNodeFactory.cs" />
+    <Compile Include="Lang\Evaluation\StatementNodes\BeginNode.cs" />
+    <Compile Include="Lang\Evaluation\PrimitiveNodes\BooleanNode.cs" />
+    <Compile Include="Lang\Evaluation\Helpers\Constructor.cs" />
+    <Compile Include="Lang\Evaluation\ExpressionNodes\FieldAccessNode.cs" />
+    <Compile Include="Lang\Exceptions\ExceptionGenerator.cs" />
+    <Compile Include="Lang\Evaluation\PrimitiveNodes\DoubleNode.cs" />
+    <Compile Include="Lang\Evaluation\StatementNodes\IfNode.cs" />
+    <Compile Include="Lang\Evaluation\PrimitiveNodes\IntNode.cs" />
+    <Compile Include="Lang\Evaluation\Helpers\IVisitor.cs" />
+    <Compile Include="Lang\Evaluation\Helpers\NodeArithmetics.cs" />
+    <Compile Include="Lang\Evaluation\PrimitiveNodes\StringNode.cs" />
+    <Compile Include="Lang\Evaluation\PrimitiveNodes\TermNode.cs" />
+    <Compile Include="Lang\Evaluation\Helpers\TokenTypeMediator.cs" />
+    <Compile Include="Lang\Evaluation\PrimitiveNodes\VarNode.cs" />
+    <Compile Include="Lang\Evaluation\StatementNodes\WhileNode.cs" />
+    <Compile Include="Lang\Evaluation\ExpressionNodes\FunCallNode.cs" />
     <Compile Include="Lang\Scoping\Scope.cs" />
-    <Compile Include="Lang\SymbolTables\SymbolTable.cs" />
-    <Compile Include="Lang\SymbolTables\VariableAlreadyDefinedException.cs" />
+    <Compile Include="Lang\Exceptions\VariableAlreadyDefinedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -163,9 +209,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <AntlrTokens Include="Lang\aegiscript2.tokens">
+    <AntlrTokens Include="Lang\ANTLR\aegiscript2.tokens">
       <Generator>MSBuild:Compile</Generator>
     </AntlrTokens>
+    <Antlr3 Include="Lang\ANTLR\aegiscript.g">
+      <Generator>MSBuild:Compile</Generator>
+    </Antlr3>
     <None Include="Lang\Test Code\arraytest.aes" />
     <None Include="Lang\Test Code\asd.aes" />
     <None Include="Lang\Test Code\euclidean.aes" />
@@ -262,12 +311,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GUI\Model\Unit tests\" />
-    <Folder Include="GUI\View\" />
     <Folder Include="Lang\Unit tests\" />
-    <Folder Include="Res\DLLs\" />
-    <Folder Include="Res\Syntax\" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Res\Icons\bluebgrarrow.png" />
+    <Resource Include="Res\Icons\bluebgrctor.png" />
+    <Resource Include="Res\Icons\constructor.png" />
+    <Resource Include="Res\Icons\arrow.png" />
     <Resource Include="Res\Icons\stop.png" />
     <Resource Include="Res\Icons\add.png" />
     <Resource Include="Res\Icons\bug.png" />

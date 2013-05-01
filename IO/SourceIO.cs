@@ -49,6 +49,7 @@ namespace AEGIScript.IO
             return lines;
         }
 
+        // 1 sor beolvasása
         public static String ReadWKT(string path)
         {
             var builder = new StringBuilder();

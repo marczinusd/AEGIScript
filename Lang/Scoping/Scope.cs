@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AEGIScript.Lang.SymbolTables;
-using AEGIScript.Lang.Evaluation;
+using AEGIScript.Lang.Evaluation.PrimitiveNodes;
 
 
 namespace AEGIScript.Lang.Scoping
@@ -87,11 +83,5 @@ namespace AEGIScript.Lang.Scoping
 
         public SymbolTable fields { get; private set; }
         protected Scope PrecedingScope;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        /// <exception>VariableAlreadyDefinedException</exception>
     }
 }
