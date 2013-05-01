@@ -20,8 +20,6 @@ namespace AEGIScript.GUI.View
         private readonly Dictionary<string, string> _descriptions = new Dictionary<string, string>(); 
         private readonly Dictionary<string, FunctionDescription> _functionDescriptions = new Dictionary<string, FunctionDescription>(); 
         private readonly EditorViewModel _viewModel;
-        private DescriptionBoxViewModel _descViewModel;
-        private DescriptionBox _descBox;
         private CompletionWindow _completionWindow;
 
         public MainWindow()
@@ -29,9 +27,6 @@ namespace AEGIScript.GUI.View
             InitializeComponent();
             _viewModel = new EditorViewModel();
             DataContext = _viewModel;
-            _descViewModel = new DescriptionBoxViewModel(new FunctionDescription("Append", "Array", "Object", "Array", "Append the object to the array", FunctionDescription.FunctionType.Call));
-            _descBox = new DescriptionBox();
-            _descBox.DataContext = _descViewModel;
             mainGrid.DataContext = _viewModel;
             textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
             textEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
@@ -140,8 +135,7 @@ namespace AEGIScript.GUI.View
             _functionDescriptions["Count"] = new FunctionDescription("Count", "Array|String", "void", "Integer", "Returns the length of the array or string.", FunctionDescription.FunctionType.Call);
 
             _keywords.Add("Read");
-            _descriptions.Add("Read", "Read(GeometryStreamReader) \t returns: Array<Geometry> \n\t Reads until end of stream, then returns a list of Geometries.");
-            _functionDescriptions["Read"] = new FunctionDescription("Read", "GeometryStream", "void", "Array<Geometry>", "Returns the length of the array or string.", FunctionDescription.FunctionType.Call);
+            _functionDescriptions["Read"] = new FunctionDescription("Read", "GeometryStream", "void", "Geometry[]", "Returns the length of the array or string.", FunctionDescription.FunctionType.Call);
 
             _keywords.Add("Boundary");
             _descriptions.Add("Boundary", "Boundary(Geometry) \t returns: Geometry \n\t Returns the boundary of the geometry object.");
@@ -192,7 +186,7 @@ namespace AEGIScript.GUI.View
             _functionDescriptions["DimensionType"] = new FunctionDescription(funName: "DimensionType",
                                       calledOn: "Geometry",
                                       parameters: "void",
-                                      returns: "DimensionType",
+                                      returns: "DimType",
                                       description: "Returns the dimension type of the geometry.",
                                       type: FunctionDescription.FunctionType.Call);
 
@@ -360,7 +354,7 @@ namespace AEGIScript.GUI.View
             _keywords.Add("Point");
             _functionDescriptions["Point"] = new FunctionDescription
                 (funName: "Point",
-                 calledOn: "void",
+                 calledOn: "Factory",
                  parameters: "double,double(,double)",
                  returns: "Point",
                  description: "Returns a new Point",
@@ -369,8 +363,8 @@ namespace AEGIScript.GUI.View
             _keywords.Add("LinearRing");
             _functionDescriptions["LinearRing"] = new FunctionDescription
              (funName: "LinearRing",
-              calledOn: "void",
-              parameters: "Array<Point|Coordinate>",
+              calledOn: "Factory",
+              parameters: "Point[ ]|Coordinate[ ]",
               returns: "LinearRing",
               description: "Returns a new LinearRing",
               type: FunctionDescription.FunctionType.Ctor);
@@ -378,8 +372,8 @@ namespace AEGIScript.GUI.View
             _keywords.Add("Line");
             _functionDescriptions["Line"] = new FunctionDescription
              (funName: "Line",
-              calledOn: "void",
-              parameters: "Array<Point|Coordinate>",
+              calledOn: "Factory",
+              parameters: "Point[ ]|Coordinate[ ]",
               returns: "Coordinate",
               description: "Returns a new Line",
               type: FunctionDescription.FunctionType.Ctor);
@@ -387,8 +381,8 @@ namespace AEGIScript.GUI.View
             _keywords.Add("LineString");
             _functionDescriptions["LineString"] = new FunctionDescription
              (funName: "LineString",
-              calledOn: "void",
-              parameters: "Array<Point|Coordinate>",
+              calledOn: "Factory",
+              parameters: "Point[ ]|Coordinate[ ]",
               returns: "Coordinate",
               description: "Returns a new LineString",
               type: FunctionDescription.FunctionType.Ctor);
@@ -412,8 +406,9 @@ namespace AEGIScript.GUI.View
             if (e.Text == ".")
             {
                 _completionWindow = new CompletionWindow(textEditor.TextArea);
-                _completionWindow.Width = _completionWindow.Width + 60;
+                _completionWindow.Width = _completionWindow.Width + 30;
                 _completionWindow.Height = 150;
+                _completionWindow.MaxHeight = 150;
                 IList<ICompletionData> data = _completionWindow.CompletionList.CompletionData;
                 foreach (string k in _keywords)
                 {
@@ -458,7 +453,7 @@ namespace AEGIScript.GUI.View
 
         public ImageSource Image
         {
-            get { return null; }
+            get { return Descriptions[Text].Image; }
         }
 
         public string Text { get; private set; }

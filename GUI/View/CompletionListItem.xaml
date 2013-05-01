@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="13" d:DesignWidth="120">
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+             d:DesignHeight="16" Height="16" d:DesignWidth="140" Width="140">
     <UserControl.Resources>
         <BitmapImage x:Key="ArrowImg" UriSource="../../res/Icons/arrow.png" />
     </UserControl.Resources>
@@ -13,7 +14,7 @@
             <ColumnDefinition Width="40*"/>
             <ColumnDefinition Width="171*"/>
         </Grid.ColumnDefinitions>
-        <Image Source="{Binding Description.Image}" Height="13" Width="13"></Image>
-        <Label Grid.Column="1"  Content="{Binding Description.Name}" FontFamily="SegoeUI" FontWeight="ExtraBlack" FontSize="12" Margin="20,-2,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"></Label>
+        <!--<Image Source="{Binding Description.Image}" Height="16" Width="16"></Image>-->
+        <Label Background="Transparent" Grid.Column="0" Grid.ColumnSpan="2"  Content="{Binding Description.Name}" FontFamily="SegoeUI" FontWeight="ExtraBlack" FontSize="11" Margin="15,-6,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"></Label>
     </Grid>
 </UserControl>
