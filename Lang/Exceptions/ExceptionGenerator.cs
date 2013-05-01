@@ -1,16 +1,29 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿using System;
 using System.Linq;
 using System.Text;
 using AEGIScript.Lang.Evaluation.ExpressionNodes;
 using AEGIScript.Lang.Evaluation.PrimitiveNodes;
 =======
+=======
+>>>>>>> detach
 ﻿using AEGIScript.Lang.Evaluation;
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+<<<<<<< HEAD
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+=======
+﻿using System;
+using System.Linq;
+using System.Text;
+using AEGIScript.Lang.Evaluation.ExpressionNodes;
+using AEGIScript.Lang.Evaluation.PrimitiveNodes;
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
 
 namespace AEGIScript.Lang.Exceptions
 {
@@ -36,6 +49,10 @@ namespace AEGIScript.Lang.Exceptions
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> detach
         public static InvalidCallException BadArguments(FunCallNode func)
         {
             var errorMsg = new StringBuilder();
@@ -49,8 +66,12 @@ namespace AEGIScript.Lang.Exceptions
             return new InvalidCallException(errorMsg.ToString());
         }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
         public static InvalidCallException BadArguments(FunCallNode func, ASTNode.Type[] actualSignature)
         {
             var errorMsg = new StringBuilder();
@@ -86,7 +107,10 @@ namespace AEGIScript.Lang.Exceptions
 
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> detach
 
     #region Exceptions
     [Serializable]
@@ -136,5 +160,10 @@ namespace AEGIScript.Lang.Exceptions
         }
     }
 #endregion
+<<<<<<< HEAD
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+=======
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
 }

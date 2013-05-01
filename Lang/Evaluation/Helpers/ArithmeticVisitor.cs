@@ -1,9 +1,17 @@
 ﻿using System;
 <<<<<<< HEAD:Lang/Evaluation/Helpers/ArithmeticVisitor.cs
+<<<<<<< HEAD:Lang/Evaluation/Helpers/ArithmeticVisitor.cs
 using AEGIScript.Lang.Evaluation.ExpressionNodes;
 using AEGIScript.Lang.Evaluation.PrimitiveNodes;
 =======
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6:Lang/Evaluation/ArithmeticVisitor.cs
+=======
+<<<<<<< HEAD:Lang/Evaluation/ArithmeticVisitor.cs
+=======
+using AEGIScript.Lang.Evaluation.ExpressionNodes;
+using AEGIScript.Lang.Evaluation.PrimitiveNodes;
+>>>>>>> Project restructured, geofactory support added:Lang/Evaluation/Helpers/ArithmeticVisitor.cs
+>>>>>>> detach:Lang/Evaluation/Helpers/ArithmeticVisitor.cs
 
 namespace AEGIScript.Lang.Evaluation.Helpers
 {

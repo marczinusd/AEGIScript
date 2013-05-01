@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using AEGIScript.IO;
 <<<<<<< HEAD
+<<<<<<< HEAD
 using AEGIScript.Lang.ANTLR;
 using AEGIScript.Lang.Evaluation;
 using AEGIScript.Lang.Evaluation.AEGISNodes;
@@ -18,6 +19,19 @@ using AEGIScript.Lang.Evaluation.StatementNodes;
 using AEGIScript.Lang;
 using AEGIScript.Lang.Evaluation;
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+using AEGIScript.Lang;
+using AEGIScript.Lang.Evaluation;
+=======
+using AEGIScript.Lang.ANTLR;
+using AEGIScript.Lang.Evaluation;
+using AEGIScript.Lang.Evaluation.AEGISNodes;
+using AEGIScript.Lang.Evaluation.ExpressionNodes;
+using AEGIScript.Lang.Evaluation.Helpers;
+using AEGIScript.Lang.Evaluation.PrimitiveNodes;
+using AEGIScript.Lang.Evaluation.StatementNodes;
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
 using AEGIScript.Lang.Exceptions;
 using AEGIScript.Lang.Scoping;
 using Antlr.Runtime;
@@ -31,9 +45,15 @@ namespace AEGIScript.GUI.Model
     internal class Interpreter
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
         #region Private Fields
 =======
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+=======
+        #region Private Fields
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
         private readonly HashSet<String> _constructors;
         private readonly Random _rand = new Random();
         private readonly Scope _scope = new Scope();
@@ -56,6 +76,10 @@ namespace AEGIScript.GUI.Model
         private int CurrentNode { get; set; }
         private int AllNodes { get; set; }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> detach
 
         #endregion
 
@@ -67,8 +91,12 @@ namespace AEGIScript.GUI.Model
 
         #region Public Fields
 
+<<<<<<< HEAD
 =======
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
         public StringBuilder Output { get; private set; }
         public event ProgressChangedEventHandler ProgressChanged;
         #endregion 
@@ -542,9 +570,12 @@ namespace AEGIScript.GUI.Model
         #endregion
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         #region Resolves
 
 =======
+=======
+>>>>>>> detach
         #region Printing functions
 
         private void PrintFun(TermNode node)
@@ -569,7 +600,14 @@ namespace AEGIScript.GUI.Model
 
         #region Resolves
 
+<<<<<<< HEAD
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+=======
+        #region Resolves
+
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
         /// <summary>
         ///     Provides an abstraction layer for resolves -- handles double dispatching to the proper functions
         ///     From a grammatical point of view, resolve deals with all expressions, but not statements.
@@ -595,10 +633,17 @@ namespace AEGIScript.GUI.Model
                 case ASTNode.Type.Assign:
                     TermNode resolved = Resolve(toRes.Children[1]);
 <<<<<<< HEAD
+<<<<<<< HEAD
                     _scope.AddVar(((VarNode) toRes.Children[0]).Symbol, resolved);
 =======
                     _scope.AddVar((toRes.Children[0] as VarNode).Symbol, resolved);
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+                    _scope.AddVar((toRes.Children[0] as VarNode).Symbol, resolved);
+=======
+                    _scope.AddVar(((VarNode) toRes.Children[0]).Symbol, resolved);
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
                     return resolved;
                 case ASTNode.Type.ArrAcc:
                     return Resolve(toRes as ArrAccessNode);
@@ -697,10 +742,17 @@ namespace AEGIScript.GUI.Model
                         }
                     }
 <<<<<<< HEAD
+<<<<<<< HEAD
                     throw ExceptionGenerator.BadArguments(fun, new[] { ASTNode.Type.String });
 =======
                     throw ExceptionGenerator.BadArguments(fun, new[] {ASTNode.Type.String});
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+                    throw ExceptionGenerator.BadArguments(fun, new[] {ASTNode.Type.String});
+=======
+                    throw ExceptionGenerator.BadArguments(fun, new[] { ASTNode.Type.String });
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
 
                 default:
                     throw new Exception(
@@ -832,6 +884,10 @@ namespace AEGIScript.GUI.Model
         #endregion
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> detach
         #region Printing functions
 
         private void PrintFun(TermNode node)
@@ -854,8 +910,12 @@ namespace AEGIScript.GUI.Model
 
         #endregion
 
+<<<<<<< HEAD
 =======
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
         #region Pretty printing functions to debug AST
 
         /// <summary>
@@ -947,9 +1007,15 @@ namespace AEGIScript.GUI.Model
                     AddIndentation(ref builder, (_treeDepth + offsetFromMax - tokenLengthFactor - depth));
                     builder.Append(Parser.TokenNames[node.Type]);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                     var Node = new ASTNode(node);
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6
+=======
+                    var Node = new ASTNode(node);
+=======
+>>>>>>> Project restructured, geofactory support added
+>>>>>>> detach
                 }
                 builder.Append('\n');
             }

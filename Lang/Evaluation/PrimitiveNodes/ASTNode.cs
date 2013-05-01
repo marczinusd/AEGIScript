@@ -56,6 +56,7 @@ namespace AEGIScript.Lang.Evaluation.PrimitiveNodes
             UInt16,
             UInt32,
 <<<<<<< HEAD:Lang/Evaluation/PrimitiveNodes/ASTNode.cs
+<<<<<<< HEAD:Lang/Evaluation/PrimitiveNodes/ASTNode.cs
             Histogram,
             TypeIdentifier,
             Point,
@@ -64,6 +65,17 @@ namespace AEGIScript.Lang.Evaluation.PrimitiveNodes
 =======
             Histogram
 >>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6:Lang/Evaluation/ASTNode.cs
+=======
+<<<<<<< HEAD:Lang/Evaluation/ASTNode.cs
+            Histogram
+=======
+            Histogram,
+            TypeIdentifier,
+            Point,
+            Line,
+            LinearRing
+>>>>>>> Project restructured, geofactory support added:Lang/Evaluation/PrimitiveNodes/ASTNode.cs
+>>>>>>> detach:Lang/Evaluation/PrimitiveNodes/ASTNode.cs
         }
 
 
