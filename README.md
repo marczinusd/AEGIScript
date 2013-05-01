@@ -21,21 +21,21 @@ Syntax
 ==========
 AEGIScript uses a very simple syntax, very similar to Python. Below is the semi-formal definition of the language:
 
-'''
+```
 PROGRAM   		::= begin STATEMENT+ end;
-STATEMENT 			::= ASSIGN_STATEMENT | IF_STATEMENT 
-					| WHILE_STATEMENT | FUNCALL_STATEMENT
+STATEMENT 		::= ASSIGN_STATEMENT | IF_STATEMENT 
+			   | WHILE_STATEMENT | FUNCALL_STATEMENT
 ASSIGN_STATEMENT 	::= ( identifier | ARRAY_ACCESSOR ) = EXPRESSION ;
 IF_STATEMENT 	 	::= if EXPRESSION : STATEMENT+ 
-						(elsif EXPRESSION: STATEMENT+ end;)* 
-						(else: STATEMENT+)? endif;
+			    (elsif EXPRESSION: STATEMENT+ end;)* 
+			    (else: STATEMENT+)? endif;
 WHILE_STATEMENT 	::= while EXPRESSION: STATEMENT+ end while ;
 FUNCALL_STATEMENT 	::= identifier ( argument? (, argument)* ) ;
-EXPRESSION 			::= identifier | arithmetic_expression 
-						| FUNCALL_EXPRESSION | ARRAY_ACCESSOR | FIELD_ACCESSOR
+EXPRESSION 		::= identifier | arithmetic_expression 
+			    | FUNCALL_EXPRESSION | ARRAY_ACCESSOR | FIELD_ACCESSOR
 FUNCALL_EXPRESSION  ::= identifier ( argument? (, argument)* )
 ARRAY_ACCESSOR      ::= identifier ([EXPRESSION])*
 FIELD_ACCESSOR      ::= identifier.FUNCALL_EXPRESSION+
-Operators	        ::= { +, -, *, /, mod, not, ||, && }
-Keywords	        ::= { begin, end, while, if, endif, true, false }
-'''
+Operators	    ::= { +, -, *, /, mod, not, ||, && }
+Keywords	    ::= { begin, end, while, if, endif, true, false }
+```
