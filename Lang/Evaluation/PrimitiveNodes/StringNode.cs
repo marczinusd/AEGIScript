@@ -1,6 +1,9 @@
 ﻿using System;
+<<<<<<< HEAD:Lang/Evaluation/PrimitiveNodes/StringNode.cs
 using AEGIScript.Lang.Evaluation.ExpressionNodes;
 using AEGIScript.Lang.Scoping;
+=======
+>>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6:Lang/Evaluation/StringNode.cs
 using Antlr.Runtime.Tree;
 
 namespace AEGIScript.Lang.Evaluation.PrimitiveNodes

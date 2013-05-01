@@ -1,0 +1,3 @@
+Resolve(VarNode) ->
+    return VarNode.Interpret(Scope)
+end

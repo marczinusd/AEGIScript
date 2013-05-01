@@ -1,0 +1,8 @@
+Walk(FunCallNode) ->
+	ResolvedArgs := Array()
+	for i in [1..FunCallNode.Children.Count]:
+		ResolvedArgs[i] = Resolve(FunCallNode.Children[i])
+	end for;
+	FunCallNode.Args = ResolvedArgs
+	FunCallNode.CallFun()
+end

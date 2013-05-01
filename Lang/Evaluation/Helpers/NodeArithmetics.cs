@@ -1,5 +1,10 @@
+<<<<<<< HEAD:Lang/Evaluation/Helpers/NodeArithmetics.cs
 ﻿using AEGIScript.Lang.Evaluation.ExpressionNodes;
 using AEGIScript.Lang.Evaluation.PrimitiveNodes;
+=======
+﻿using System;
+using System.Text;
+>>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6:Lang/Evaluation/NodeArithmetics.cs
 using AEGIScript.Lang.Exceptions;
 
 namespace AEGIScript.Lang.Evaluation.Helpers

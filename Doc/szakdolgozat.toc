@@ -1,0 +1,12 @@
+\select@language {magyar}
+\contentsline {chapter}{\numberline {1.}Bevezet\IeC {\~o}}{2}
+\contentsline {chapter}{\numberline {2.}Projektdefin\IeC {\'\i }ci\IeC {\'o}}{4}
+\contentsline {section}{\numberline {2.1.}Elm\IeC {\'e}leti h\IeC {\'a}tt\IeC {\'e}r}{4}
+\contentsline {subsection}{\numberline {2.1.1.}Interpreterek}{4}
+\contentsline {subsubsection}{Bytecode interpreterek}{4}
+\contentsline {subsubsection}{AST interpreterek}{4}
+\contentsline {section}{\numberline {2.2.}Absztrakt szintaxisfa bej\IeC {\'a}r\IeC {\'a}sok}{5}
+\contentsline {section}{\numberline {2.3.}Az AEGIS projekt}{5}
+\contentsline {chapter}{\numberline {3.}Felhaszn\IeC {\'a}l\IeC {\'o}i dokument\IeC {\'a}ci\IeC {\'o}}{6}
+\contentsline {chapter}{\numberline {4.}Fejleszt\IeC {\~o}i dokument\IeC {\'a}ci\IeC {\'o}}{7}
+\contentsline {chapter}{\numberline {5.}\IeC {\"O}sszegz\IeC {\'e}s}{8}
