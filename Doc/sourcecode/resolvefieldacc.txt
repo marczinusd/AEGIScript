@@ -1,0 +1,17 @@
+Resolve(FieldAccessNode) ->
+	Resolved = Resolve(FieldAccessNode.Children[0])
+	for i in [2..FieldAccessNode.Children.Count]:
+		Resolved = ResolveGenFun(Resolved, FieldAccessNode.Children[i])
+	end for
+end
+
+ResolveGenFun(Caller, FunCallNode) ->
+	ResolvedArgs = Array()
+	for i in [2..FunCallNode.Children.Count]:
+		ResolvedArgs[i] := Resolve(FunCallNode.Children[i])
+	end for
+	FunCallNode.Args := ResolvedArgs
+	
+	return Caller.CallFun(FunCallNode)
+end
+	

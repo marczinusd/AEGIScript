@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="AEGIScript.GUI.View.DescriptionBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="160" d:DesignWidth="400"  Height="160" Width="400"
+             >
+    <UserControl.Resources>
+        <BitmapImage x:Key="ArrowImg" UriSource="../../res/Icons/arrow.png" />
+    </UserControl.Resources>
+    <Grid Name="ActualGrid" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="32*"/>
+            <ColumnDefinition Width="33*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="57*"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Grid.Column="0" Background="#41B1E1">
+        </Label>
+        <Image Grid.Row="0" Grid.Column="0" Width="30" Height="30" Source="{Binding Description.BlueImage}" Margin="5"></Image>
+        <Label Name="FunctionNameLabel" Foreground="White" Background="#41B1E1" Content="{Binding Description.FunName}" 
+               Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontFamily="SegoeUI" FontWeight="ExtraLight" 
+               FontSize="18"   Grid.ColumnSpan="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
+        <Label Name="SourceObjectLabel" FontFamily="SegoeUI" FontWeight="ExtraLight" Content="{Binding Description.CalledOn}" FontSize="14" 
+               HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"></Label>
+        <Label Name="ReturnsLabel" Grid.Row="1" Grid.Column="2" FontFamily="SegoeUI" FontWeight="ExtraLight" 
+               Content="{Binding Description.Returns}" FontSize="14" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"></Label>
+        <Label Grid.Row="2" Grid.Column="1" FontFamily="SegoeUI" FontWeight="ExtraBold" Content="DESCRIPTION" FontSize="16"></Label>
+        <TextBlock Margin="20,0,20,0" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" 
+                   FontFamily="SegoeUI" FontWeight="ExtraLight" FontSize="13" Text="{Binding Description.Description}" 
+                   TextWrapping="WrapWithOverflow" TextAlignment="Left"></TextBlock>
+    </Grid>
+</UserControl>

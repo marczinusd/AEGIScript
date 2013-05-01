@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="AEGIScript.GUI.View.CompletionListItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="13" d:DesignWidth="120">
+    <UserControl.Resources>
+        <BitmapImage x:Key="ArrowImg" UriSource="../../res/Icons/arrow.png" />
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="171*"/>
+        </Grid.ColumnDefinitions>
+        <Image Source="{Binding Description.Image}" Height="13" Width="13"></Image>
+        <Label Grid.Column="1"  Content="{Binding Description.Name}" FontFamily="SegoeUI" FontWeight="ExtraBlack" FontSize="12" Margin="20,-2,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"></Label>
+    </Grid>
+</UserControl>

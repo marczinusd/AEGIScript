@@ -1,0 +1,18 @@
+Walk(IfNode) ->
+	NodeLength := IfNode.Children.Length
+	ElsifNodes := IfNode.Children.Where( Child is ElsifNode )
+	if IfNode.Condition:
+		for i in [1..NodeLength]:
+			Walk(IfNode.Children[i])
+		end for
+	else if ElsifNodes.Length > 0:
+		for i in [1..ElsifNodes.Length]:
+			if ElsifNodes[i].Condition:
+				Walk(ElsifNodes[i])
+				return
+			end if
+		end for
+	else
+		Walk(IfNode.ElseNode)
+	end if
+end

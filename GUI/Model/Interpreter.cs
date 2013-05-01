@@ -6,8 +6,18 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using AEGIScript.IO;
+<<<<<<< HEAD
 using AEGIScript.Lang;
 using AEGIScript.Lang.Evaluation;
+=======
+using AEGIScript.Lang.ANTLR;
+using AEGIScript.Lang.Evaluation;
+using AEGIScript.Lang.Evaluation.AEGISNodes;
+using AEGIScript.Lang.Evaluation.ExpressionNodes;
+using AEGIScript.Lang.Evaluation.Helpers;
+using AEGIScript.Lang.Evaluation.PrimitiveNodes;
+using AEGIScript.Lang.Evaluation.StatementNodes;
+>>>>>>> Project restructured, geofactory support added
 using AEGIScript.Lang.Exceptions;
 using AEGIScript.Lang.Scoping;
 using Antlr.Runtime;
@@ -20,6 +30,10 @@ namespace AEGIScript.GUI.Model
 {
     internal class Interpreter
     {
+<<<<<<< HEAD
+=======
+        #region Private Fields
+>>>>>>> Project restructured, geofactory support added
         private readonly HashSet<String> _constructors;
         private readonly Random _rand = new Random();
         private readonly Scope _scope = new Scope();
@@ -29,13 +43,6 @@ namespace AEGIScript.GUI.Model
         private bool _errorsIgnored;
         private Boolean _hasAsync;
         private int _treeDepth;
-
-        public Interpreter()
-        {
-            Output = new StringBuilder();
-            _constructors = new HashSet<string> {"Array", "ShapeFileReader", "TiffReader", "GeoTiffReader"};
-        }
-
 
         /// <summary>
         ///     Fields provided by ANTLR
@@ -48,8 +55,25 @@ namespace AEGIScript.GUI.Model
         private CancellationToken Token { get; set; }
         private int CurrentNode { get; set; }
         private int AllNodes { get; set; }
+<<<<<<< HEAD
+=======
+
+        #endregion
+
+        public Interpreter()
+        {
+            Output = new StringBuilder();
+            _constructors = new HashSet<string> {"Array", "ShapeFileReader", "TiffReader", "GeoTiffReader", "GetGeometryFactory"};
+        }
+
+        #region Public Fields
+
+>>>>>>> Project restructured, geofactory support added
         public StringBuilder Output { get; private set; }
         public event ProgressChangedEventHandler ProgressChanged;
+        #endregion 
+
+        #region Interpreter functions
 
         /// <summary>
         ///     Runs the source file through the lexer and the parser and then returns the AST representation.
@@ -164,6 +188,42 @@ namespace AEGIScript.GUI.Model
                 output = ex.Message;
             }
             return output;
+        }
+#endregion
+
+        #region Walks
+
+        /// <summary>
+        ///     Provides a layer of abstraction for walking ASTNodes -- handles double dispatching gracefully
+        ///     From a grammatical point of view, walk handles actual statements
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>String representation for debug purposes</returns>
+        private void Walk(ASTNode node)
+        {
+            switch (node.ActualType)
+            {
+                case ASTNode.Type.Assign:
+                    Walk(node as AssignNode);
+                    break;
+                case ASTNode.Type.While:
+                    Walk(node as WhileNode);
+                    break;
+                case ASTNode.Type.If:
+                    Walk(node as IfNode);
+                    break;
+                case ASTNode.Type.Elif:
+                    Walk(node as ElsifNode);
+                    break;
+                case ASTNode.Type.Else:
+                    Walk(node as ElseNode);
+                    break;
+                case ASTNode.Type.FunCall:
+                    Walk(node as FunCallNode);
+                    break;
+                default:
+                    throw new Exception("RUNTIME ERROR! \n Invalid statement on line: " + node.Line);
+            }
         }
 
         #region Walks
@@ -327,7 +387,7 @@ namespace AEGIScript.GUI.Model
                         throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
                                             node.Line + "\n");
                     }
-                    int ind = (resolvedInd as IntNode).Value;
+                    int ind = ((IntNode) resolvedInd).Value;
                     if (ind >= 0 && ind < actualArray.Elements.Count
                         && actualArray[ind].ActualType == ASTNode.Type.Array)
                     {
@@ -346,12 +406,12 @@ namespace AEGIScript.GUI.Model
                     throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
                                         node.Line + "\n");
                 }
-                int finalInd = (resolvedInd as IntNode).Value;
+                int finalInd = ((IntNode) resolvedInd).Value;
                 actualArray[finalInd] = resolved;
                 _scope.AddVar(accessor.Symbol, orig);
             }
             else
-                _scope.AddVar((node.Children[0] as VarNode).Symbol, resolved);
+                _scope.AddVar(((VarNode) node.Children[0]).Symbol, resolved);
         }
 
 
@@ -435,7 +495,6 @@ namespace AEGIScript.GUI.Model
         /// <returns>Whole result of the loop</returns>
         private void Walk(WhileNode node)
         {
-            var builder = new StringBuilder();
             var cond = Resolve(node.Children[0]) as BooleanNode;
             while (cond.Value)
             {
@@ -482,6 +541,7 @@ namespace AEGIScript.GUI.Model
 
         #endregion
 
+<<<<<<< HEAD
         #region Printing functions
 
         private void PrintFun(TermNode node)
@@ -506,6 +566,10 @@ namespace AEGIScript.GUI.Model
 
         #region Resolves
 
+=======
+        #region Resolves
+
+>>>>>>> Project restructured, geofactory support added
         /// <summary>
         ///     Provides an abstraction layer for resolves -- handles double dispatching to the proper functions
         ///     From a grammatical point of view, resolve deals with all expressions, but not statements.
@@ -530,7 +594,11 @@ namespace AEGIScript.GUI.Model
                     return Resolve(toRes as ArrayNode);
                 case ASTNode.Type.Assign:
                     TermNode resolved = Resolve(toRes.Children[1]);
+<<<<<<< HEAD
                     _scope.AddVar((toRes.Children[0] as VarNode).Symbol, resolved);
+=======
+                    _scope.AddVar(((VarNode) toRes.Children[0]).Symbol, resolved);
+>>>>>>> Project restructured, geofactory support added
                     return resolved;
                 case ASTNode.Type.ArrAcc:
                     return Resolve(toRes as ArrAccessNode);
@@ -628,7 +696,11 @@ namespace AEGIScript.GUI.Model
                                                 ex.Message + "\n at line: " + fun.Line);
                         }
                     }
+<<<<<<< HEAD
                     throw ExceptionGenerator.BadArguments(fun, new[] {ASTNode.Type.String});
+=======
+                    throw ExceptionGenerator.BadArguments(fun, new[] { ASTNode.Type.String });
+>>>>>>> Project restructured, geofactory support added
 
                 default:
                     throw new Exception(
@@ -759,6 +831,31 @@ namespace AEGIScript.GUI.Model
 
         #endregion
 
+<<<<<<< HEAD
+=======
+        #region Printing functions
+
+        private void PrintFun(TermNode node)
+        {
+            Output.Append(node);
+            ReportProgress();
+        }
+
+        private void PrintLineFun(TermNode node)
+        {
+            Output.Append("\n" + node);
+            ReportProgress();
+        }
+
+        private void PrintLineFun(String message)
+        {
+            Output.Append("\n" + message);
+            ReportProgress();
+        }
+
+        #endregion
+
+>>>>>>> Project restructured, geofactory support added
         #region Pretty printing functions to debug AST
 
         /// <summary>
@@ -832,8 +929,8 @@ namespace AEGIScript.GUI.Model
             AddIndentation(ref builder, depth);
             if (node.Token != null)
             {
-                int tokenLengthFactor = node.Token.Text.Length/4;
                 int offsetFromMax = 2;
+                int tokenLengthFactor;
                 if (tokenTextOnly)
                 {
                     builder.Append(node.Token.Text);
@@ -849,7 +946,10 @@ namespace AEGIScript.GUI.Model
                 {
                     AddIndentation(ref builder, (_treeDepth + offsetFromMax - tokenLengthFactor - depth));
                     builder.Append(Parser.TokenNames[node.Type]);
+<<<<<<< HEAD
                     var Node = new ASTNode(node);
+=======
+>>>>>>> Project restructured, geofactory support added
                 }
                 builder.Append('\n');
             }
@@ -877,45 +977,45 @@ namespace AEGIScript.GUI.Model
         /// </summary>
         /// <param name="node">Current root</param>
         /// <param name="depth">Current depth</param>
-        /// <param name="v_current">Count of visited nodes</param>
-        /// <param name="e_current">Count of "ended" nodes</param>
-        private void DepthFirstDescent(CommonTree node, int depth, ref int v_current, ref int e_current)
+        /// <param name="vCurrent">Count of visited nodes</param>
+        /// <param name="eCurrent">Count of "ended" nodes</param>
+        private void DepthFirstDescent(CommonTree node, int depth, ref int vCurrent, ref int eCurrent)
         {
             if (!_visitHelper.ContainsKey(node))
             {
                 _visitHelper.Add(node, new DfsHelper(depth, true));
-                _visitHelper[node].Order = v_current++;
+                _visitHelper[node].Order = vCurrent++;
             }
 
             for (int i = 0; i < node.ChildCount; i++)
             {
                 if (!_visitHelper.ContainsKey(node))
                 {
-                    DepthFirstDescent(node, depth + 1, ref v_current, ref e_current);
+                    DepthFirstDescent(node, depth + 1, ref vCurrent, ref eCurrent);
                 }
             }
-            _visitHelper[node].End = e_current++;
+            _visitHelper[node].End = eCurrent++;
         }
 
 
-        private void DepthFirstDescent(CommonTree node, int depth, ref StringBuilder builder, ref int v_current,
-                                       ref int e_current)
+        private void DepthFirstDescent(CommonTree node, int depth, ref StringBuilder builder, ref int vCurrent,
+                                       ref int eCurrent)
         {
             if (!_visitHelper.ContainsKey(node))
             {
                 _visitHelper.Add(node, new DfsHelper(depth, true));
-                _visitHelper[node].Order = v_current++;
+                _visitHelper[node].Order = vCurrent++;
             }
 
             for (int i = 0; i < node.ChildCount; i++)
             {
                 if (!_visitHelper.ContainsKey(node.GetChild(i) as CommonTree))
                 {
-                    DepthFirstDescent(node.GetChild(i) as CommonTree, depth + 1, ref builder, ref v_current,
-                                      ref e_current);
+                    DepthFirstDescent(node.GetChild(i) as CommonTree, depth + 1, ref builder, ref vCurrent,
+                                      ref eCurrent);
                 }
             }
-            _visitHelper[node].End = e_current++;
+            _visitHelper[node].End = eCurrent++;
             if (node.Token != null)
             {
                 AddIndentation(ref builder, depth);
@@ -943,9 +1043,12 @@ namespace AEGIScript.GUI.Model
             }
 
             public int Depth { get; private set; }
+
             public int Order { get; set; }
+
             public int End { get; set; }
-            private bool Visited { get; set; }
+
+            private bool Visited { get;  set; }
         }
 
         #endregion

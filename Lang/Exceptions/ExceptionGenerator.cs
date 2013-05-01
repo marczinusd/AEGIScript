@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 ﻿using AEGIScript.Lang.Evaluation;
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+=======
+﻿using System;
+using System.Linq;
+using System.Text;
+using AEGIScript.Lang.Evaluation.ExpressionNodes;
+using AEGIScript.Lang.Evaluation.PrimitiveNodes;
+>>>>>>> Project restructured, geofactory support added
 
 namespace AEGIScript.Lang.Exceptions
 {
@@ -27,6 +35,22 @@ namespace AEGIScript.Lang.Exceptions
                 + func.Line + ".\n The function has no overload that takes " + func.ResolvedArgs.Count + " parameters.");
         }
 
+<<<<<<< HEAD
+=======
+        public static InvalidCallException BadArguments(FunCallNode func)
+        {
+            var errorMsg = new StringBuilder();
+            errorMsg.AppendLine("RUNTIME ERROR!\n Invalid arguments in function call to "
+                + func.FunName + " on line " + func.Line);
+            errorMsg.Append("Called with types:");
+            foreach (var type in func.ResolvedArgs.Select(x => x.ActualType))
+            {
+                errorMsg.Append(type.ToString() + " ");
+            }
+            return new InvalidCallException(errorMsg.ToString());
+        }
+
+>>>>>>> Project restructured, geofactory support added
         public static InvalidCallException BadArguments(FunCallNode func, ASTNode.Type[] actualSignature)
         {
             var errorMsg = new StringBuilder();
@@ -61,6 +85,7 @@ namespace AEGIScript.Lang.Exceptions
         }
 
     }
+<<<<<<< HEAD
 
     #region Exceptions
     [Serializable]
@@ -110,4 +135,6 @@ namespace AEGIScript.Lang.Exceptions
         }
     }
 #endregion
+=======
+>>>>>>> Project restructured, geofactory support added
 }

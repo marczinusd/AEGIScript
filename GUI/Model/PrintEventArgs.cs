@@ -1,5 +1,6 @@
 ﻿using System;
 using AEGIScript.Lang.Evaluation;
+using AEGIScript.Lang.Evaluation.PrimitiveNodes;
 
 namespace AEGIScript.GUI.Model
 {
