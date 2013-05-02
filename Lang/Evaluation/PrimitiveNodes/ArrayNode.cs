@@ -1,15 +1,5 @@
 ﻿using System.Linq;
-<<<<<<< HEAD:Lang/Evaluation/PrimitiveNodes/ArrayNode.cs
-<<<<<<< HEAD:Lang/Evaluation/PrimitiveNodes/ArrayNode.cs
 using AEGIScript.Lang.Evaluation.ExpressionNodes;
-=======
->>>>>>> 02d2e234ae3a1038fef2923d05ff58208dfe66a6:Lang/Evaluation/ArrayNode.cs
-=======
-<<<<<<< HEAD:Lang/Evaluation/ArrayNode.cs
-=======
-using AEGIScript.Lang.Evaluation.ExpressionNodes;
->>>>>>> Project restructured, geofactory support added:Lang/Evaluation/PrimitiveNodes/ArrayNode.cs
->>>>>>> detach:Lang/Evaluation/PrimitiveNodes/ArrayNode.cs
 using Antlr.Runtime.Tree;
 using System;
 using System.Collections.Generic;

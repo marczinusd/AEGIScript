@@ -167,15 +167,17 @@ namespace AEGIScript.GUI.View
                                                               type: FunctionDescription.FunctionType.Call);
 
             _keywords.Add("Clone");
-            _functionDescriptions["Clone"] = new FunctionDescription(funName: "Clone",
-                                                  calledOn: "Geometry",
-                                                  parameters: "void",
-                                                  returns: "Geometry",
-                                                  description: "Returns a new geometry object identical to the original.",
-                                                  type: FunctionDescription.FunctionType.Call);
+            _functionDescriptions["Clone"] = new FunctionDescription
+                (funName: "Clone",
+                 calledOn: "Geometry",
+                 parameters: "void",
+                 returns: "Geometry",
+                 description: "Returns a new geometry object identical to the original.",
+                 type: FunctionDescription.FunctionType.Call);
 
             _keywords.Add("Dimension");
-            _functionDescriptions["Dimension"] = new FunctionDescription(funName: "Dimension",
+            _functionDescriptions["Dimension"] = new FunctionDescription
+                (funName: "Dimension",
                                                   calledOn: "Geometry",
                                                   parameters: "void",
                                                   returns: "Integer",
