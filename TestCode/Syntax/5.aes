@@ -1,0 +1,6 @@
+begin
+	x = 1;
+	else
+		print(x);
+	endif;
+end;

@@ -1,0 +1,11 @@
+begin
+	files = Dir("*.wkt");
+	printline(files);
+	Result = Array();
+	i = 0;
+	while i < files.Count():
+		append(Result, ReadWKT(files[i]));
+		i = i + 1;
+	end while;
+	printline(Result);
+end;

@@ -1,0 +1,7 @@
+begin
+	i = 0;
+	while i < 300000:
+		i = i + 1;
+	//end while;
+	print(i);
+end;

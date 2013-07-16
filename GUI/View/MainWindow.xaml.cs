@@ -17,7 +17,6 @@ namespace AEGIScript.GUI.View
     public partial class MainWindow
     {
         private readonly List<string> _keywords = new List<string>();
-        private readonly Dictionary<string, string> _descriptions = new Dictionary<string, string>(); 
         private readonly Dictionary<string, FunctionDescription> _functionDescriptions = new Dictionary<string, FunctionDescription>(); 
         private readonly EditorViewModel _viewModel;
         private CompletionWindow _completionWindow;
@@ -53,6 +52,7 @@ namespace AEGIScript.GUI.View
             DebugButton.IsEnabled = false;
             ImmediateButton.IsEnabled = false;
             CancelButton.IsEnabled = true;
+            RunMenuItem.IsEnabled = false;
         }
 
         void _viewModel_OnFinished(object sender, EventArgs e)
@@ -61,6 +61,7 @@ namespace AEGIScript.GUI.View
             DebugButton.IsEnabled = true;
             ImmediateButton.IsEnabled = true;
             CancelButton.IsEnabled = false;
+            RunMenuItem.IsEnabled = true;
         }
 
         private void viewModel_OnClose(object sender, EventArgs e)
@@ -120,7 +121,6 @@ namespace AEGIScript.GUI.View
         {
 
             _keywords.Add("Append");
-            _descriptions.Add("Append", "Append(object), Append(Array, object) \t returns: Array \n\t Appends the object at the end of the array.");
             _functionDescriptions["Append"] = new FunctionDescription("Append", "Array", "Object", "Array", "Appends the object at the end of the array.", FunctionDescription.FunctionType.Call);
             _keywords.Add("Array");
             _functionDescriptions["Array"] = new FunctionDescription(funName: "Array",
@@ -129,16 +129,22 @@ namespace AEGIScript.GUI.View
                                                               returns: "Array",
                                                               description: "Returns an empty array.",
                                                               type: FunctionDescription.FunctionType.Ctor);
+            _keywords.Add("At");
+            _functionDescriptions["At"] = new FunctionDescription("At", "Array", "int", "Object", "Returns the object, stored in the array at the index provided as a parameter", FunctionDescription.FunctionType.Call);
+
+            _keywords.Add("ReadToEnd");
+            _functionDescriptions["ReadToEnd"] = new FunctionDescription("ReadToEnd", "FileStream", "void", "string", "Reads a line from a non-empty filestream", FunctionDescription.FunctionType.Call);
+
+            _keywords.Add("EOF");
+            _functionDescriptions["EOF"] = new FunctionDescription("EOF", "FileStream", "void", "bool", "Returns whether the stream is at its end or not", FunctionDescription.FunctionType.Call);
 
             _keywords.Add("Count");
-            _descriptions.Add("Count", "Count(Array|String) \t returns: Integer \n\t Returns the length of an array or a string.");
             _functionDescriptions["Count"] = new FunctionDescription("Count", "Array|String", "void", "Integer", "Returns the length of the array or string.", FunctionDescription.FunctionType.Call);
 
             _keywords.Add("Read");
             _functionDescriptions["Read"] = new FunctionDescription("Read", "GeometryStream", "void", "Geometry[]", "Returns the length of the array or string.", FunctionDescription.FunctionType.Call);
 
             _keywords.Add("Boundary");
-            _descriptions.Add("Boundary", "Boundary(Geometry) \t returns: Geometry \n\t Returns the boundary of the geometry object.");
             _functionDescriptions["Boundary"] = new FunctionDescription("Boundary", "Geometry", "void", "Geometry", "Returns the boundary of the geometry object.", FunctionDescription.FunctionType.Call);
 
             _keywords.Add("ConvexHull");
@@ -253,7 +259,6 @@ namespace AEGIScript.GUI.View
               description: "Returns whether the caller crosses the parameter.",
               type: FunctionDescription.FunctionType.Call);
             _keywords.Add("Disjoint");
-            _descriptions.Add("Disjoint", "Disjoint(Envelope) \t returns Boolean \n\t Returns if the two objects are disjoint.");
             _functionDescriptions["Disjoint"] = new FunctionDescription
              (funName: "Disjoint",
               calledOn: "Envelope",
@@ -280,7 +285,6 @@ namespace AEGIScript.GUI.View
               type: FunctionDescription.FunctionType.Call);
 
             _keywords.Add("Overlaps");
-            _descriptions.Add("Overlaps", "Overlaps(Envelope) \t returns Boolean \n\t Returns whether the two objects overlap.");
             _functionDescriptions["Overlaps"] = new FunctionDescription
              (funName: "Overlaps",
               calledOn: "Envelope",
@@ -308,7 +312,6 @@ namespace AEGIScript.GUI.View
               type: FunctionDescription.FunctionType.Call);
             
             _keywords.Add("Intersects");
-            _descriptions.Add("Intersects", "Intersects(Envelope) \t returns Coordinate \n\t Returns the center of an envelope.");
             _functionDescriptions["Intersects"] = new FunctionDescription
              (funName: "Intersects",
               calledOn: "Envelope",
@@ -317,7 +320,6 @@ namespace AEGIScript.GUI.View
               description: "Returns whether the caller intersects with the parameter or not.",
               type: FunctionDescription.FunctionType.Call);
             _keywords.Add("Maximum");
-            _descriptions.Add("Maximum", "Maximum(Envelope) \t returns Coordinate \n\t Returns the center of an envelope.");
             _functionDescriptions["Maximum"] = new FunctionDescription
              (funName: "Maximum",
               calledOn: "Envelope",
@@ -390,7 +392,6 @@ namespace AEGIScript.GUI.View
               type: FunctionDescription.FunctionType.Ctor);
 
             _keywords.Add("Type");
-            _descriptions.Add("Type", "Type(Object) \t returns: String \n\t Returns the string representation of the object's known type.");
             _functionDescriptions["Type"] = new FunctionDescription
              (funName: "Type",
               calledOn: "Object",

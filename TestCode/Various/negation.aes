@@ -1,0 +1,6 @@
+begin
+	x = not false;
+	y = -1 - 3;
+	z = -y;
+	print(z);
+end;

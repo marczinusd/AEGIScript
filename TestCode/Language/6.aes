@@ -1,0 +1,5 @@
+begin
+	x = [1,2,3,4];
+	x = x.Append(x[2]);
+	printline(x[0]);
+end;

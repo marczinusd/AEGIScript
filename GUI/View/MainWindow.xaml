@@ -75,7 +75,7 @@
             </MenuItem>
             <Separator/>
             <MenuItem Header="BUILD" FontWeight="Thin" FontSize="16">
-                <MenuItem InputGestureText="F5" Header="Run"  Command="{Binding RunCommand}" FontSize="14"/>
+                <MenuItem Name="RunMenuItem" InputGestureText="F5" Header="Run"  Command="{Binding RunCommand}" FontSize="14"/>
             </MenuItem>
             <MenuItem Header="DEBUG" FontWeight="Thin" Margin="20,0,0,0" FontSize="16">
                 <MenuItem InputGestureText="F6" Header="Print AST" Command="{Binding PrintASTCommand}" FontSize="14"/>

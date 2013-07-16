@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using AEGIScript.Lang.Evaluation.ExpressionNodes;
@@ -11,9 +12,14 @@ namespace AEGIScript.Lang.Exceptions
     /// </summary>
     static class ExceptionGenerator
     {
-        public static IndexOutOfRangeException IndexOutOfRange()
+        public static IndexOutOfRangeException IndexOutOfRange(ArrAccessNode arr)
         {
-            return new IndexOutOfRangeException();
+            return new IndexOutOfRangeException("RUNTIME ERROR!\n You are trying to access an array with an out of range index! Error occured at line: " + arr.Line);
+        }
+
+        public static EndOfStreamException EndOfStream()
+        {
+            return new EndOfStreamException("RUNTIME ERROR!\n You are trying to read from an empty stream!");
         }
 
         public static InvalidCallException UndefinedFunctionCall(FunCallNode func)

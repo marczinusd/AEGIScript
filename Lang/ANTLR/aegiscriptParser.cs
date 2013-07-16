@@ -126,7 +126,7 @@ public partial class aegiscriptParser : Antlr.Runtime.Parser
 	}
 
 	public override string[] TokenNames { get { return aegiscriptParser.tokenNames; } }
-	public override string GrammarFileName { get { return "D:\\Eclipse\\aegiscript_live\\aegiscript.g"; } }
+	public override string GrammarFileName { get { return "aegiscript.g"; } }
 
 	//int HIDDEN = Hidden;
 

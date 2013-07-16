@@ -108,7 +108,7 @@ public partial class aegiscriptLexer : Antlr.Runtime.Lexer
 
 		OnCreated();
 	}
-	public override string GrammarFileName { get { return "D:\\Eclipse\\aegiscript_live\\aegiscript.g"; } }
+	public override string GrammarFileName { get { return "aegiscript.g"; } }
 
 
 	partial void OnCreated();

@@ -1,0 +1,5 @@
+begin
+	while true:
+		i = 1;
+	end while;
+end;

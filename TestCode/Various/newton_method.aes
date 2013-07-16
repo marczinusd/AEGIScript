@@ -1,0 +1,11 @@
+begin
+	Precision = 200;
+	Data = 2151230;
+	Counter = 0;
+	p = 1.0;
+	while Counter < Precision:
+		p = (Data/p + p) / 2;
+		Counter = Counter + 1;
+	end while;
+	print(p);
+end;

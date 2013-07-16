@@ -1,0 +1,10 @@
+begin
+	a = 1120;
+	b = 22400;
+	while b != 0:
+		t = b;
+		b = a mod t;
+		a = t;
+	end while;
+	print(a);
+end;

@@ -1,0 +1,14 @@
+begin
+	files = Dir("*.tif");
+	printline(files);
+	Result = Array();
+	i = 0;
+	while i < files.Count():
+		Reader = TiffReader(files[i]);
+		append(Result, Reader.Read());
+		i = i + 1;
+	end while;
+// 'At' call is needed, because array accessors
+//  are not supported in chained accessors
+	printline(Result.At(0).At(0).ConvexHull());
+end;

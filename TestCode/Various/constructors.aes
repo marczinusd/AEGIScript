@@ -1,0 +1,12 @@
+begin
+	x = Array();
+	//x = x.Append(1,2);
+	x = [1,2,3,4];
+	y = TiffReader("GMARBLES.tif");
+	y = ShapeFileReader("map.shp");
+	Geometries = y.Read();
+	printline(Geometries.At(0).Dimension());
+	x = x.Append(1).Count();
+	x = [1,2,3,4,5];
+	print(x.Append(3).RemoveAt(0));
+end;

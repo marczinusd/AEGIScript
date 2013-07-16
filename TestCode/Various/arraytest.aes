@@ -1,0 +1,14 @@
+begin
+	x = [1,2,[1,"asd","asd"],4];
+	print(x);
+	y = x[2][0];
+	y = rand(20);
+	print(x[x[1]]);
+	z = [1,2,3];
+	x[0] = 3;
+	z = z + 1 + 2 + "asd" + [x,2,3];
+	print(x);
+	x[0] = "asd";
+	print(x);
+	print(y);
+end;

@@ -1,0 +1,13 @@
+begin
+	if true:
+		print(true);
+		print(false);
+	endif;
+	
+	if false:
+		print(false);
+	else:
+		print(false);
+		print(false);
+	endif;
+end;

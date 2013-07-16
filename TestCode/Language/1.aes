@@ -1,0 +1,18 @@
+begin
+	x = 1;
+	if x == 1:
+		printline(x);
+		while x < 5:
+			if x == 2:
+				while x < 3:
+					x = x + 1;
+					if x == 2:
+						x = x + 5;
+					endif;
+					printline(x);
+				end while;				
+			endif;
+			x = x + 1;
+		end while;
+	endif;
+end;

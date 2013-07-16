@@ -1,0 +1,5 @@
+begin
+	x = [1,2,3,4];
+	y = x.Append(5).Append(6).RemoveAt(3).Count();
+	printline(x);
+end;

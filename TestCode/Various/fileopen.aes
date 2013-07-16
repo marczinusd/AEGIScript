@@ -1,0 +1,10 @@
+begin
+	f = Open("loremipsum.txt");
+	str = f.ReadToEnd();
+	i = 0;
+	while i < str.Count():
+		printline(str.At(i));
+	end while;
+	printline(str);
+	close(f);
+end;

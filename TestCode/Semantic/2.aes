@@ -1,0 +1,4 @@
+begin
+	x = "somestring";
+	y = x * 3;
+end;

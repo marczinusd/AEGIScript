@@ -5,7 +5,6 @@
 *.pydevproject
 .project
 .metadata
-bin/
 tmp/
 *.tmp
 *.bak
@@ -43,8 +42,6 @@ local.properties
 *.sln.docstates
 
 # Build results
-[Dd]ebug/
-[Rr]elease/
 *_i.c
 *_p.c
 *.ilk
@@ -98,8 +95,9 @@ DocProject/Help/html
 publish
 
 # Others
-[Bb]in
 [Oo]bj
+[Dd]ebug
+[Rr]elease
 sql
 TestResults
 *.Cache
@@ -141,7 +139,6 @@ dist
 build
 eggs
 parts
-bin
 var
 sdist
 develop-eggs

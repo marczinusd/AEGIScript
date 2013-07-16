@@ -59,7 +59,7 @@ namespace AEGIScript.IO
                 {
                     while (!reader.EndOfStream)
                     {
-                        builder.AppendLine(reader.ReadLine());
+                        builder.Append(reader.ReadLine());
                     }
                     reader.Close();
                 }

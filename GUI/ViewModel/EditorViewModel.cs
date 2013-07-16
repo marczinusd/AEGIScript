@@ -180,10 +180,9 @@ namespace AEGIScript.GUI.ViewModel
                 OnPropertyChanged("TaskRunning");
                 Timer.Start();
                 OnRunning(this, new EventArgs());
-                // wat
-                var TaskId = 12345;
+                var TaskId = 1;
                 var op = AsyncOperationManager.CreateOperation(TaskId);
-                Task.Factory.StartNew(() => RunParallel(source, CToken, op), CToken)
+                Task.Factory.StartNew(() => RunParallel(source, CToken, op, true), CToken)
                             .ContinueWith(q => Update(), TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
@@ -225,9 +224,9 @@ namespace AEGIScript.GUI.ViewModel
             }
         }
 
-        private void RunParallel(String source, CancellationToken token, AsyncOperation operation)
+        private void RunParallel(String source, CancellationToken token, AsyncOperation operation, bool errosIgnored = false)
         {
-            AesInterpreter.WalkParallel(source, token, operation);
+            AesInterpreter.WalkAsync(source, token, operation, errosIgnored);
         }
 
         private void New()

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using AEGIScript.IO;
@@ -94,22 +96,27 @@ namespace AEGIScript.GUI.Model
         {
             Output.Clear();
             Token = new CancellationToken();
-            _errorsIgnored = true;
+            _errorsIgnored = fromImmediate;
             if (!fromImmediate)
             {
                 _scope.Clear();
             }
             SetParser(source);
 
-            AstParserRuleReturnScope<CommonTree, IToken> ret = Parser.program();
+            var ret = Parser.program();
 
             // can't really determine where the problem came from
             // ANTLR suppresses errors during parsing and lexing
-            CheckANTLRErrors();
+            var text = ret.Tree.Text;
+            if (CheckANTLRErrors() > 0)
+            {
+                Output.Append("Syntax error!");
+                return;
+            }
             Walk(ret.Tree);
         }
 
-        public void WalkParallel(String source, CancellationToken token, AsyncOperation async,
+        public void WalkAsync(String source, CancellationToken token, AsyncOperation async,
                                  bool errorsIgnored = false)
         {
             _hasAsync = true;
@@ -120,7 +127,7 @@ namespace AEGIScript.GUI.Model
             _scope.Clear();
             SetParser(source);
             Token.ThrowIfCancellationRequested();
-            AstParserRuleReturnScope<CommonTree, IToken> ret = Parser.program();
+            var ret = Parser.program();
             if (CheckANTLRErrors() > 0)
             {
                 Output.Append("Syntax error!");
@@ -226,7 +233,7 @@ namespace AEGIScript.GUI.Model
         /// <param name="node">Root of the AST</param>
         private void Walk(BeginNode node)
         {
-            _beginTime = DateTime.Now;
+            _beginTime = DateTime.UtcNow;
             AllNodes = node.Children.Count;
             for (int i = 0; i < node.Children.Count; i++)
             {
@@ -264,7 +271,7 @@ namespace AEGIScript.GUI.Model
 
         private void ReportCompletionTime()
         {
-            TimeSpan elapsedTime = DateTime.Now - _beginTime;
+            TimeSpan elapsedTime = DateTime.UtcNow - _beginTime;
             double asDouble = Math.Truncate(elapsedTime.TotalSeconds*10000)/10000;
             Output.Insert(0, "Successfully finished in: " + asDouble.ToString(CultureInfo.InvariantCulture) +
                              " second(s). \n\n");
@@ -299,7 +306,7 @@ namespace AEGIScript.GUI.Model
         {
             try
             {
-                var begin = new BeginNode(tree); // negation 52 negative 30
+                var begin = new BeginNode(tree);
                 Walk(begin);
             }
             catch (OperationCanceledException)
@@ -308,15 +315,15 @@ namespace AEGIScript.GUI.Model
                 _scope.Clear();
                 Output.Append("OPERATION CANCELLED BY USER.");
             }
-            catch (InvalidOperationException ex)
-            {
-                PrintLineFun("RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message +
-                             ", TargetSite: " + ex.TargetSite + ", Source: " + ex.Source);
-            }
-            catch (Exception ex)
-            {
-                PrintLineFun(ex.Message);
-            }
+            //catch (InvalidOperationException ex)
+            //{
+            //    PrintLineFun("RUNTIME ERROR!\n Error in an external DLL with message: \n " + ex.Message +
+            //                 ", TargetSite: " + ex.TargetSite + ", Source: " + ex.Source);
+            //}
+            //catch (Exception ex)
+            //{
+            //    PrintLineFun(ex.Message);
+            //}
         }
 
         /// <summary>
@@ -492,6 +499,15 @@ namespace AEGIScript.GUI.Model
                 TermNode resolved = Resolve(node.Children[1]);
                 PrintLineFun(resolved);
             }
+            else if (node.FunName == "close" && node.Children.Count == 2)
+            {
+                TermNode resolved = Resolve(node.Children[1]);
+                if (resolved.ActualType == ASTNode.Type.File)
+                {
+                    ((FileNode)resolved).Close();
+                }
+                else throw ExceptionGenerator.BadArguments(node);
+            }
             else
             {
                 throw new Exception("RUNTIME ERROR! \n Undefined function call at line " + node.Line + " \n");
@@ -579,6 +595,14 @@ namespace AEGIScript.GUI.Model
             return RunBuiltinFuns(fun, resolvedArgs);
         }
 
+
+        /// <summary>
+        ///     Acts as the standard library of the language. Should extract to seperate module, 
+        ///     see: Lang/Evaluation/Helpers/Library
+        /// </summary>
+        /// <param name="fun">Function to call</param>
+        /// <param name="resolvedArgs">Actual arguments</param>
+        /// <returns>Result of the call</returns>
         private TermNode RunBuiltinFuns(FunCallNode fun, List<TermNode> resolvedArgs)
         {
             switch (fun.FunName)
@@ -625,7 +649,48 @@ namespace AEGIScript.GUI.Model
                         }
                     }
                     throw ExceptionGenerator.BadArguments(fun, new[] { ASTNode.Type.String });
-
+                case "Dir":
+                    if (resolvedArgs.Count == 0)
+                    {
+                        List<TermNode> files = Directory
+                            .GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
+                            .Select( s => new StringNode(s))
+                            .Cast<TermNode>()
+                            .ToList();
+                        return new ArrayNode(files);
+                    }
+                    if (resolvedArgs.Count == 1 && resolvedArgs[0].ActualType == ASTNode.Type.String)
+                    {
+                        List<TermNode> files = Directory
+                            .GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                                      ((StringNode) resolvedArgs[0]).Value)
+                            .Select(s => new StringNode(s))
+                            .Cast<TermNode>()
+                            .ToList();
+                        return new ArrayNode(files);
+                    }
+                    if (resolvedArgs.Count == 2 && resolvedArgs[0].ActualType == ASTNode.Type.String &&
+                        resolvedArgs[1].ActualType == ASTNode.Type.String)
+                    {
+                        String path = ((StringNode) resolvedArgs[0]).Value;
+                        String filter = ((StringNode) resolvedArgs[1]).Value;
+                        var Files = Directory.GetFiles(path, filter);
+                        List<TermNode> files = Files.Select(s => new StringNode(s)).Cast<TermNode>().ToList();
+                        return new ArrayNode(files);
+                    }
+                    else throw ExceptionGenerator.BadArguments(fun);
+                case "Open":
+                    if (resolvedArgs.Count == 1 && resolvedArgs[0].ActualType == ASTNode.Type.String)
+                    {
+                        string path = ((StringNode) resolvedArgs[0]).Value;
+                        if (!File.Exists(path))
+                        {
+                            throw ExceptionGenerator.EndOfStream();
+                        }
+                        var stream = new FileStream(path, FileMode.Open);
+                        return new FileNode(stream);
+                    }
+                    throw ExceptionGenerator.BadArguments(fun);
                 default:
                     throw new Exception(
                         "RUNTIME ERROR!\n You are either calling a non-existing function, or trying to " +
@@ -713,7 +778,16 @@ namespace AEGIScript.GUI.Model
                 throw new Exception("RUNTIME ERROR!\n You are trying to use a non-integer accessor on line " +
                                     toRes.Line + "\n");
             }
-            return Resolve(actualArray[(resolvedInd as IntNode).Value]);
+            try
+            {
+                var toReturn = Resolve(actualArray[(resolvedInd as IntNode).Value]);
+                return toReturn;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                throw ExceptionGenerator.IndexOutOfRange(toRes);
+            }
+
         }
 
         /// <summary>

@@ -59,7 +59,8 @@ namespace AEGIScript.Lang.Evaluation.PrimitiveNodes
             TypeIdentifier,
             Point,
             Line,
-            LinearRing
+            LinearRing,
+            File
         }
 
 

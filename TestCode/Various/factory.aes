@@ -1,0 +1,13 @@
+begin
+
+	Factory = GetGeometryFactory();
+	y = Factory.Point(1.0, 2.0, 3.0);
+	y = [ Factory.Point(1.0, 2.0, 3.0),
+		  Factory.Point(1.0, 3.0, 3.0),
+		  Factory.Point(3.0, 3.0, 3.0) ];
+	Ring = Factory.LinearRing(y);
+	printline(Ring);
+	printline(Factory.LinearRing(Ring));
+	printline(Factory.Coordinate(1.0, 2.0, 3.0));
+
+end;
